@@ -1,3 +1,4 @@
+//Manages user profiles, authentication
 const User = require('../models/userModel');
 const { hashPassword, comparePassword, generateToken } = require('../middlewares/auth');
 
