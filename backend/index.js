@@ -9,7 +9,8 @@ const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const healthPlanRoutes = require('./routes/healthPlanRoutes');
 const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
-const communityPostRoutes = require('./routes/communityPostRoutes');
+const postRoutes = require('./routes/PostRoutes');
+const communityRoutes = require('./routes/communityRoutes')
 
 const app = express();
 
@@ -31,7 +32,9 @@ connectDB();
 app.use('/api/users', userRoutes);
 app.use('/api/health-plans', healthPlanRoutes);
 app.use('/api/emergency-contacts', emergencyContactRoutes);
-app.use('/api/community-posts', communityPostRoutes);
+app.use('/api/community-posts', postRoutes);
+app.use('/api/communities', communityRoutes)
+
 
 const PORT = process.env.PORT || 8070;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
