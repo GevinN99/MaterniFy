@@ -62,17 +62,17 @@ export const getPostsByCommunity = async (req, res) => {
 // Get all posts belonging to all communities that the user has joined
 export const getPostsByAllCommunities = async (req, res) => {
 	try {
-		const { userId } = req.params 
+		const { userId } = req.params
 
 		// Find the communities that the user is a member of
 		const userCommunities = await CommunityModel.find({
 			members: userId,
-		}).select('_id')
+		}).select("_id")
 
 		if (!userCommunities || userCommunities.length === 0) {
 			return res
 				.status(404)
-				.json({ message: 'No communities found for this user' })
+				.json({ message: "No communities found for this user" })
 		}
 
 		// Get all posts from the communities the user has joined
@@ -80,15 +80,19 @@ export const getPostsByAllCommunities = async (req, res) => {
 
 		const posts = await PostModel.find({
 			communityId: { $in: communityIds },
-		}).sort({ createdAt: -1 })
-
-		// Return the posts
+		})
+			.populate("userId", "fullName profileImage") // Populate user details
+			.populate("communityId", "name") // Populate community name
+			.sort({ createdAt: -1 })
+		
+		console.log(posts)
 		return res.status(200).json(posts)
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: 'Internal server error' })
+		res.status(500).json({ error: "Internal server error" })
 	}
 }
+
 
 
 

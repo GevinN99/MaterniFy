@@ -13,7 +13,7 @@ const router = express.Router()
 const injectDummyUser = async (req, res, next) => {
 	if (process.env.NODE_ENV === 'development' || req.query.bypassAuth) {
 		try {
-			const dummyUserId = '67bb1fac48c88b4e0ca227c1' // Replace with actual ID
+			const dummyUserId = "67bc9ceff607c265056765af" // Replace with actual ID
 
 			// Use userModel instead of undefined User
 			const dummyUser = await userModel.findById(dummyUserId).exec()

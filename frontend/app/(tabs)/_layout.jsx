@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native"
 
 export default function TabsLayout() {
 	return (
-		<Tabs            
+        <Tabs                
             screenOptions={{                
 				tabBarActiveTintColor: "#38BDF8",
 				tabBarLabelStyle: {
@@ -23,7 +23,22 @@ export default function TabsLayout() {
 					tabBarIcon: ({ focused, color }) => (
 						<Ionicons
 							name={focused ? "home" : "home-outline"}
-							size={24}
+							size={30}
+							color={color}
+						/>
+					),
+				}}
+			/>
+			<Tabs.Screen
+				name="chatbot"
+				options={{
+					headerTitle: "Chatbot",
+					title: "",
+					headerShown: false,
+					tabBarIcon: ({ focused, color }) => (
+						<Ionicons
+							name={focused ? "chatbubble" : "chatbubble-outline"}
+							size={30}
 							color={color}
 						/>
 					),
@@ -35,11 +50,11 @@ export default function TabsLayout() {
 					headerTitle: "Community",
 					title: "",
 					headerShown: false,
-					tabBarIcon: ({ focused, color }) => (
+                    tabBarIcon: ({ focused, color }) => (                        
 						<Ionicons
 							name={focused ? "people" : "people-outline"}
-							size={24}
-							color={color}
+							size={30}
+                            color={color}                            
 						/>
 					),
 				}}
@@ -54,7 +69,7 @@ const styles = StyleSheet.create({
         display: "flex",
         justifyContent: "center",        
 		borderRadius: 50, 
-		margin: 10,		
+        margin: 10,        
 		shadowColor: "#000", 
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,

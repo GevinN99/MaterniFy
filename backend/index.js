@@ -15,11 +15,13 @@ const communityRoutes = require('./routes/communityRoutes')
 const app = express();
 
 // Middleware
-app.use(cors({
-    origin: ['http://localhost:8081'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-}));
+app.use(
+	cors({
+		origin: ["http://localhost:8081", "http://192.168.8.172:8081"],
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		credentials: true,
+	})
+)
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
