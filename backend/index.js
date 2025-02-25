@@ -10,6 +10,7 @@ const userRoutes = require('./routes/userRoutes');
 const healthPlanRoutes = require('./routes/healthPlanRoutes');
 const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
 const communityPostRoutes = require('./routes/communityPostRoutes');
+const edinburghRoutes = require('./routes/edinburghRoutes');
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/health-plans', healthPlanRoutes);
 app.use('/api/emergency-contacts', emergencyContactRoutes);
 app.use('/api/community-posts', communityPostRoutes);
+app.use('/api/edinburgh', edinburghRoutes);
 
 const PORT = process.env.PORT || 8070;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
