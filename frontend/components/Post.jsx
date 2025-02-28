@@ -1,8 +1,7 @@
-import { View, Text, Image, StyleSheet, Dimensions } from "react-native"
+import { View, Text, StyleSheet, Dimensions } from "react-native"
 import React from "react"
 import { Ionicons } from "@expo/vector-icons"
-
-const { width } = Dimensions.get("window")
+import { Image } from "expo-image"
 
 const Post = ({
 	profile,
@@ -36,11 +35,12 @@ const Post = ({
 			</View>
 			<Text className="mt-4">{content}</Text>
 			{image && (
-				<View className="flex items-center w-full my-4 overflow-hidden rounded-2xl">
+				<View className="flex my-4 items-center w-full overflow-hidden rounded-2xl">
 					<Image
 						source={image}
-						style={[styles.postImage, { width: width - 48 }]} // Adjust width dynamically
-						resizeMode="cover"
+						style={[styles.postImage]}
+						contentFit="cover"
+						transition={1000}
 					/>
 				</View>
 			)}

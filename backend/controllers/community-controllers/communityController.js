@@ -12,11 +12,28 @@ export const getAllCommunities = async (req, res) => {
 	}
 }
 
+// Get user communities
+export const getUserCommunities = async (req, res) => {
+	try {
+		const { userId } = req.params
+		if (!userId) return res.status(400).json({ error: "User ID is required" })
+		console.log(`Fetching communities for user ID: ${userId}`)
+
+		const userCommunities = await CommunityModel.find({ members: userId })
+
+		res.status(200).json(userCommunities)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Failed to fetch user's communities" })
+	}
+}
+
+
 // Create a new community
 export const createCommunity = async (req, res) => {
-	try {
-		const { name, description } = req.body
-		const admin = req.user.id
+	try {		
+		const { name, description, imageUrl } = req.body		
+		const admin = req.user.id		
 
 		if (!name) {
 			return res.status(400).json({ error: 'Name required' })
@@ -29,6 +46,7 @@ export const createCommunity = async (req, res) => {
 		const newCommunity = new CommunityModel({
 			name,
 			description,
+			imageUrl,
 			admin,
 			members: [admin],
 		})

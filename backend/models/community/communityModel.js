@@ -3,10 +3,11 @@ const { Schema } = mongoose
 
 const communitySchema = new mongoose.Schema({
 	name: { type: String, required: true },
-	description: { type: String },
-	members: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-	posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-	admin: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Admin field added
+	description: { type: String, required: true },	
+	imageUrl: { type: String },
+	admin: { type: Schema.Types.ObjectId, ref: "User", required: true }, 
+	members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+	posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 	createdAt: { type: Date, default: Date.now },
 })
 

@@ -4,8 +4,9 @@ import CommunityModel from '../../models/community/communityModel.js'
 // Create a new post
 export const createPost = async (req, res) => {
 	try {
+		console.log('creatign post')
 		// Get the content and communityId from the request body
-		const { content, communityId } = req.body
+		const { content, communityId, imageUrl } = req.body
 		// Get the userId from the request object
 		const userId = req.user.id
 
@@ -22,7 +23,8 @@ export const createPost = async (req, res) => {
 		const newPost = new PostModel({
 			content,
 			userId,
-			communityId,			
+			communityId,	
+			imageUrl,
 		})
 
 		// Save the new post

@@ -2,6 +2,7 @@ const express = require('express')
 const userModel = require('../models/userModel.js')
 const {
 	getAllCommunities,
+	getUserCommunities,
 	// getCommunityById,
 	createCommunity,
 	// updateCommunity,
@@ -36,6 +37,10 @@ const injectDummyUser = async (req, res, next) => {
 
 // Route to get all communities
 router.get('/', getAllCommunities)
+
+// Toute to get user communities
+router.get("/user/:userId", injectDummyUser, getUserCommunities)
+
 
 // Route to get a single community by ID
 // router.get('/:communityId', getCommunityById)
