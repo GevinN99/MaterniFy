@@ -7,14 +7,16 @@ import * as ImagePicker from "expo-image-picker"
 import { Image } from "expo-image"
 import { createCommunity } from "../api/communityApi"
 import { Alert } from "react-native"
+import uploadImage from "../utils/uploadImage"
 
-const CreateCommunity = ({ visible, onClose }) => {
+const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
+	const [loading, setLoading] = useState(false)
 	const [communityDetails, setCommunityDetails] = useState({
 		name: "",
 		description: "",
 		imageUrl: "",
-    })
-    const [image, setImage] = useState(null)
+	})
+	const [image, setImage] = useState(null)
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,18 +33,30 @@ const CreateCommunity = ({ visible, onClose }) => {
 	}
 
 	const handleSubmit = async () => {
-        if (!communityDetails.name || !communityDetails.description) {
-            Alert.alert("Please fill in all fields")
-            console.log('fill all')
+		if (!communityDetails.name || !communityDetails.description) {
+			Alert.alert("Please fill in all fields")
+			console.log("fill all")
 			return
-        }
-        
-        try {
-            const response = await createCommunity(communityDetails)
-            console.log(response)
-        } catch (error) {
-            console.log(error)
-        }		
+		}
+
+		setLoading(true)
+
+		try {
+			let imageUrl = ""
+
+			if (image) {
+				imageUrl = await uploadImage(image)
+			}
+
+			const response = await createCommunity({ ...communityDetails, imageUrl })
+			console.log(response)
+			setLoading(false)
+			onCommunityCreated()
+			onClose()
+		} catch (error) {
+			console.log(error)
+			setLoading(false)
+		}
 	}
 
 	return (
@@ -67,7 +81,7 @@ const CreateCommunity = ({ visible, onClose }) => {
 					<View className="p-3 m-2 rounded-lg flex gap-4">
 						<View className="flex justify-center items-center">
 							{image ? (
-								<View>									
+								<View>
 									<Image
 										source={{ uri: image }}
 										style={[styles.postImage]}
@@ -129,10 +143,13 @@ const CreateCommunity = ({ visible, onClose }) => {
 							/>
 						</View>
 						<TouchableOpacity
-							className="bg-blue-400 items-center py-3 rounded-md"							
+							className="bg-blue-400 items-center py-3 rounded-md"
 							onPress={handleSubmit}
+							disabled={loading}
 						>
-							<Text className="font-bold text-white">Create Community</Text>
+							<Text className="font-bold text-white">
+								{loading ? "Creating..." : "Create Communtiy"}
+							</Text>
 						</TouchableOpacity>
 					</View>
 				</SafeAreaView>
@@ -154,7 +171,7 @@ const styles = StyleSheet.create({
 		height: undefined,
 		aspectRatio: 1,
 		borderRadius: 10,
-	},	
+	},
 })
 
 export default CreateCommunity

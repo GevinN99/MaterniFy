@@ -1,12 +1,31 @@
 import { View, Text, StyleSheet } from "react-native"
-import React from "react"
+import React, { useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
+import { TouchableOpacity } from "react-native"
 
-const CommunityCard = ({ name, members, description, image }) => {
+const CommunityCard = ({
+	name,
+	members,
+	description,
+	image,
+	isMember,
+	onJoin,
+	onLeave,	
+}) => {
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
-	
+
+	const [isUserMember, setIsUserMember] = useState(isMember)
+	const handleToggleMembership = () => {
+		if (isUserMember) {
+			onLeave(community._id)
+		} else {
+			onJoin(community._id)
+		}
+		setIsUserMember(!isUserMember)
+	}	
+
 	return (
 		<View className="flex flex-row items-center p-4 bg-white rounded-xl shadow-sm mb-4">
 			{Image && (
@@ -29,17 +48,26 @@ const CommunityCard = ({ name, members, description, image }) => {
 					{description}
 				</Text>
 			</View>
-			<View className="bg-[#6DE6FF] border-2 border-black rounded-full ml-4  truncate">
+			{/* <View className="bg-[#6DE6FF] border-2 border-black rounded-full ml-4  truncate">
 				<Ionicons
 					name="remove-outline"
 					size={24}
 				/>
-			</View>
+			</View> */}
+			<TouchableOpacity
+				onPress={handleToggleMembership}
+				className={"border-2 border-black rounded-full ml-4 p-2"}
+			>
+				<Ionicons
+					name={isUserMember ? "remove-outline" : "add-outline"}
+					size={24}					
+				/>
+			</TouchableOpacity>
 		</View>
 	)
 }
 
-const styles = StyleSheet.create({	
+const styles = StyleSheet.create({
 	communityImage: {
 		width: 70,
 		height: 70,

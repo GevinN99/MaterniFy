@@ -1,31 +1,48 @@
 import CommunityModel from '../../models/community/communityModel.js'
 
 // Get all communities
-export const getAllCommunities = async (req, res) => {
-	try {
-        // Find all communities
-		const communities = await CommunityModel.find()
-		res.status(200).json(communities)
-	} catch (error) {
-		console.error(error)
-		res.status(500).json({ error: 'Faild to fetch communities' })
-	}
-}
+// export const getAllCommunities = async (req, res) => {
+// 	try {
+//         // Find all communities
+// 		const communities = await CommunityModel.find()
+// 		res.status(200).json(communities)
+// 	} catch (error) {
+// 		console.error(error)
+// 		res.status(500).json({ error: 'Faild to fetch communities' })
+// 	}
+// }
 
 // Get user communities
-export const getUserCommunities = async (req, res) => {
-	try {
-		const { userId } = req.params
-		if (!userId) return res.status(400).json({ error: "User ID is required" })
-		console.log(`Fetching communities for user ID: ${userId}`)
+// export const getUserCommunities = async (req, res) => {
+// 	try {
+// 		const { userId } = req.params
+// 		if (!userId) return res.status(400).json({ error: "User ID is required" })
+// 		console.log(`Fetching communities for user ID: ${userId}`)
 
-		const userCommunities = await CommunityModel.find({ members: userId })
+// 		const userCommunities = await CommunityModel.find({ members: userId })
 
-		res.status(200).json(userCommunities)
-	} catch (error) {
-		console.error(error)
-		res.status(500).json({ error: "Failed to fetch user's communities" })
-	}
+// 		res.status(200).json(userCommunities)
+// 	} catch (error) {
+// 		console.error(error)
+// 		res.status(500).json({ error: "Failed to fetch user's communities" })
+// 	}
+// }
+
+// Get both user communities and non-user communities
+export const getAllCommunities = async (req, res) => {
+    try {
+        const { userId } = req.params
+        if (!userId) return res.status(400).json({ error: "User ID is required" })
+        console.log(`Fetching communities for user ID: ${userId}`)
+
+        const userCommunities = await CommunityModel.find({ members: userId })
+        const nonUserCommunities = await CommunityModel.find({ members: { $ne: userId } })
+
+        res.status(200).json({ userCommunities, nonUserCommunities })
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Failed to fetch communities" })
+    }
 }
 
 
