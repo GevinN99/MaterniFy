@@ -5,31 +5,31 @@ import { Image } from "expo-image"
 import { TouchableOpacity } from "react-native"
 
 const CommunityCard = ({
-	name,
-	members,
-	description,
-	image,
-	communityId,
+	community,
 	isMember,
-	onJoin,
-	onLeave,	
+	handleJoin,
+	handleLeave
 }) => {
+	if (!community) {
+		return null
+	}
+	const { imageUrl, name, members, description, _id:communityId } = community
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
 
 	const handleToggleMembership = () => {
 		if (isMember) {
-			onLeave(communityId)
+			handleLeave(communityId)
 		} else {
-			onJoin(communityId)
+			handleJoin(communityId)
 		}		
 	}	
 
 	return (
 		<View className="flex flex-row items-center p-4 bg-white rounded-xl shadow-sm mb-4">
-			{Image && (
+			{imageUrl && (
 				<Image
-					source={image}
+					source={{ uri: imageUrl }}
 					style={styles.communityImage}
 					contentFit="cover"
 					placeholder={{ blurhash }}
@@ -38,7 +38,7 @@ const CommunityCard = ({
 			)}
 			<View className="flex-1 ml-4">
 				<Text className="font-medium">{name}</Text>
-				<Text className="font-light">{members} members</Text>
+				<Text className="font-light">{members.length} members</Text>
 				<Text
 					className="mt-1"
 					numberOfLines={1}

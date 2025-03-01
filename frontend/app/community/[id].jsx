@@ -6,11 +6,12 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import CommunityDetails from "../../components/CommunityDetails"
 import { getCommunityById } from "../../api/communityApi"
 import Post from "../../components/Post"
+import { useCommunity } from "../../context/communityContext"
 
 const Community = () => {
-	const [community, setCommunity] = useState(null)
-	const [error, setError] = useState(null)	
-	const { id } = useLocalSearchParams()
+	const [community, setCommunity] = useState(null)	
+	const { handleJoinCommunity, handleLeaveCommunity } = useCommunity()
+	const { id, isMember } = useLocalSearchParams()	
 
 	useEffect(() => {
 		const fetchCommunityDetails = async () => {
@@ -25,7 +26,7 @@ const Community = () => {
 		}
 
 		fetchCommunityDetails()
-	}, [id])
+	}, [id])	
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
@@ -45,28 +46,25 @@ const Community = () => {
 				</View>
 				{community && (
 					<View>
-						<CommunityDetails community={community} />
+						<CommunityDetails
+							community={community}
+							isMember={isMember}
+							handleJoin={handleJoinCommunity} 
+							handleLeave={handleLeaveCommunity}
+						/>
 						{community.posts.length > 0 && (
 							<View>
 								<Text className="text-xl font-semibold mt-4">Posts</Text>
 								{community.posts.map((post, index) => (
 									<Post
 										key={index}
-										profile={{ uri: post.userId.profileImage }}
-										user={post.userId.fullName}
-										community={community}
-										date={new Date(post.createdAt).toLocaleDateString()}
-										content={post.content}
-										image={post.imageUrl ? { uri: post.imageUrl } : null} // Conditionally post image
-										likes={post.likes.length}
-										replies={post.replies.length}
+										post={post}										
 									/>
 								))}
 							</View>
 						)}
 					</View>
 				)}
-				
 			</ScrollView>
 		</SafeAreaView>
 	)

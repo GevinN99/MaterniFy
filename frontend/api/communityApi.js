@@ -12,7 +12,7 @@ export const getPostsFromAllUsersCommunities = async () => {
 	return response.data
 }
 
-export const getAllCommunities = async () => {
+export const getAllCommunities = async () => {	
 	const response = await axios.get(
 		`${API_URL}/communities/67bc9ceff607c265056765af`
 	)
@@ -48,6 +48,12 @@ export const joinCommunity = async (communityId) => {
 
 export const leaveCommunity = async (communityId) => {	
 	const response = await axios.post(`${API_URL}/communities/leave/${communityId}`)
+	console.log(response)
+	return response.data
+}
+
+export const likeUnlikePost = async (postId) => {	
+	const response = await axios.post(`${API_URL}/community-posts/like-unlike/${postId}`)
 	console.log(response)
 	return response.data
 }

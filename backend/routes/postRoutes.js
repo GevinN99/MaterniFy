@@ -4,7 +4,8 @@ const {
 	createPost,
 	getPostsByCommunity,
     deletePost,
-    getPostsByAllCommunities,
+	getPostsByAllCommunities,
+	likeUnlikePost
 } = require('../controllers/community-controllers/postController.js')
 
 const router = express.Router()
@@ -39,5 +40,6 @@ router.post('/create', injectDummyUser, createPost)
 router.get('/community/:communityId', injectDummyUser, getPostsByCommunity)
 router.get('/:userId', getPostsByAllCommunities)
 router.delete('/delete/:postId', injectDummyUser, deletePost)
+router.post('/like-unlike/:postId', injectDummyUser, likeUnlikePost)
 
 module.exports = router
