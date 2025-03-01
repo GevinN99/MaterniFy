@@ -1,15 +1,29 @@
 // app/(tabs)/AiGeneratedHealthTipsScreen.jsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 /**
- * This screen shows AI-generated health tips.
- * It includes multiple "cards" with tips 
- * matching your "Hi, Sarah!" design concept.
+ * AiGeneratedHealthTipsScreen Component
+ * ---------------------------------------
+ * This screen displays AI-generated health tips.
+ * It includes:
+ *   - A greeting header ("Hi, Sarah!")
+ *   - A subheading listing existing medical conditions
+ *   - Two "tip cards" each containing a title and description
+ * 
+ * Enhancements:
+ *   - A gradient background for a modern look.
+ *   - ScrollView wraps the content to ensure it’s scrollable on smaller devices.
+ *   - Each tip card has a white background with rounded corners and shadows.
  */
 export default function AiGeneratedHealthTipsScreen() {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#FFF', '#E8F4FA']}
+      style={styles.gradientContainer}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
       {/* Greeting / heading */}
       <Text style={styles.heading}>Hi, Sarah!</Text>
       <Text style={styles.subheading}>Existing Medical Conditions:</Text>
@@ -32,7 +46,8 @@ export default function AiGeneratedHealthTipsScreen() {
           for better absorption.
         </Text>
       </View>
-    </View>
+    </ScrollView>
+    </LinearGradient>
   );
 }
 
