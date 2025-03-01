@@ -1,18 +1,28 @@
 // app/(tabs)/HealthPlanScreen.jsx
 import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+// Import LinearGradient from Expo for a smooth gradient background
+import { LinearGradient } from 'expo-linear-gradient';
 
 /**
- * This screen corresponds to the "Health Plan" tab. 
- * It shows a hero image and some text, 
- * matching your provided mockup.
+ * Enhanced HealthPlanScreen Component
+ * -------------------------------------
+ * This screen is part of the "Health Plan" tab.
+ * It displays a hero image, titles, description, and a call-to-action button,
+ * all styled within a card-like container over a gradient background.
  */
+
+
 export default function HealthPlanScreen() {
   return (
+     <LinearGradient
+      colors={['#E0F3FF', '#FFFFFF']}  // Gradient from light blue to white
+      style={styles.gradientContainer}
+    >
     <View style={styles.container}>
       {/* Replace with your actual illustration or local asset */}
       <Image
-        source={{ uri: 'https://via.placeholder.com/200' }}
+        source={{ uri: 'frontend/assets/images/helthplan1.png' }}
         style={styles.image}
       />
       <Text style={styles.title}>Transform Your Health With</Text>
@@ -21,6 +31,7 @@ export default function HealthPlanScreen() {
         Your Personalized Pregnancy Plan Starts Here
       </Text>
     </View>
+    </LinearGradient>
   );
 }
 
