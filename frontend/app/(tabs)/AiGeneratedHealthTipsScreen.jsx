@@ -35,3 +35,44 @@ export default function AiGeneratedHealthTipsScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#FFF',
+      padding: 20,
+      justifyContent: 'center',
+    },
+    heading: {
+      fontSize: 22,
+      fontWeight: '600',
+      marginBottom: 10,
+      textAlign: 'center',
+    },
+    subheading: {
+      fontSize: 16,
+      fontWeight: '500',
+      marginBottom: 5,
+    },
+    condition: {
+      fontSize: 14,
+      marginBottom: 15,
+      color: '#333',
+    },
+    tipCard: {
+      backgroundColor: '#E8F4FA', // Light background for the card
+      padding: 15,
+      borderRadius: 8,
+      marginBottom: 15,
+    },
+    tipTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      marginBottom: 5,
+    },
+    tipText: {
+      fontSize: 14,
+      lineHeight: 20,
+      color: '#555',
+    },
+  });
