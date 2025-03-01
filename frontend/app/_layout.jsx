@@ -2,6 +2,7 @@ import "../global.css"
 import { Text } from "react-native"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
+import epdsScreen from "./epds"
 
 function RootLayout() {
 	// const [fontsLoaded] = useFonts({
@@ -35,11 +36,9 @@ function RootLayout() {
 				}}
 			/>
 
-			<Stack.Screen
-				name="epds"
-				options={{
-					title: "Profile",
-				}}
+			<Stack.Screen 
+			name = "epds"
+			options={{title: "EPDS Assessment"}}
 			/>
 		</Stack>
 	)
