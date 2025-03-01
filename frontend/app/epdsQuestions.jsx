@@ -25,4 +25,22 @@ const EpdsQuestion = () => {
         setResponses(updatedResponses);
     };
 
+    return (
+        <View style={styles.container}>
+            {questions.map((q, index) => (
+                <view key={index} style={styles.questionBlock}>
+                    <Text style={styles.question}>{q.question}</Text>
+                    {q.options.map((option, i) => (
+                        <TouchableOpacity key={i} style={[styles.option, responses[index] === option ? styles.selected : null]} onPress={() => handleAnswer(index, option)}>
+                            <Text style={styles.optionText}>{option}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </view>
+            ))}
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("EpdsResults", { responses })}>
+                <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+        </View>
+    );
 };
+
