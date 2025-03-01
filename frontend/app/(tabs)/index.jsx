@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Calendar } from "react-native-calendars";
 import { router } from "expo-router";
 
+
 const Landing = () => {
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [selectedDate, setSelectedDate] = useState("");
@@ -24,7 +25,7 @@ const Landing = () => {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={require("../assets/images/landing.png")} style={styles.image} />
+        <Image source={require("../../assets/images/landing.png")} style={styles.image} /> 
         <Text style={styles.title}>Welcome, Sarah!</Text>
         <Text style={styles.subtitle}>How are you feeling today?</Text>
 
@@ -45,21 +46,21 @@ const Landing = () => {
         <View style={styles.secContainer}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Healthplan.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/Healthplan.png")} style={styles.sectors} /> 
               <Text style={styles.topic}>Health Plan</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Mentalhealth.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/Mentalhealth.png")} style={styles.sectors} />
               <Text style={styles.topic}>Mental Health</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Appoinments.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/Appoinments.png")} style={styles.sectors} /> 
               <Text style={styles.topic}>Appointments</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Emmergency.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/Emmergency.png")} style={styles.sectors} /> 
               <Text style={styles.topic}>Emergency</Text>
             </TouchableOpacity>
           </View>
