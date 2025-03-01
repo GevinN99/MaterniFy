@@ -44,3 +44,15 @@ const EpdsQuestion = () => {
     );
 };
 
+const styles = StyleSheet.create({
+    container: { flex: 1, padding: 20, backgroundColor: "#F0F7FF" },
+    questionBlock: { marginBottom: 20 },
+    question: { fontSize: 16, color: "#184E77", marginBottom: 10 },
+    option: { padding: 10, backgroundColor: "#fff", borderRadius: 5, marginBottom: 10 },
+    optionText: { color: "#184E77", fontSize: 14 },
+    selected: { backgroundColor: "#3B82F6" },
+    button: { backgroundColor: "#3B82F6", padding: 15, borderRadius: 5, width: "80%", alignItems: "center", marginTop: 20 },
+    buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+});
+
+export default EpdsQuestion;
