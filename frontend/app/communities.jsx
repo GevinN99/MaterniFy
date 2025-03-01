@@ -6,57 +6,34 @@ import {
 	TouchableOpacity,
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { Link, useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
-import { getAllCommunities, joinCommunity, leaveCommunity } from "../api/communityApi"
 import CreateCommunity from "../components/CreateCommunity"
+import { useCommunity } from "../context/communityContext"
+import ErrorMessage from "../components/ErrorMessage"
+import LoadingSpinner from "../components/LoadingSpinner"
 
 const Communities = () => {
 	const [searchQuery, setSearchQuery] = useState("")
-	const [nonUserCommunities, setNonUserCommunities] = useState([])
-	const [userCommunities, setUserCommunities] = useState([])
 	const [isModalVisible, setIsModalVisible] = useState(false)
-	const [updateTrigger, setUpdateTrigger] = useState(false)
+	const {
+		userCommunities,
+		nonUserCommunities,
+		handleJoinCommunity,
+		handleLeaveCommunity,
+		setUpdateTrigger,
+		error,
+		loading,
+	} = useCommunity()
 	const router = useRouter()
-	useEffect(() => {
-		const fetchCommunities = async () => {
-			try {
-				const { userCommunities, nonUserCommunities } =
-					await getAllCommunities()
-				setUserCommunities(userCommunities || [])
-				setNonUserCommunities(nonUserCommunities || [])
-			} catch (error) {
-				console.log(error)
-			}
-		}
 
-		fetchCommunities()
-	}, [updateTrigger])
-
-	const handleJoinCommunity = async (communityId) => {
-		try {
-			const response = await joinCommunity(communityId)
-			console.log(response)
-			setUpdateTrigger((prev) => !prev)
-		} catch (error) {
-			console.log(error)
-		}		
-	}
-
-	const handleLeaveCommunity = async (communityId) => {
-		try {
-			const response = await leaveCommunity(communityId)
-			console.log(response)
-			setUpdateTrigger((prev) => !prev)
-		} catch (error) {
-			console.log(error)
-		}		
-	}
-
-	const handleNavigateToCommunity = (communityId) => {
-		router.push(`/community/${communityId}`)
+	const handleNavigateToCommunity = (communityId, isMember) => {
+		router.push({
+			pathname: `/community/${communityId}`,
+			query: { isMember },
+		})
 	}
 
 	return (
@@ -102,11 +79,15 @@ const Communities = () => {
 
 				<Text className="text-2xl font-semibold my-4">Your communities</Text>
 				<View>
-					{userCommunities &&
+					{loading ? (
+						<LoadingSpinner />
+					) : error ? (
+						<ErrorMessage error="Failed to load communities" />
+					) : userCommunities && userCommunities.length > 0 ? (
 						userCommunities.map((community, index) => (
 							<TouchableOpacity
 								key={index}
-								onPress={() => handleNavigateToCommunity(community._id)}
+								onPress={() => handleNavigateToCommunity(community._id, true)}
 							>
 								<CommunityCard
 									image={
@@ -121,18 +102,29 @@ const Communities = () => {
 									onLeave={() => handleLeaveCommunity(community._id)}
 								/>
 							</TouchableOpacity>
-						))}
+						))
+					) : (
+						<View className="flex-1 justify-center items-center">
+							<Text className="text-gray-500">
+								User has not joined any community
+							</Text>
+						</View>
+					)}
 				</View>
 
 				<Text className="text-2xl font-semibold mt-8 my-4">
 					Discover new communities
 				</Text>
 				<View>
-					{nonUserCommunities &&
+					{loading ? (
+						<LoadingSpinner />
+					) : error ? (
+						<ErrorMessage error="Failed to load communities" />
+					) : nonUserCommunities && nonUserCommunities.length > 0 ? (
 						nonUserCommunities.map((community, index) => (
 							<TouchableOpacity
 								key={index}
-								onPress={() => handleNavigateToCommunity(community._id)}
+								onPress={() => handleNavigateToCommunity(community._id, false)}
 							>
 								<CommunityCard
 									image={
@@ -146,7 +138,14 @@ const Communities = () => {
 									onLeave={() => handleLeaveCommunity(community._id)}
 								/>
 							</TouchableOpacity>
-						))}
+						))
+					) : (
+						<View className="flex-1 justify-center items-center">
+							<Text className="text-gray-500">
+								No new communities available
+							</Text>
+						</View>
+					)}
 				</View>
 			</ScrollView>
 			<CreateCommunity

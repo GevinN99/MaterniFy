@@ -1,32 +1,17 @@
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native"
+import { View, Text, ScrollView, TouchableOpacity } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import CommunityHeader from "../../components/CommunityHeader"
 import Post from "../../components/Post"
-import { getPostsFromAllUsersCommunities } from "../../api/communityApi"
+import ErrorMessage from "../../components/ErrorMessage"
 import CreatePost from "../../components/CreatePost"
+import { useCommunity } from "../../context/communityContext"
+import LoadingSpinner from "../../components/LoadingSpinner"
 
 
 const Community = () => {
-	const [posts, setPosts] = useState([])
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(null)	
+	const { posts, loading, error } = useCommunity()
 	const [isModalVisible, setIsModalVisible] = useState(false)	
-
-	useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				const fetchedPosts = await getPostsFromAllUsersCommunities()
-				setPosts(fetchedPosts || [])
-			} catch (error) {				
-				setError(error)
-			} finally {
-				setLoading(false)
-			}
-		}
-
-		fetchPosts()
-	}, [])
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
@@ -43,32 +28,33 @@ const Community = () => {
 					visible={isModalVisible}
 					onClose={() => setIsModalVisible(false)}
 				/>
-				{loading ? (
-					<View className="flex-1 justify-center items-center mt-52">
-						<ActivityIndicator
-							size="large"
-							color="#38BDF8"
-						/>
-					</View>
+				{loading ? (					
+					<LoadingSpinner styles={"mt-44"} />
 				) : error ? (
-					<View className="flex-1 justify-center items-center mt-52">
-						<Text className="text-red-500">Failed to load posts</Text>
-					</View>
+					<ErrorMessage error="Failed to load posts" styles="mt-44" />
 				) : (
 					<View>
-						{posts.map((post, index) => (
-							<Post
-								key={index}
-								profile={{ uri: post.userId.profileImage }}
-								user={post.userId.fullName}
-								community={post.communityId}
-								date={new Date(post.createdAt).toLocaleDateString()}
-								content={post.content}
-								image={post.imageUrl ? { uri: post.imageUrl } : null} // Conditionally post image
-								likes={post.likes.length}
-								replies={post.replies.length}
-							/>
-						))}
+						{posts.length > 0 ? (
+							posts.map((post, index) => (
+								<Post
+									key={index}
+									profile={{ uri: post.userId.profileImage }}
+									user={post.userId.fullName}
+									community={post.communityId}
+									date={new Date(post.createdAt).toLocaleDateString()}
+									content={post.content}
+									image={post.imageUrl ? { uri: post.imageUrl } : null} // Conditionally post image
+									likes={post.likes.length}
+									replies={post.replies.length}
+								/>
+							))
+						) : (
+							<View className="flex-1 justify-center items-center mt-52">
+								<Text className="text-gray-500">
+									User has not joined any community
+								</Text>
+							</View>
+						)}
 					</View>
 				)}
 			</ScrollView>

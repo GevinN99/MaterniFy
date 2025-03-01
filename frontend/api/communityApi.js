@@ -12,7 +12,7 @@ export const getPostsFromAllUsersCommunities = async () => {
 	return response.data
 }
 
-export const getAllCommunities = async () => {
+export const getAllCommunities = async () => {	
 	const response = await axios.get(
 		`${API_URL}/communities/67bc9ceff607c265056765af`
 	)

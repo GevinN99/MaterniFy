@@ -71,7 +71,7 @@ export const getPostsByCommunity = async (req, res) => {
 // Get all posts belonging to all communities that the user has joined
 export const getPostsByAllCommunities = async (req, res) => {
 	try {
-		const { userId } = req.params
+		const { userId } = req.params		
 
 		// Find the communities that the user is a member of
 		const userCommunities = await CommunityModel.find({
@@ -80,8 +80,8 @@ export const getPostsByAllCommunities = async (req, res) => {
 
 		if (!userCommunities || userCommunities.length === 0) {
 			return res
-				.status(404)
-				.json({ message: "No communities found for this user" })
+				.status(200)
+				.json({ message: "User has not joined any community", posts: [] })
 		}
 
 		// Get all posts from the communities the user has joined
