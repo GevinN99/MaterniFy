@@ -58,14 +58,7 @@ const Community = () => {
 								{community.posts.map((post, index) => (
 									<Post
 										key={index}
-										profile={{ uri: post.userId.profileImage }}
-										user={post.userId.fullName}
-										community={community}
-										date={new Date(post.createdAt).toLocaleDateString()}
-										content={post.content}
-										image={post.imageUrl ? { uri: post.imageUrl } : null} // Conditionally post image
-										likes={post.likes.length}
-										replies={post.replies.length}
+										post={post}										
 									/>
 								))}
 							</View>

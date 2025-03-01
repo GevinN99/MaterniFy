@@ -119,3 +119,34 @@ export const deletePost = async (req, res) => {
 		res.status(500).json({ error: 'Internal server error' })
 	}
 }
+
+// Like or unlike a post
+export const likeUnlikePost = async (req, res) => {
+	try {
+		const { postId } = req.params
+		const userId = req.user.id
+
+		const post = await PostModel.findById(postId)
+
+		if (!post) {
+			return res.status(404).json({ message: "Post not found" })
+		}
+
+		let message = ""
+		if (post.likes.includes(userId)) {
+			// Unlike the post
+			post.likes = post.likes.filter((id) => id.toString() !== userId.toString())
+			message = "Post unliked"
+		} else {
+			// Like the post
+			post.likes.push(userId)
+			message = "Post liked"
+		}
+
+		await post.save()
+		return res.status(200).json (post)
+	} catch (error) {
+		console.error("Error liking/unliking post:", error)
+		return res.status(500).json({ message: "Internal server error" })
+	}
+}

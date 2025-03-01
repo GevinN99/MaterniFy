@@ -28,24 +28,20 @@ const Community = () => {
 					visible={isModalVisible}
 					onClose={() => setIsModalVisible(false)}
 				/>
-				{loading ? (					
+				{loading ? (
 					<LoadingSpinner styles={"mt-44"} />
 				) : error ? (
-					<ErrorMessage error="Failed to load posts" styles="mt-44" />
+					<ErrorMessage
+						error="Failed to load posts"
+						styles="mt-44"
+					/>
 				) : (
 					<View>
 						{posts.length > 0 ? (
 							posts.map((post, index) => (
 								<Post
 									key={index}
-									profile={{ uri: post.userId.profileImage }}
-									user={post.userId.fullName}
-									community={post.communityId}
-									date={new Date(post.createdAt).toLocaleDateString()}
-									content={post.content}
-									image={post.imageUrl ? { uri: post.imageUrl } : null} // Conditionally post image
-									likes={post.likes.length}
-									replies={post.replies.length}
+									post={post}									
 								/>
 							))
 						) : (

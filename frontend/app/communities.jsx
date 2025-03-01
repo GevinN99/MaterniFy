@@ -90,16 +90,10 @@ const Communities = () => {
 								onPress={() => handleNavigateToCommunity(community._id, true)}
 							>
 								<CommunityCard
-									image={
-										community.imageUrl ? { uri: community.imageUrl } : null
-									}
-									name={community.name}
-									members={community.members.length}
-									description={community.description}
-									communityId={community._id}
+									community={community}
 									isMember={true}
-									onJoin={() => handleJoinCommunity(community._id)}
-									onLeave={() => handleLeaveCommunity(community._id)}
+									handleJoin={handleJoinCommunity}
+									handleLeave={handleLeaveCommunity}
 								/>
 							</TouchableOpacity>
 						))
@@ -127,15 +121,10 @@ const Communities = () => {
 								onPress={() => handleNavigateToCommunity(community._id, false)}
 							>
 								<CommunityCard
-									image={
-										community.imageUrl ? { uri: community.imageUrl } : null
-									}
-									name={community.name}
-									members={community.members.length}
-									description={community.description}
+									community={community}
 									isMember={false}
-									onJoin={() => handleJoinCommunity(community._id)}
-									onLeave={() => handleLeaveCommunity(community._id)}
+									handleJoin={handleJoinCommunity}
+									handleLeave={handleLeaveCommunity}
 								/>
 							</TouchableOpacity>
 						))

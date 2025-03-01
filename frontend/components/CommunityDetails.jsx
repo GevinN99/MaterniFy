@@ -7,22 +7,14 @@ const CommunityDetails = ({ community, initialIsMember, handleJoin, handleLeave 
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
 	
-	const handleJoinCommunity = async () => {
-		try {
-			await handleJoin(community._id)
+	const handleJoinCommunity = () => {
+			handleJoin(community._id)
 			setIsMember(true)
-		} catch (error) {
-			console.error("Error joining community:", error)
-		}
 	}
 
-	const handleLeaveCommunity = async () => {
-		try {
-			await handleLeave(community._id)
+	const handleLeaveCommunity =  () => {		
+			 handleLeave(community._id)
 			setIsMember(false)
-		} catch (error) {
-			console.error("Error leaving community:", error)
-		}
 	}
 
 	return (

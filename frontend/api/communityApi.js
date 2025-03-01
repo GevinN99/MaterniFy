@@ -51,3 +51,9 @@ export const leaveCommunity = async (communityId) => {
 	console.log(response)
 	return response.data
 }
+
+export const likeUnlikePost = async (postId) => {	
+	const response = await axios.post(`${API_URL}/community-posts/like-unlike/${postId}`)
+	console.log(response)
+	return response.data
+}
