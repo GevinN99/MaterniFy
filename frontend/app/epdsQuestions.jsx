@@ -14,3 +14,8 @@ const EpdsQuestions = [
     { question: "I have been so unhappy that I have been crying", options: ["Yes, most of the time", "Yes, quite often", "Only occasionally", "No, never"] },
     { question: "The thought of harming myself has occurred to me", options: ["Yes, quite often", "Sometimes", "Hardly ever", "Never"] },
 ];
+
+const EpdsQuestion = ({ question, options }) => {
+    const [selectedOption, setSelectedOption] = useState(null);
+    );
+};
