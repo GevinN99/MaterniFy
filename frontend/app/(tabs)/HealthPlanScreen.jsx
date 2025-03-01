@@ -37,12 +37,25 @@ export default function HealthPlanScreen() {
 
 // Basic styles to mimic your UI design
 const styles = StyleSheet.create({
-  container: {
+  gradientContainer: {
     flex: 1,
-    backgroundColor: '#E0F3FF', // Light blue background
+  },
+  // Card style: white background, rounded corners, padding, and shadow
+  card: {
+    flex: 1,
+    margin: 20,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    // iOS shadow properties
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    // Android elevation for shadow
+    elevation: 5,
   },
   image: {
     width: 200,
@@ -69,4 +82,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
+   // Button container styling: blue background, rounded corners, padding
+   button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginTop: 10,
+  },
+  // Button text styling
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
+
