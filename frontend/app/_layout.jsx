@@ -34,6 +34,13 @@ function RootLayout() {
 					title: "Communities",
 				}}
 			/>
+
+			<Stack.Screen
+				name="epds"
+				options={{
+					title: "Profile",
+				}}
+			/>
 		</Stack>
 	)
 }
