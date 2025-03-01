@@ -3,138 +3,104 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 
 const EpdsQuestions = [
-    { question: "I have been able to laugh and see the funny side of things",
+
+    { id: 1,
+        question: "I have been able to laugh and see the funny side of things",
          options: [
-            "As much as I always could",
-            "Not quite so much now",
-            "Definietly not so much now", 
-            "Not at all"
+            { text: "As much as I always could", score: 3 },
+            { text: "Not quite so much now", score: 2 },
+            { text: "Definitely not so much now", score: 1 },
+            { text: "Not at all", score: 0 }
         ] 
     },
 
-    { question: "I have looked forward with enjoyment to things", 
+    { id: 2,
+        question: "I have looked forward with enjoyment to things", 
         options: [
-            "As much as I ever did", 
-            "Rather less than I used to", 
-            "Definitely less than I used to", 
-            "Hardly at all"
+            { text: "As much as I ever did", score: 3 },
+            { text: "Rather less than I used to", score: 2 },
+            { text: "Definitely less than I used to", score: 1 },
+            { text: "Hardly at all", score: 0 }
         ] 
     },
 
-    { question: "I have blamed myself unnecessarily when things went wrong", 
+    { id: 3,
+        question: "I have blamed myself unnecessarily when things went wrong", 
         options: [
-            "Yes, most of the time", 
-            "Yes, some of the time", 
-            "Not very often", 
-            "No, never"
+            { text: "Yes, most of the time", score: 0 },
+            { text: "Yes, some of the time", score: 1 },
+            { text: "Not very often", score: 2 },
+            { text: "No, never", score: 3 }
+        ]
+    },
+
+    { id: 4,
+        question: "I have been anxious or worried for no good reason", 
+        options: [
+            { text: "No, not at all", score: 3 },
+            { text: "Hardly ever", score: 2 },
+            { text: "Yes, sometimes", score: 1 },
+            { text: "Yes, very often", score: 0 }
         ] 
     },
 
-    { question: "I have been anxious or worried for no good reason", 
+    { id: 5,
+        question: "I have felt scared or panicky for no very good reason", 
         options: [
-            "No, not at all", 
-            "Hardly ever", 
-            "Yes, sometimes", 
-            "Yes, very often"
+            { text: "Yes, quite a lot", score: 0 },
+            { text: "Yes, sometimes", score: 1 },
+            { text: "No, not much", score: 2 },
+            { text: "No, not at all", score: 3 }
         ] 
     },
 
-    { question: "I have felt scared or panicky for no very good reason", 
+    { id: 6,
+        question: "Things have been getting on top of me", 
         options: [
-            "Yes, quite a lot", 
-            "Yes, sometimes", 
-            "No, not much", 
-            "No, not at all"
+            { text: "Yes, most of the time I haven't been able to cope at all", score: 0 },
+            { text: "Yes, sometimes I haven't been coping as well as usual", score: 1 },
+            { text: "No, most of the time I have coped quite well", score: 2 },
+            { text: "No, I have been coping as well as ever", score: 3 }
         ] 
     },
 
-    { question: "Things have been getting on top of me", 
+    { id: 7,
+        question: "I have been so unhappy that I have had difficulty sleeping", 
         options: [
-            "Yes, most of the time I haven't been able to cope at all", 
-            "Yes, sometimes I haven't been coping as well as usual", 
-            "No, most of the time I have coped quite well", 
-            "No, I have been coping as well as ever"
+            { text: "Yes, most of the time", score: 0 },
+            { text: "Yes, sometimes", score: 1 },
+            { text: "Not very often", score: 2 },
+            { text: "No, not at all", score: 3 }
         ] 
     },
 
-    { question: "I have been so unhappy that I have had difficulty sleeping", 
+    { id: 8,
+        question: "I have felt sad or miserable", 
         options: [
-            "Yes, most of the time", 
-            "Yes, sometimes", 
-            "Not very often", 
-            "No, not at all"
+            { text: "Yes, most of the time", score: 0 },
+            { text: "Yes, quite often", score: 1 },
+            { text: "Not very often", score: 2 },
+            { text: "No, not at all", score: 3 }
         ] 
     },
 
-    { question: "I have felt sad or miserable", 
+    { id: 9,
+        question: "I have been so unhappy that I have been crying", 
         options: [
-            "Yes, most of the time", 
-            "Yes, quite often", 
-            "Not very often", 
-            "No, not at all"
+            { text: "Yes, most of the time", score: 0 },
+            { text: "Yes, quite often", score: 1 },
+            { text: "Only occasionally", score: 2 },
+            { text: "No, never", score: 3 }
         ] 
     },
 
-    { question: "I have been so unhappy that I have been crying", 
+    { id: 10,
+        question: "The thought of harming myself has occurred to me", 
         options: [
-            "Yes, most of the time", 
-            "Yes, quite often", 
-            "Only occasionally", 
-            "No, never"
-        ] 
-    },
-
-    { question: "The thought of harming myself has occurred to me", 
-        options: [
-            "Yes, quite often", 
-            "Sometimes", 
-            "Hardly ever", 
-            "Never"
+            { text: "Yes, quite often", score: 0 },
+            { text: "Sometimes", score: 1 },
+            { text: "Hardly ever", score: 2 },
+            { text: "Never", score: 3 }
         ] 
     },
 ];
-
-const EpdsQuestion = () => {
-    const [responses, setResponses] = useState(Array(10).fill(null));
-    const router = useRouter();
-
-    const handleAnswer = (index, answer) => {
-        const updatedResponses = [...responses];
-        updatedResponses[index] = answer;
-        setResponses(updatedResponses);
-    };
-
-    return (
-        <ScrollView className="flex-1 bg-gray-100 px-6">
-            <Text className="text-2xl font-bold text-gray-800 text-center mb-6">EPDS Assessment</Text>
-
-            {EpdsQuestions.map((q, index) => (
-                <View key={index} className="bg-white p-4 rounded-xl shadow-md mb-6">
-                    <Text className="text-lg font-semibold text-gray-700 mb-3">{q.question}</Text>
-
-                    {q.options.map((option, i) => (
-                        <TouchableOpacity 
-                            key={i}
-                            className={`p-3 rounded-md mb-2 ${responses[index] === option ? "bg-blue-500" : "bg-grey-200"}`}
-                            onPress={() => handleAnswer(index, option)}
-                        >
-                            <Text className={`text-base ${responses[index] === option ? "text-white" : "text-gray-700"}`}>
-                                {option}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            ))}
-
-            <TouchableOpacity 
-                className="mt-6 bg-blue-500 p-4 rounded-lg items-center"
-                onPress={() => router.push({ pathname: "/epds/results", params: { responses } })}>
-
-                <Text className="text-lg font-semibold text-white">Submit</Text>
-                </TouchableOpacity>
-        </ScrollView>
-    );
-}
- 
-
-export default EpdsQuestion;
