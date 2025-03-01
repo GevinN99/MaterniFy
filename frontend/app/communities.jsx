@@ -8,27 +8,25 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import React, { useEffect, useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
-import { Link } from "expo-router"
+import { Link, useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
-import { getAllCommunities } from "../api/communityApi"
+import { getAllCommunities, joinCommunity, leaveCommunity } from "../api/communityApi"
 import CreateCommunity from "../components/CreateCommunity"
 
 const Communities = () => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [nonUserCommunities, setNonUserCommunities] = useState([])
 	const [userCommunities, setUserCommunities] = useState([])
-	const [isModalVisible, setIsModalVisible] = useState(false)	
+	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [updateTrigger, setUpdateTrigger] = useState(false)
-
+	const router = useRouter()
 	useEffect(() => {
 		const fetchCommunities = async () => {
 			try {
-				const userId = "your-user-id" // Replace with actual user ID
 				const { userCommunities, nonUserCommunities } =
-					await getAllCommunities(userId)
+					await getAllCommunities()
 				setUserCommunities(userCommunities || [])
 				setNonUserCommunities(nonUserCommunities || [])
-				console.log({ userCommunities, nonUserCommunities })
 			} catch (error) {
 				console.log(error)
 			}
@@ -37,19 +35,33 @@ const Communities = () => {
 		fetchCommunities()
 	}, [updateTrigger])
 
-	const handleJoinCommunity = (communityId) => {
-		// Your join community logic here
-		console.log(`Joining community with id: ${communityId}`)
+	const handleJoinCommunity = async (communityId) => {
+		try {
+			const response = await joinCommunity(communityId)
+			console.log(response)
+			setUpdateTrigger((prev) => !prev)
+		} catch (error) {
+			console.log(error)
+		}		
 	}
 
-	const handleLeaveCommunity = (communityId) => {
-		// Your leave community logic here
-		console.log(`Leaving community with id: ${communityId}`)
+	const handleLeaveCommunity = async (communityId) => {
+		try {
+			const response = await leaveCommunity(communityId)
+			console.log(response)
+			setUpdateTrigger((prev) => !prev)
+		} catch (error) {
+			console.log(error)
+		}		
+	}
+
+	const handleNavigateToCommunity = (communityId) => {
+		router.push(`/community/${communityId}`)
 	}
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="p-4 ">
+			<ScrollView className="p-4">
 				<View className="flex flex-row items-center mb-4">
 					<Link
 						href="community"
@@ -90,36 +102,51 @@ const Communities = () => {
 
 				<Text className="text-2xl font-semibold my-4">Your communities</Text>
 				<View>
-					{userCommunities && userCommunities.map((community, index) => (
-						<CommunityCard
-							key={index}
-							image={community.imageUrl ? { uri: community.imageUrl } : null}
-							name={community.name}
-							members={community.members.length}
-							description={community.description}
-							isMember={true}
-							onJoin={() => handleJoinCommunity(community._id)}
-							onLeave={() => handleLeaveCommunity(community._id)}
-						/>
-					))}
+					{userCommunities &&
+						userCommunities.map((community, index) => (
+							<TouchableOpacity
+								key={index}
+								onPress={() => handleNavigateToCommunity(community._id)}
+							>
+								<CommunityCard
+									image={
+										community.imageUrl ? { uri: community.imageUrl } : null
+									}
+									name={community.name}
+									members={community.members.length}
+									description={community.description}
+									communityId={community._id}
+									isMember={true}
+									onJoin={() => handleJoinCommunity(community._id)}
+									onLeave={() => handleLeaveCommunity(community._id)}
+								/>
+							</TouchableOpacity>
+						))}
 				</View>
 
 				<Text className="text-2xl font-semibold mt-8 my-4">
 					Discover new communities
 				</Text>
 				<View>
-					{nonUserCommunities && nonUserCommunities.map((community, index) => (
-						<CommunityCard
-							key={index}
-							image={community.imageUrl ? { uri: community.imageUrl } : null}
-							name={community.name}
-							members={community.members.length}
-							description={community.description}
-							isMember={false}
-							onJoin={() => handleJoinCommunity(community._id)}
-							onLeave={() => handleLeaveCommunity(community._id)}
-						/>
-					))}
+					{nonUserCommunities &&
+						nonUserCommunities.map((community, index) => (
+							<TouchableOpacity
+								key={index}
+								onPress={() => handleNavigateToCommunity(community._id)}
+							>
+								<CommunityCard
+									image={
+										community.imageUrl ? { uri: community.imageUrl } : null
+									}
+									name={community.name}
+									members={community.members.length}
+									description={community.description}
+									isMember={false}
+									onJoin={() => handleJoinCommunity(community._id)}
+									onLeave={() => handleLeaveCommunity(community._id)}
+								/>
+							</TouchableOpacity>
+						))}
 				</View>
 			</ScrollView>
 			<CreateCommunity

@@ -4,10 +4,12 @@ const {
 	getAllCommunities,
 	// getUserCommunities,
 	// getUserAndNonUserCommunities,
-	// getCommunityById,
+	getCommunityById,
 	createCommunity,
 	// updateCommunity,
 	deleteCommunity,
+	joinCommunity,
+	leaveCommunity,
 } = require('../controllers/community-controllers/communityController.js')
 const router = express.Router()
 
@@ -15,7 +17,7 @@ const router = express.Router()
 const injectDummyUser = async (req, res, next) => {
 	if (process.env.NODE_ENV === 'development' || req.query.bypassAuth) {
 		try {
-			const dummyUserId = "67bc9ceff607c265056765af" // Replace with actual ID
+			const dummyUserId = "67bc9ceff607c265056765af" 
 
 			// Use userModel instead of undefined User
 			const dummyUser = await userModel.findById(dummyUserId).exec()
@@ -47,7 +49,7 @@ router.get('/:userId', injectDummyUser ,getAllCommunities)
 
 
 // Route to get a single community by ID
-// router.get('/:communityId', getCommunityById)
+router.get('/community/:communityId', getCommunityById)
 
 // Route to create a new community
 router.post('/create', injectDummyUser, createCommunity)
@@ -57,5 +59,8 @@ router.post('/create', injectDummyUser, createCommunity)
 
 // Route to delete a community by ID
 router.delete('/delete/:communityId', deleteCommunity)
+
+router.post("/join/:communityId", injectDummyUser, joinCommunity)
+router.post("/leave/:communityId", injectDummyUser ,leaveCommunity)
 
 module.exports = router

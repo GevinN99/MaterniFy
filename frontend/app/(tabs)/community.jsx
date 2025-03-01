@@ -30,7 +30,7 @@ const Community = () => {
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="">
+			<ScrollView className="px-4">
 				<CommunityHeader />
 				<Text className="text-lg font-bold mx-6 my-2">Your feed</Text>
 				<TouchableOpacity

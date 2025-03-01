@@ -4,33 +4,40 @@ import CommunityModel from '../../models/community/communityModel.js'
 // Create a new post
 export const createPost = async (req, res) => {
 	try {
-		console.log('creatign post')
+		console.log("creatign post")
 		// Get the content and communityId from the request body
 		const { content, communityId, imageUrl } = req.body
 		// Get the userId from the request object
 		const userId = req.user.id
 
 		// Check if content exists
-		if (!content) { 
-			return res.status(400).json({ error: 'Content required' })
+		if (!content) {
+			return res.status(400).json({ error: "Content required" })
 		}
 
 		// Check if communityId exists
 		if (!communityId) {
-			return res.status(400).json({ error: 'Community ID required' })
+			return res.status(400).json({ error: "Community ID required" })
 		}
-		
+
 		const newPost = new PostModel({
 			content,
 			userId,
-			communityId,	
+			communityId,
 			imageUrl,
 		})
 
 		// Save the new post
 		await newPost.save()
 
-		res.status(201).json({ message: 'Post created successfully', post: newPost })
+		// Add the post ID to the community's posts array
+		await CommunityModel.findByIdAndUpdate(communityId, {
+			$push: { posts: newPost._id },
+		})
+
+		res
+			.status(201)
+			.json({ message: "Post created successfully", post: newPost })
 	} catch(error) {
 		console.error(error)
 		res.status(500).json({ error: 'Failed to create post' })
@@ -94,9 +101,6 @@ export const getPostsByAllCommunities = async (req, res) => {
 		res.status(500).json({ error: "Internal server error" })
 	}
 }
-
-
-
 
 // // Delete a post
 export const deletePost = async (req, res) => {

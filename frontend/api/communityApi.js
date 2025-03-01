@@ -12,7 +12,6 @@ export const getPostsFromAllUsersCommunities = async () => {
 	return response.data
 }
 
-
 export const getAllCommunities = async () => {
 	const response = await axios.get(
 		`${API_URL}/communities/67bc9ceff607c265056765af`
@@ -21,6 +20,13 @@ export const getAllCommunities = async () => {
 	return response.data
 }
 
+export const getCommunityById = async (communityId) => {
+	const response = await axios.get(
+		`${API_URL}/communities/community/${communityId}`
+	)
+	console.log("Community:", response.data)
+	return response.data
+}
 
 export const createCommunity = async (data) => {
 	const response = await axios.post(`${API_URL}/communities/create`, data)
@@ -30,6 +36,18 @@ export const createCommunity = async (data) => {
 
 export const createPost = async (data) => {
 	const response = await axios.post(`${API_URL}/community-posts/create`, data)
+	console.log(response)
+	return response.data
+}
+
+export const joinCommunity = async (communityId) => {	
+	const response = await axios.post(`${API_URL}/communities/join/${communityId}`)
+	console.log(response)
+	return response.data
+}
+
+export const leaveCommunity = async (communityId) => {	
+	const response = await axios.post(`${API_URL}/communities/leave/${communityId}`)
 	console.log(response)
 	return response.data
 }

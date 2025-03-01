@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import { Alert } from "react-native"
-import { createPost, getUserCommunities } from "../api/communityApi"
+import { createPost, getAllCommunities } from "../api/communityApi"
 import uploadImage from "../utils/uploadImage"
 
 const CreatePost = ({ visible, onClose }) => {
@@ -29,9 +29,9 @@ const CreatePost = ({ visible, onClose }) => {
 	useEffect(() => {
 		const fetchUserCommunities = async () => {
 			try {
-				const fetchedUserCommunities = await getUserCommunities()
-				setUserCommunities(fetchedUserCommunities || [])
-				console.log(fetchedUserCommunities)
+				const { userCommunities } = await getAllCommunities()
+				setUserCommunities(userCommunities || [])
+				console.log(userCommunities)
 			} catch (error) {
 				console.log(error)
 			}

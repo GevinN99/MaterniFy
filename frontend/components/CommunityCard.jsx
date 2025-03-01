@@ -9,6 +9,7 @@ const CommunityCard = ({
 	members,
 	description,
 	image,
+	communityId,
 	isMember,
 	onJoin,
 	onLeave,	
@@ -16,14 +17,12 @@ const CommunityCard = ({
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
 
-	const [isUserMember, setIsUserMember] = useState(isMember)
 	const handleToggleMembership = () => {
-		if (isUserMember) {
-			onLeave(community._id)
+		if (isMember) {
+			onLeave(communityId)
 		} else {
-			onJoin(community._id)
-		}
-		setIsUserMember(!isUserMember)
+			onJoin(communityId)
+		}		
 	}	
 
 	return (
@@ -48,18 +47,13 @@ const CommunityCard = ({
 					{description}
 				</Text>
 			</View>
-			{/* <View className="bg-[#6DE6FF] border-2 border-black rounded-full ml-4  truncate">
-				<Ionicons
-					name="remove-outline"
-					size={24}
-				/>
-			</View> */}
+
 			<TouchableOpacity
 				onPress={handleToggleMembership}
 				className={"border-2 border-black rounded-full ml-4 p-2"}
 			>
 				<Ionicons
-					name={isUserMember ? "remove-outline" : "add-outline"}
+					name={isMember ? "remove-outline" : "add-outline"}
 					size={24}					
 				/>
 			</TouchableOpacity>

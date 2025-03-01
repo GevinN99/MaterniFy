@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native"
+import { View, Text, StyleSheet } from "react-native"
 import React from "react"
 import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
@@ -14,7 +14,7 @@ const Post = ({
 	replies,
 }) => {
 	return (
-		<View className="bg-white p-4 my-2 mx-6 rounded-2xl">
+		<View className="bg-white p-4 my-2 rounded-2xl">
 			<View className="flex flex-row items-center">
 				<Image
 					source={profile}
@@ -25,7 +25,7 @@ const Post = ({
 						<Text className="font-bold">{user}</Text>
 						<Text className="text-gray-500">
 							@
-							{community?.name
+							{community?.name || community
 								.replace(/\s+/g, "")
 								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>

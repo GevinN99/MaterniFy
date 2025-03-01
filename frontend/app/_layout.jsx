@@ -15,7 +15,15 @@ function RootLayout() {
 					headerShown: false,
 					title: "Communities",
 				}}
-			/>			
+			/>
+
+			<Stack.Screen
+				name="community/[id]"
+				options={{
+					headerShown: false,
+					title: "Community Details",
+				}}
+			/>
 		</Stack>
 	)
 }
