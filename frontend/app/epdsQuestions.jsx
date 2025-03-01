@@ -15,7 +15,14 @@ const EpdsQuestions = [
     { question: "The thought of harming myself has occurred to me", options: ["Yes, quite often", "Sometimes", "Hardly ever", "Never"] },
 ];
 
-const EpdsQuestion = ({ question, options }) => {
-    const [selectedOption, setSelectedOption] = useState(null);
-    );
+const EpdsQuestion = () => {
+    const [responses, setResponses] = useState(Array(10).fill(null));
+    const navigation = useNavigation();
+
+    const handleAnswer = (index, answer) => {
+        const updatedResponses = [...responses];
+        updatedResponses[index] = answer;
+        setResponses(updatedResponses);
+    };
+
 };
