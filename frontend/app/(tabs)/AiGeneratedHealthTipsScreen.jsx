@@ -52,12 +52,16 @@ export default function AiGeneratedHealthTipsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#FFF',
-      padding: 20,
-      justifyContent: 'center',
-    },
+    gradientContainer: {
+        flex: 1,
+      },
+       // ScrollView content container styling
+  container: {
+    flexGrow: 1,
+    backgroundColor: 'transparent', // Let LinearGradient show through
+    padding: 20,
+    justifyContent: 'center',
+  },
     heading: {
       fontSize: 22,
       fontWeight: '600',
@@ -80,14 +84,17 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       marginBottom: 15,
     },
-    tipTitle: {
-      fontSize: 16,
-      fontWeight: '600',
-      marginBottom: 5,
-    },
-    tipText: {
-      fontSize: 14,
-      lineHeight: 20,
-      color: '#555',
-    },
+     // Tip title style, with emphasis and accent color
+  tipTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 8,
+    color: '#007AFF',
+  },
+  // Tip text style for the card description
+  tipText: {
+    fontSize: 16,
+    lineHeight: 22,
+    color: '#555',
+  },
   });
