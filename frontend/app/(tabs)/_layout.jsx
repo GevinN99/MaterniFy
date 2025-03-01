@@ -65,7 +65,7 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
 	tabBar: {
-        backgroundColor: "#fff",
+        backgroundColor: "transparent",
         display: "flex",
         justifyContent: "center",        
 		borderRadius: 50, 

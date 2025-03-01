@@ -1,14 +1,13 @@
 import { View, Text, Image, StyleSheet, Pressable } from "react-native"
 import { useRouter } from "expo-router"
 import React from "react"
-import profile from "../assets/images/profile.jpeg"
 
 const CommunityHeader = () => {
 	const router = useRouter()
 	return (		
 		<View className="flex flex-row justify-between mx-4 my-4 items-center">
 			<Image
-				source={profile}
+				source={""}
 				style={styles.profileImage} // Only Image uses StyleSheet
 			/>
 			<Pressable onPress={() => router.push("/communities")}>
