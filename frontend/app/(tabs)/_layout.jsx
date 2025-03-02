@@ -1,30 +1,21 @@
 import { Tabs } from "expo-router"
-import { Ionicons } from "@expo/vector-icons"
-import { StyleSheet } from "react-native"
+import React from "react"
+import TabBar from "../../components/TabBar"
+import { House, Bot, UsersRound } from "lucide-react-native"
 
 export default function TabsLayout() {
 	return (
-        <Tabs                
-            screenOptions={{                
-				tabBarActiveTintColor: "#38BDF8",
-				tabBarLabelStyle: {
-					fontSize: 12,
-					fontWeight: "bold",
-				},
-				tabBarStyle: styles.tabBar,
-			}}
-		>
+		<Tabs tabBar={(props) => <TabBar {...props} />}>
 			<Tabs.Screen
 				name="index"
 				options={{
 					headerTitle: "Home",
-					title: "",
 					headerShown: false,
-					tabBarIcon: ({ focused, color }) => (
-						<Ionicons
-							name={focused ? "home" : "home-outline"}
-							size={30}
-							color={color}
+					tabBarLabel: "Home",
+					tabBarIcon: ({ focused }) => (
+						<House
+							className={`text-${focused ? "blue-500" : "gray-500"}`}
+							size={26}
 						/>
 					),
 				}}
@@ -33,13 +24,12 @@ export default function TabsLayout() {
 				name="chatbot"
 				options={{
 					headerTitle: "Chatbot",
-					title: "",
 					headerShown: false,
+					tabBarLabel: "Chatbot",
 					tabBarIcon: ({ focused, color }) => (
-						<Ionicons
-							name={focused ? "chatbubble" : "chatbubble-outline"}
-							size={30}
-							color={color}
+						<Bot
+							className={`text-${focused ? "blue-500" : "gray-500"}`}
+							size={26}
 						/>
 					),
 				}}
@@ -48,13 +38,12 @@ export default function TabsLayout() {
 				name="community"
 				options={{
 					headerTitle: "Community",
-					title: "",
 					headerShown: false,
-                    tabBarIcon: ({ focused, color }) => (                        
-						<Ionicons
-							name={focused ? "people" : "people-outline"}
-							size={30}
-                            color={color}                            
+					tabBarLabel: "Community",
+					tabBarIcon: ({ focused, color }) => (	
+						<UsersRound
+							className={`text-${focused ? "blue-500" : "gray-500"}`}
+							size={26}
 						/>
 					),
 				}}
@@ -62,17 +51,3 @@ export default function TabsLayout() {
 		</Tabs>
 	)
 }
-
-const styles = StyleSheet.create({
-	tabBar: {
-        backgroundColor: "transparent",
-        display: "flex",
-        justifyContent: "center",        
-		borderRadius: 50, 
-        margin: 10,        
-		shadowColor: "#000", 
-		shadowOffset: { width: 0, height: 2 },
-		shadowOpacity: 0.25,
-		shadowRadius: 3.84,
-	},
-})

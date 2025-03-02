@@ -1,20 +1,25 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState} from 'react'
-import { Image } from 'expo-image'
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
+import React, { useState } from "react"
+import { Image } from "expo-image"
 
-const CommunityDetails = ({ community, initialIsMember, handleJoin, handleLeave }) => {	
+const CommunityDetails = ({
+	community,
+	initialIsMember,
+	handleJoin,
+	handleLeave,
+}) => {
 	const [isMember, setIsMember] = useState(initialIsMember)
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
-	
+
 	const handleJoinCommunity = () => {
-			handleJoin(community._id)
-			setIsMember(true)
+		handleJoin(community._id)
+		setIsMember(true)
 	}
 
-	const handleLeaveCommunity =  () => {		
-			 handleLeave(community._id)
-			setIsMember(false)
+	const handleLeaveCommunity = () => {
+		handleLeave(community._id)
+		setIsMember(false)
 	}
 
 	return (

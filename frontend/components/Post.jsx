@@ -1,10 +1,12 @@
 import { View, Text, StyleSheet, Pressable } from "react-native"
 import React, { useState } from "react"
-import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
 import { likeUnlikePost } from "../api/communityApi"
+import { useCommunity } from "../context/communityContext"
+import { Ionicons } from "@expo/vector-icons"
+import { EllipsisVertical } from 'lucide-react-native'
 
-const Post = ({ post }) => {
+const Post = ({ post, community }) => {
 	if (!post) {
 		return null
 	}
@@ -17,6 +19,7 @@ const Post = ({ post }) => {
 		imageUrl,
 		content,
 	} = post
+	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [likeCount, setLikeCount] = useState(likes.length)
 	const usertest = "67bc9ceff607c265056765af"
@@ -35,6 +38,7 @@ const Post = ({ post }) => {
 			const { likes } = await likeUnlikePost(postId)
 			setLikeCount(likes.length)
 			setLiked(likes.includes(usertest))
+			setUpdateTrigger((prev) => !prev)
 		} catch (error) {
 			console.error(error)
 		}
@@ -56,7 +60,7 @@ const Post = ({ post }) => {
 						<Text className="font-bold">{userId.fullName}</Text>
 						<Text className="text-gray-500">
 							@
-							{communityId.name
+							{communityId.name || community.name
 								.replace(/\s+/g, "")
 								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>
@@ -85,7 +89,7 @@ const Post = ({ post }) => {
 					>
 						<Ionicons
 							name="chatbubble-outline"
-							size={20}
+							size={18}
 							className="mr-1"
 						/>
 						<Text>{post.replies.length}</Text>
@@ -103,24 +107,16 @@ const Post = ({ post }) => {
 						<Text>{likeCount}</Text>
 					</Pressable>
 				</View>
-				<Pressable onPress={toggleMenu}>
-					<Ionicons
-						name="ellipsis-vertical-outline"
-						size={20}
-						className="-mr-1 relative"
-					/>
+				<Pressable onPress={toggleMenu}>					
+					<EllipsisVertical size={20} className="-mr-1 relative"/>
 				</Pressable>
 				{showMenu && (
 					<View className="absolute right-5 bottom-1 rounded-md shadow-md z-10 p-1">
 						<Pressable
 							onPress={handleDelete}
 							className="p-2 rounded-md flex flex-row gap-2 items-center"
-						>
-							<Ionicons
-								name="trash"
-								size={20}
-								className="text-red-500"
-							/>
+						>							
+							<Trash size={20} className="text-red-500"/>
 							<Text className="text-red-500">Delete</Text>
 						</Pressable>
 					</View>
