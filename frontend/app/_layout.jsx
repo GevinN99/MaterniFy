@@ -2,7 +2,7 @@ import "../global.css"
 import { Text } from "react-native"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
-import EPDS from "./epds";
+import epds from "./epds";
 
 function RootLayout() {
 	// const [fontsLoaded] = useFonts({
@@ -36,10 +36,10 @@ function RootLayout() {
 				}}
 			/>
 			<Stack.Screen 
-			name="EPDS" 
+			name="epds" 
 			options={{ 
 				headerShown: false,
-				title: "EPDS"}}/>
+				title: "epds"}}/>
 		</Stack>
 	);
 }

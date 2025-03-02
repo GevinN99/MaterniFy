@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { questions, getRecommendations } from "../api/epdsData";
 
-const EPDS = () => {
+const epds = () => {
     const [answers, setAnswers] = useState(Array(10).fill(null));
     const [submitted, setSubmitted] = useState(false);
     const router = useRouter();
@@ -76,4 +76,4 @@ const EPDS = () => {
       );
     };
     
-    export default EPDS;
+    export default epds;
