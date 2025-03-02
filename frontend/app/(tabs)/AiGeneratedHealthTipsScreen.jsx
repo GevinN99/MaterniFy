@@ -1,7 +1,10 @@
 // app/(tabs)/AiGeneratedHealthTipsScreen.jsx
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet , ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
+
+
 
 /**
  * AiGeneratedHealthTipsScreen Component
@@ -18,6 +21,13 @@ import { LinearGradient } from 'expo-linear-gradient';
  *   - Each tip card has a white background with rounded corners and shadows.
  */
 export default function AiGeneratedHealthTipsScreen() {
+  const navigation = useNavigation();
+   // Example function triggered when user taps the edit icon
+   const handleEditConditions = () => {
+    // Implement your edit logic here
+    console.log('Edit existing medical conditions');
+  };
+
   return (
     <LinearGradient
       colors={['#FFF', '#E8F4FA']}
@@ -25,13 +35,29 @@ export default function AiGeneratedHealthTipsScreen() {
     >
       <ScrollView contentContainerStyle={styles.container}>
       {/* Greeting / heading */}
-      <Text style={styles.heading}>Hi, Sarah!</Text>
-      <Text style={styles.subheading}>Existing Medical Conditions:</Text>
-      <Text style={styles.condition}>• High Blood Pressure</Text>
+       {/* Main Greeting */}
+       <Text style={styles.heading}>✨ Hi, Sarah!</Text>
+        <Text style={styles.introText}>
+          Let’s take a moment to care for you and your baby today
+        </Text>
+       
+        {/* Row: "Existing Medical Conditions" + Edit Button */}
+        <View style={styles.conditionsContainer}>
+          <Text style={styles.conditionsTitle}>Existing Medical Conditions</Text>
+          <TouchableOpacity onPress={handleEditConditions} style={styles.editButton}>
+            {/* Replace with your chosen icon */}
+            <Text style={styles.editText}>Edit</Text>
+          </TouchableOpacity>
+        </View> 
+        
+       {/* Single condition bullet (red) */}
+       <Text style={styles.conditionBullet}>
+          <Text style={styles.redText}>🩸 High Blood Pressure</Text>
+        </Text>
 
       {/* Tip Card 1 */}
       <View style={styles.tipCard}>
-        <Text style={styles.tipTitle}>High Blood Pressure Warning</Text>
+        <Text style={styles.tipTitle}>🩸 High Blood Pressure Warning</Text>
         <Text style={styles.tipText}>
           Your blood pressure is above normal. 
           Reduce processed foods, monitor regularly,
@@ -40,61 +66,126 @@ export default function AiGeneratedHealthTipsScreen() {
       </View>
        {/* Tip Card 2 */}
        <View style={styles.tipCard}>
-        <Text style={styles.tipTitle}>Boost Your Iron Levels!</Text>
+        <Text style={styles.tipTitle}>⚡Boost Your Iron Levels!</Text>
         <Text style={styles.tipText}>
           Try iron-rich foods (like spinach, lentils) with vitamin C 
           for better absorption.
         </Text>
       </View>
+
+       {/* "GO BACK" button -> navigate to Home (HealthPlanScreen) */}
+       <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Home')} // 3) navigate to "Home"
+        >
+          <Text style={styles.buttonText}>GO BACK</Text>
+        </TouchableOpacity>
+
     </ScrollView>
     </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-    gradientContainer: {
-        flex: 1,
-      },
-       // ScrollView content container styling
+  gradientContainer: {
+    flex: 1,
+  },
   container: {
     flexGrow: 1,
-    backgroundColor: 'transparent', // Let LinearGradient show through
+    backgroundColor: 'transparent',
     padding: 20,
-    justifyContent: 'center',
+    // This ensures content can scroll on smaller devices
   },
-    heading: {
-      fontSize: 22,
-      fontWeight: '600',
-      marginBottom: 10,
-      textAlign: 'center',
-    },
-    subheading: {
-      fontSize: 16,
-      fontWeight: '500',
-      marginBottom: 5,
-    },
-    condition: {
-      fontSize: 14,
-      marginBottom: 15,
-      color: '#333',
-    },
-    tipCard: {
-      backgroundColor: '#E8F4FA', // Light background for the card
-      padding: 15,
-      borderRadius: 8,
-      marginBottom: 15,
-    },
-     // Tip title style, with emphasis and accent color
-  tipTitle: {
-    fontSize: 18,
+  // Greeting "✨ Hi, Sarah!"
+  heading: {
+    fontSize: 24,
     fontWeight: '700',
     marginBottom: 8,
+    textAlign: 'center',
+    color: '#333',
+  },
+  // Subheading under the main greeting
+  introText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: '#555',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  // Row for "Existing Medical Conditions" + edit icon
+  conditionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  conditionsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  editButton: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  editText: {
+    fontSize: 14,
     color: '#007AFF',
   },
-  // Tip text style for the card description
-  tipText: {
-    fontSize: 16,
-    lineHeight: 22,
-    color: '#555',
+  // Single bullet item (🩸 High Blood Pressure)
+  conditionBullet: {
+    fontSize: 14,
+    marginBottom: 20,
   },
-  });
+  // Red text for "High Blood Pressure"
+  redText: {
+    color: 'red',
+  },
+  // Tip Card style
+  tipCard: {
+    backgroundColor: '#E8F4FA',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    // Light shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    // Elevation for Android
+    elevation: 2,
+  },
+  // Title within each tip card
+  tipTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 6,
+    color: '#007AFF',
+  },
+  // Main text in the tip card
+  tipText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: '#555',
+    marginBottom: 4,
+  },
+  // "Tip:" line for extra advice
+  tipNote: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: '#333',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    alignSelf: 'center', // center horizontally
+    marginTop: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});

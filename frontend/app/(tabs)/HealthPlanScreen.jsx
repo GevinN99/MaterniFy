@@ -1,13 +1,15 @@
 // app/(tabs)/HealthPlanScreen.jsx
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity,ScrollView } from 'react-native';
 // Import LinearGradient from Expo for a smooth gradient background
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 import helthplanImg from '../../assets/images/helthplan1.png';
 
 
 
 export default function HealthPlanScreen() {
+  const navigation = useNavigation();
   return (
     <LinearGradient
       colors={['#64B9F1', '#FFFFFF']} // Gradient from light blue to white
@@ -30,8 +32,11 @@ export default function HealthPlanScreen() {
           Your Personalized Pregnancy Plan Starts Here
         </Text>
 
-        {/* Call-to-action button */}
-        <TouchableOpacity style={styles.button}>
+        {/* "GET STARTED" button -> navigates to the hidden AiTips tab */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('AiTips')}
+        >
           <Text style={styles.buttonText}>GET STARTED</Text>
         </TouchableOpacity>
       </View>
