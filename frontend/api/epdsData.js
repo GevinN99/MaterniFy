@@ -1,4 +1,4 @@
-export const question = [
+export const questions = [
     {
         question: "I have been able to laugh and see the funny side of things",
         option: [
