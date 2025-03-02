@@ -8,7 +8,7 @@ function home() {
 		<View className="flex-1 items-center justify-center bg-gray-100 px-6">
 			<Text className="text-2xl font-bold text-gray-800 mb-6">Welcome to Maternify!</Text>
 
-			<TouchableOpacity className="w-full bg-blue-300 p-6 rounded-xl shadow-md items-center" onPress={() => router.push("epds")}>
+			<TouchableOpacity className="w-full bg-blue-300 p-6 rounded-xl shadow-md items-center" onPress={() => router.push("EPDS")}>
 				<Text className="text-xl font-bold text-white">EPDS Assessment</Text>
 				<Text className="text-sm text-white">Take the Edinburgh Postnatal Depression Scale</Text>
 			</TouchableOpacity>
