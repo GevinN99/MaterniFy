@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
         marginTop: 20,
         paddingHorizontal: 40,
         paddingVertical: 15,
-        position: "absolute",
-        bottom: 50,
+        position: "fixed",
+        bottom: -400,
     },
     nextButtonText: {
         fontSize: 30,

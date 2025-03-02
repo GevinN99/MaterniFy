@@ -36,6 +36,7 @@ const styles = {
   title: {
     fontSize: 60,
     fontWeight: "bold",
+    textAlign:"center"
   },
   subtitle: {
     fontSize: 22,
