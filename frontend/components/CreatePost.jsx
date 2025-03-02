@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { Picker } from "@react-native-picker/picker"
+import CustomPicker from "./CustomPicker"
 import {
 	View,
 	Text,
@@ -71,7 +72,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 			const response = await createPost({ ...postDetails, imageUrl })
 			console.log(response)
-			setLoading(false)			
+			setLoading(false)
 			onClose()
 		} catch (error) {
 			console.log(error)
@@ -108,7 +109,7 @@ const CreatePost = ({ visible, onClose }) => {
 								setPostDetails((prev) => ({ ...prev, content: text }))
 							}
 						/>
-						<Picker
+						{/* <Picker
 							className="outline-none border-none "
 							selectedValue={postDetails.communityId}
 							onValueChange={(itemValue) =>
@@ -128,7 +129,25 @@ const CreatePost = ({ visible, onClose }) => {
 										value={community._id}
 									/>
 								))}
-						</Picker>
+						</Picker>						 */}						
+
+						{userCommunities && (
+							<CustomPicker
+								items={userCommunities.map((community) => ({
+									label: community.name,
+									value: community._id,
+									imageUrl: community.imageUrl,
+								}))}
+								selectedValue={postDetails.communityId}
+								onValueChange={(itemValue) =>
+									setPostDetails((prev) => ({
+										...prev,
+										communityId: itemValue,
+									}))
+								}
+							/>
+						)}
+
 						<View className="flex justify-center items-center">
 							{image ? (
 								<View>
@@ -187,9 +206,9 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 
-    postImage: {
-        // Width: 400, for web. '100%' not valid for web
-		width: '100%',
+	postImage: {
+		// Width: 400, for web. '100%' not valid for web
+		width: "100%",
 		height: undefined,
 		aspectRatio: 1,
 		borderRadius: 10,
