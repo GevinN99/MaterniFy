@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   TextInput,
-  Button,
   View,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
@@ -18,6 +18,8 @@ export default function ChatBotScreen() {
     },
   ]);
   const [inputText, setInputText] = useState('');
+  const [typing, setTyping] = useState(false);       // Are we waiting for GPT?
+  const [typingDots, setTypingDots] = useState('');  // Cycles ".", "..", "..."
 
   // Replace with your own OpenAI API key
   const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
@@ -34,6 +36,28 @@ export default function ChatBotScreen() {
     `,
   };
 
+  // Cycle "typingDots" between ".", "..", "..." every 500ms when typing == true
+  useEffect(() => {
+    let intervalId;
+    if (typing) {
+      let i = 0;
+      intervalId = setInterval(() => {
+        // Cycle among ".", "..", "..."
+        setTypingDots('.'.repeat((i % 3) + 1));
+        i++;
+      }, 500);
+    } else {
+      // Reset if not typing
+      setTypingDots('');
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [typing]);
+
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
@@ -47,6 +71,9 @@ export default function ChatBotScreen() {
     setInputText('');
 
     try {
+      // Show typing indicator
+      setTyping(true);
+
       // Construct final message list: system message + conversation messages
       const requestMessages = [systemMessage, ...updatedMessages];
 
@@ -64,11 +91,16 @@ export default function ChatBotScreen() {
 
       const data = await response.json();
       const assistantMessage = data?.choices?.[0]?.message;
+
+      // Hide typing indicator
+      setTyping(false);
+
       if (assistantMessage) {
         setMessages((prev) => [...prev, assistantMessage]);
       }
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
+      setTyping(false);
     }
   };
 
@@ -89,6 +121,14 @@ export default function ChatBotScreen() {
                 isUserMessage ? styles.userRow : styles.assistantRow,
               ]}
             >
+              {!isUserMessage && (
+                <Image
+                  source={{
+                    uri: 'https://cdn-icons-png.flaticon.com/512/8943/8943377.png',
+                  }}
+                  style={styles.profileImage}
+                />
+              )}
               <View
                 style={[
                   styles.bubble,
@@ -105,6 +145,21 @@ export default function ChatBotScreen() {
             </View>
           );
         })}
+        {/* TYPING INDICATOR: only if 'typing' is true */}
+        {typing && (
+          <View style={[styles.messageRow, styles.assistantRow]}>
+            <Image
+              source={{
+                uri: 'https://cdn-icons-png.flaticon.com/512/8943/8943377.png',
+              }}
+              style={styles.profileImage}
+            />
+            <View style={[styles.bubble, styles.assistantBubble]}>
+              {/* Show the animated dots */}
+              <Text style={styles.assistantTyping}>{typingDots}</Text>
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       {/* Input field & custom send button */}
@@ -207,5 +262,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  // Rounded assistant profile image
+  profileImage: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
   },
 });
