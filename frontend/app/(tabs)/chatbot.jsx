@@ -22,6 +22,18 @@ export default function ChatBotScreen() {
   // Replace with your own OpenAI API key
   const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
 
+
+  // We define our system message:
+  const systemMessage = {
+    role: 'system',
+    content: `
+      You are a helpful assistant specialized in maternal health. 
+      You should only answer questions related to maternal health. 
+      If the user asks a question outside of maternal health, 
+      politely decline to answer.
+    `,
+  };
+
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
@@ -35,7 +47,9 @@ export default function ChatBotScreen() {
     setInputText('');
 
     try {
-      // Call OpenAI Chat API
+      // Construct final message list: system message + conversation messages
+      const requestMessages = [systemMessage, ...updatedMessages];
+
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -44,7 +58,7 @@ export default function ChatBotScreen() {
         },
         body: JSON.stringify({
           model: 'gpt-3.5-turbo',
-          messages: updatedMessages,
+          messages: requestMessages,
         }),
       });
 
