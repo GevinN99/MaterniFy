@@ -9,28 +9,41 @@ import {
   SafeAreaView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Calendar } from "react-native-calendars";
 import { router } from "expo-router";
+import moment from "moment";
 
 const Landing = () => {
   const [selectedEmotion, setSelectedEmotion] = useState(null);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
+  const [currentWeek, setCurrentWeek] = useState(moment());
 
   const handleSelectEmotion = (emotion) => {
     setSelectedEmotion(emotion);
     console.log(`Selected Emotion: ${emotion}`);
   };
 
+  const getWeekDates = () => {
+    const startOfWeek = currentWeek.startOf("week");
+    return [...Array(7)].map((_, i) => startOfWeek.clone().add(i, "days"));
+  };
+
+  const handlePrevWeek = () => {
+    setCurrentWeek((prev) => prev.clone().subtract(1, "week"));
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeek((prev) => prev.clone().add(1, "week"));
+  };
+
   return (
     <SafeAreaView style={styles.safeContainer}>
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={require("../assets/images/landing.png")} style={styles.image} />
+        <Image source={require("../../assets/images/landing.png")} style={styles.image} /> 
         <Text style={styles.title}>Welcome, Sarah!</Text>
         <Text style={styles.subtitle}>How are you feeling today?</Text>
 
         <View style={styles.emojiContainer}>
-          {[
-            { name: "happy", label: "Happy", color: "green" },
+          {[{ name: "happy", label: "Happy", color: "green" },
             { name: "happy-outline", label: "Calm", color: "lightgreen" },
             { name: "help-circle", label: "Confused", color: "#E0C412" },
             { name: "sad", label: "Sad", color: "orange" },
@@ -44,53 +57,51 @@ const Landing = () => {
 
         <View style={styles.secContainer}>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Healthplan.png")} style={styles.sectors} />
+            <TouchableOpacity onPress={() => router.push("/getstart")}>
+              <Image source={require("../../assets/images/Healthplan.png")} style={styles.sectors} />
               <Text style={styles.topic}>Health Plan</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Mentalhealth.png")} style={styles.sectors} />
+            <TouchableOpacity onPress={() => router.push("/getstart")}>
+              <Image source={require("../../assets/images/Mentalhealth.png")} style={styles.sectors} />
               <Text style={styles.topic}>Mental Health</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Appoinments.png")} style={styles.sectors} />
+            <TouchableOpacity onPress={() => router.push("/getstart")}>
+              <Image source={require("../../assets/images/Appoinments.png")} style={styles.sectors} />
               <Text style={styles.topic}>Appointments</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/getstart")}> 
-              <Image source={require("../assets/images/Emmergency.png")} style={styles.sectors} />
+            <TouchableOpacity onPress={() => router.push("/getstart")}>
+              <Image source={require("../../assets/images/Emmergency.png")} style={styles.sectors} />
               <Text style={styles.topic}>Emergency</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.calendarContainer}>
-          <Calendar
-            onDayPress={(day) => setSelectedDate(day.dateString)}
-            markedDates={{
-              [selectedDate]: { selected: true, selectedColor: "#64A8F1" },
-            }}
-          />
-          {selectedDate ? <Text style={styles.dateText}>Doctor Checkup: {selectedDate}</Text> : null}
-        </View>
-      </ScrollView>
-
-      <View style={styles.page}>
-        {[
-          { name: "calendar", label: "Today" },
-          { name: "globe-outline", label: "Community" },
-          { name: "chatbox-ellipses", label: "Chatbot" },
-          { name: "person", label: "Profile" },
-        ].map(({ name, label }) => (
-          <View key={label}>
-            <TouchableOpacity style={styles.baricon}>
-              <Ionicons name={name} size={40} color="white" />
-              <Text style={styles.icontxt}>{label}</Text>
+          <View style={styles.weekHeader}>
+            <TouchableOpacity onPress={handlePrevWeek}>
+              <Ionicons name="chevron-back" size={24} color="#64A8F1" />
+            </TouchableOpacity>
+            <Text style={styles.weekTitle}>{currentWeek.format("  MMMM D  ")}</Text>
+            <TouchableOpacity onPress={handleNextWeek}>
+              <Ionicons name="chevron-forward" size={24} color="#64A8F1" />
             </TouchableOpacity>
           </View>
-        ))}
-      </View>
+          <View style={styles.weekDays}>
+            {getWeekDates().map((date) => (
+              <TouchableOpacity key={date.format("YYYY-MM-DD")} onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}>
+                <Text style={[styles.dayText, selectedDate === date.format("YYYY-MM-DD") && styles.selectedDay]}>
+                {date.format("dd").charAt(0)}{"\n"}{"\n"}{date.format("D")}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {selectedDate && (
+            <><Text style={styles.dateText}>Doctor Checkup </Text><Text>{selectedDate}</Text></>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -131,9 +142,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectors: {
-    width: 150,
-    height: 150,
-    margin: 5,
+    width: 130,
+    height: 130,
+    margin: 20,
   },
   secContainer: {
     alignItems: "center",
@@ -141,44 +152,54 @@ const styles = StyleSheet.create({
   },
   topic: {
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
-  calendarContainer: {
-    padding: 20,
-    marginTop: 30,
-    width: 400,
+  calendarContainer:{
+    margin: 30,
+    alignItems:"center",
+    backgroundColor:"#E2E0E0",
+    paddingVertical:20,
+    paddingHorizontal:20,
+    height:200,
+    width:350,
+    borderRadius:20
+  },
+  weekHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  weekTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  weekDays: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  dayText: {
+    fontSize: 18,
+    color: "gray",
+    textAlign:"center",
+    padding:10,
+    
+
+  },
+  selectedDay: {
+    fontSize: 19,
+    fontWeight: "bold",
+    color: "#64A8F1",
   },
   dateText: {
     marginTop: 10,
-    fontSize: 16,
+    fontSize: 20,
     textAlign: "center",
-  },
-  page: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    backgroundColor: "#64A8F1",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingBottom: 40,
-    height: 90,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  baricon: {
-    alignItems: "center",
-    paddingTop: 10,
-  },
-  icontxt: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 12,
+    color:"#005F80",
+    fontWeight:"bold"
   },
 });
 
 export default Landing;
-
