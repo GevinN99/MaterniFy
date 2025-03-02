@@ -1,80 +1,89 @@
 // app/(tabs)/HealthPlanScreen.jsx
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 // Import LinearGradient from Expo for a smooth gradient background
 import { LinearGradient } from 'expo-linear-gradient';
-
-/**
- * Enhanced HealthPlanScreen Component
- * -------------------------------------
- * This screen is part of the "Health Plan" tab.
- * It displays a hero image, titles, description, and a call-to-action button,
- * all styled within a card-like container over a gradient background.
- */
 
 
 export default function HealthPlanScreen() {
   return (
-     <LinearGradient
-      colors={['#E0F3FF', '#FFFFFF']}  // Gradient from light blue to white
+    <LinearGradient
+      colors={['#E0F3FF', '#FFFFFF']} // Gradient from light blue to white
       style={styles.gradientContainer}
     >
-    <View style={styles.container}>
-      {/* Replace with your actual illustration or local asset */}
-      <Image
-        source={{ uri: 'frontend/assets/images/helthplan1.png' }}
-        style={styles.image}
-      />
-      <Text style={styles.title}>Transform Your Health With</Text>
-      <Text style={styles.subtitle}>Personalized Health Plan</Text>
-      <Text style={styles.description}>
-        Your Personalized Pregnancy Plan Starts Here
-      </Text>
-    </View>
+      <View style={styles.container}>
+        {/* Circular container for the illustration */}
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: '@/assets/images/helthplan1.png' }}
+            style={styles.image}
+          />
+        </View>
+
+        {/* Smaller title text */}
+        <Text style={styles.smallTitle}>Transform Your Health With</Text>
+
+        {/* Larger main title text */}
+        <Text style={styles.bigTitle}>Personalized Health Plan</Text>
+
+        {/* Description text */}
+        <Text style={styles.description}>
+          Your Personalized Pregnancy Plan Starts Here
+        </Text>
+
+        {/* Call-to-action button */}
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>GET STARTED</Text>
+        </TouchableOpacity>
+      </View>
     </LinearGradient>
   );
 }
 
-// Basic styles to mimic your UI design
 const styles = StyleSheet.create({
   gradientContainer: {
     flex: 1,
   },
-  // Card style: white background, rounded corners, padding, and shadow
-  card: {
+  // Main container: center content vertically & horizontally
+  container: {
     flex: 1,
-    margin: 20,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    // iOS shadow properties
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    // Android elevation for shadow
-    elevation: 5,
+    paddingHorizontal: 20,
   },
-  image: {
+  // Circular container for the illustration
+  imageContainer: {
     width: 200,
     height: 200,
+    borderRadius: 100, // half the width/height
+    overflow: 'hidden', // ensures image is clipped to circle
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
-    borderRadius: 8,
   },
-  title: {
+  // The image fills the circular container
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  // Smaller title text (e.g., "Transform Your Health With")
+  smallTitle: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  // Larger title text (e.g., "Personalized Health Plan")
+  bigTitle: {
     fontSize: 22,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 5,
+    marginBottom: 10,
+    textAlign: 'center',
   },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: '400',
-    color: '#555',
-    marginBottom: 15,
-  },
+  // Description text
   description: {
     fontSize: 14,
     color: '#666',
@@ -82,19 +91,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
-   // Button container styling: blue background, rounded corners, padding
-   button: {
+  // "GET STARTED" button
+  button: {
     backgroundColor: '#007AFF',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
-    marginTop: 10,
   },
-  // Button text styling
+  // Button text
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
 });
-
