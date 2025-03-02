@@ -14,24 +14,22 @@ export default function ChatBotScreen() {
   const [inputText, setInputText] = useState('');
 
   // Replace with your own OpenAI API key
-  const OPENAI_API_KEY = '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';
+  const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
-    // The user's new message
+    // Add user's new message
     const userMessage = {
       role: 'user',
       content: inputText,
     };
-
-    // Immediately show the user’s message locally
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInputText('');
 
     try {
-      // Request to ChatGPT
+      // Call OpenAI Chat API
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -46,8 +44,6 @@ export default function ChatBotScreen() {
 
       const data = await response.json();
       const assistantMessage = data?.choices?.[0]?.message;
-
-      // Add assistant's response
       if (assistantMessage) {
         setMessages((prev) => [...prev, assistantMessage]);
       }
@@ -58,18 +54,37 @@ export default function ChatBotScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.chatContainer}>
-        {messages.map((msg, index) => (
-          <View key={index} style={styles.messageBubble}>
-            <Text style={styles.roleText}>{msg.role.toUpperCase()}:</Text>
-            {/* For the assistant's text, we'll parse it as Markdown */}
-            {msg.role === 'assistant' ? (
-              <Markdown style={markdownStyle}>{msg.content}</Markdown>
-            ) : (
-              <Text style={styles.messageText}>{msg.content}</Text>
-            )}
-          </View>
-        ))}
+      <ScrollView
+        style={styles.chatContainer}
+        contentContainerStyle={styles.chatContentContainer}
+      >
+        {messages.map((msg, index) => {
+          const isUserMessage = msg.role === 'user';
+
+          return (
+            <View
+              key={index}
+              style={[
+                styles.messageRow,
+                isUserMessage ? styles.userRow : styles.assistantRow,
+              ]}
+            >
+              <View
+                style={[
+                  styles.bubble,
+                  isUserMessage ? styles.userBubble : styles.assistantBubble,
+                ]}
+              >
+                {/* User messages as plain text; assistant messages as Markdown */}
+                {isUserMessage ? (
+                  <Text style={styles.userText}>{msg.content}</Text>
+                ) : (
+                  <Markdown style={markdownStyle}>{msg.content}</Markdown>
+                )}
+              </View>
+            </View>
+          );
+        })}
       </ScrollView>
 
       <View style={styles.inputContainer}>
@@ -85,12 +100,12 @@ export default function ChatBotScreen() {
   );
 }
 
-// Optionally customize Markdown styling
+// Optionally customize how Markdown text is displayed for the assistant messages
 const markdownStyle = {
   body: {
     fontSize: 16,
+    color: '#000',
   },
-  // Add more style rules if desired
 };
 
 const styles = StyleSheet.create({
@@ -100,23 +115,49 @@ const styles = StyleSheet.create({
   },
   chatContainer: {
     flex: 1,
-    padding: 10,
   },
-  messageBubble: {
+  chatContentContainer: {
+    paddingVertical: 10,
+  },
+
+  // Each message row
+  messageRow: {
+    flexDirection: 'row',
     marginVertical: 5,
+    marginHorizontal: 10,
   },
-  roleText: {
-    fontWeight: 'bold',
-    marginBottom: 2,
+  userRow: {
+    justifyContent: 'flex-end',
   },
-  messageText: {
+  assistantRow: {
+    justifyContent: 'flex-start',
+  },
+
+  // Bubble styles
+  bubble: {
+    maxWidth: '80%',
+    padding: 10,
+    borderRadius: 16,
+  },
+  userBubble: {
+    backgroundColor: '#0078fe', // Messenger-style blue
+    borderBottomRightRadius: 0,
+  },
+  assistantBubble: {
+    backgroundColor: '#e4e6eb', // Light gray
+    borderBottomLeftRadius: 0,
+  },
+
+  // Text styles
+  userText: {
     fontSize: 16,
+    color: '#fff',
   },
+
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    padding: 6,
     borderTopWidth: 1,
     borderColor: '#ccc',
   },
@@ -124,9 +165,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',
-    paddingHorizontal: 10,
     height: 40,
-    marginRight: 10,
     borderRadius: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
   },
 });
