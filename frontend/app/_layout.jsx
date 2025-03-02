@@ -2,7 +2,6 @@ import "../global.css"
 import { Text } from "react-native"
 import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
-import { EpdsProvider } from "./epdsContext"
 
 function RootLayout() {
 	// const [fontsLoaded] = useFonts({
@@ -35,9 +34,6 @@ function RootLayout() {
 					title: "Communities",
 				}}
 			/>
-			<EpdsProvider>
-				<Stack screenOptions={{ headerShown: false }} />
-			</EpdsProvider>
 		</Stack>
 	);
 }
