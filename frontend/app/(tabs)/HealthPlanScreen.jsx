@@ -3,6 +3,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 // Import LinearGradient from Expo for a smooth gradient background
 import { LinearGradient } from 'expo-linear-gradient';
+import helthplanImg from '@/assets/images/helthplan1.png';
 
 
 export default function HealthPlanScreen() {
@@ -14,10 +15,7 @@ export default function HealthPlanScreen() {
       <View style={styles.container}>
         {/* Circular container for the illustration */}
         <View style={styles.imageContainer}>
-          <Image
-            source={{ uri: '@/assets/images/helthplan1.png' }}
-            style={styles.image}
-          />
+        <Image source={helthplanImg} style={styles.image} />
         </View>
 
         {/* Smaller title text */}
