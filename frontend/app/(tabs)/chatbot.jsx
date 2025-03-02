@@ -11,7 +11,12 @@ import {
 import Markdown from 'react-native-markdown-display';
 
 export default function ChatBotScreen() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      role: 'assistant',
+      content: 'Hey there, mama! 🤰✨ I’m MaterniFy, your friendly guide to all things maternal health. Whether it’s nutrition tips, emotional support, or just a listening ear, I’m here for you! Ready to dive in? Ask away! ❤️‍🩹',
+    },
+  ]);
   const [inputText, setInputText] = useState('');
 
   // Replace with your own OpenAI API key
@@ -88,7 +93,7 @@ export default function ChatBotScreen() {
         })}
       </ScrollView>
 
-      {/* Rounded input field & custom send button */}
+      {/* Input field & custom send button */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -124,22 +129,24 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
 
-  // Each message row
+  // Each message row takes full width
   messageRow: {
     flexDirection: 'row',
+    width: '100%',
     marginVertical: 5,
-    marginHorizontal: 10,
+    paddingHorizontal: 10,
   },
   userRow: {
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end', // bubble on the right
   },
   assistantRow: {
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-start', // bubble on the left
   },
 
   // Bubble styles
   bubble: {
-    maxWidth: '80%',
+    maxWidth: '80%',       // Don’t exceed 80% of container width
+    flexShrink: 1,         // Allow bubble to wrap text properly
     padding: 10,
     borderRadius: 16,
   },
@@ -170,7 +177,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     height: 40,
-    borderRadius: 20, // Half of the height for a full "pill" shape
+    borderRadius: 20, // half the height for a pill shape
     paddingHorizontal: 12,
     marginRight: 10,
   },
@@ -178,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0078fe',
     paddingHorizontal: 18,
     paddingVertical: 10,
-    borderRadius: 20, // Matches input's rounding
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
