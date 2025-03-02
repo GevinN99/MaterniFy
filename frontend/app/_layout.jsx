@@ -4,7 +4,8 @@ import { useFonts } from "expo-font"
 
 import { Stack } from 'expo-router';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { useColorScheme } from 'react-native';
+
 
 function RootLayout() {
 	const colorScheme = useColorScheme();

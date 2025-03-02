@@ -3,13 +3,14 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 // Import LinearGradient from Expo for a smooth gradient background
 import { LinearGradient } from 'expo-linear-gradient';
-import helthplanImg from '@/assets/images/helthplan1.png';
+import helthplanImg from '../../assets/images/helthplan1.png';
+
 
 
 export default function HealthPlanScreen() {
   return (
     <LinearGradient
-      colors={['#E0F3FF', '#FFFFFF']} // Gradient from light blue to white
+      colors={['#64B9F1', '#FFFFFF']} // Gradient from light blue to white
       style={styles.gradientContainer}
     >
       <View style={styles.container}>
