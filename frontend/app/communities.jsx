@@ -8,12 +8,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"
 import React, { useState } from "react"
 import { Ionicons } from "@expo/vector-icons"
-import { Link, useRouter } from "expo-router"
+import { useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
 import CreateCommunity from "../components/CreateCommunity"
 import { useCommunity } from "../context/communityContext"
 import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
+import Header from "../components/Header"
 
 const Communities = () => {
 	const [searchQuery, setSearchQuery] = useState("")
@@ -38,21 +39,7 @@ const Communities = () => {
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="p-4">
-				<View className="flex flex-row items-center mb-4">
-					<Link
-						href="community"
-						className="mr-2"
-					>
-						<Ionicons
-							name="arrow-back"
-							size={24}
-							color="black"
-						/>
-					</Link>
-					<Text className="text-2xl font-bold">Communities</Text>
-				</View>
-
+			<ScrollView className="px-4">				
 				{/* Search bar */}
 				<View className="relative flex justify-center">
 					<Ionicons

@@ -1,6 +1,7 @@
 import "../global.css"
 import { Stack } from "expo-router"
 import { CommunityProvider } from "../context/communityContext"
+import Header from "../components/Header" 
 
 function RootLayout() {
 	return (
@@ -14,16 +15,36 @@ function RootLayout() {
 				<Stack.Screen
 					name="communities"
 					options={{
-						headerShown: false,
-						title: "Communities",
+						header: () => (
+							<Header
+								backLink="/community"
+								title="Communities"
+							/>
+						),
 					}}
 				/>
 
 				<Stack.Screen
 					name="community/[id]"
 					options={{
-						headerShown: false,
-						title: "Community Details",
+						header: ({ route }) => (
+							<Header
+								backLink="/communities"
+								title="Community Details"
+							/>
+						),
+					}}
+				/>
+
+				<Stack.Screen
+					name="communityUserProfile/[userId]"
+					options={{
+						header: () => (
+							<Header
+								backLink="/community"
+								title="Community User Profile"
+							/>
+						),
 					}}
 				/>
 			</Stack>
