@@ -20,6 +20,7 @@ export default function ChatBotScreen() {
   const [inputText, setInputText] = useState('');
   const [typing, setTyping] = useState(false);       // Are we waiting for GPT?
   const [typingDots, setTypingDots] = useState('');  // Cycles ".", "..", "..."
+  const [typewriter, setTypewriter] = useState(false);           // "currently animating the text"
 
   // Replace with your own OpenAI API key
   const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
@@ -96,12 +97,56 @@ export default function ChatBotScreen() {
       setTyping(false);
 
       if (assistantMessage) {
-        setMessages((prev) => [...prev, assistantMessage]);
+        startTypewriter(assistantMessage.content);
       }
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
       setTyping(false);
     }
+  };
+
+
+  /**
+   * 3) Start typewriter animation for the new assistant message.
+   *    We'll add a new "assistant" message with empty content,
+   *    then gradually fill it with characters from fullText.
+   */
+  const startTypewriter = (fullText) => {
+    // Add a new assistant message with empty content to state
+    setMessages((prev) => [
+      ...prev,
+      { role: 'assistant', content: '' },
+    ]);
+
+    setTypewriter(true);
+
+    let i = 0;
+    const speed = 20; // ms per character (adjust as desired)
+    const intervalId = setInterval(() => {
+      i++;
+      const partial = fullText.slice(0, i);
+
+      // Update the last message's content with the partial text
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        const lastIndex = newMessages.length - 1;
+
+        // Make sure it's the assistant message we just added
+        if (newMessages[lastIndex].role === 'assistant') {
+          newMessages[lastIndex] = {
+            ...newMessages[lastIndex],
+            content: partial,
+          };
+        }
+        return newMessages;
+      });
+
+      if (i >= fullText.length) {
+        // Done animating
+        clearInterval(intervalId);
+        setTypewriter(false);
+      }
+    }, speed);
   };
 
   return (
