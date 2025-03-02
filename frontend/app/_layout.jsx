@@ -1,9 +1,13 @@
 import "../global.css"
 import { Text } from "react-native"
 import { useFonts } from "expo-font"
-import { Stack } from "expo-router"
+
+import { Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 function RootLayout() {
+	const colorScheme = useColorScheme();
 	// const [fontsLoaded] = useFonts({
 	// 	Thin: require("../assets/fonts/Poppins-Thin.ttf"),
 	// 	ExtraLight: require("../assets/fonts/Poppins-ExtraLight.ttf"),
@@ -36,6 +40,12 @@ function RootLayout() {
 			/>
 		</Stack>
 	)
+	return (
+		<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+		  <Stack screenOptions={{ headerShown: false }} />
+		</ThemeProvider>
+	  );
+	
 }
 
 export default RootLayout
