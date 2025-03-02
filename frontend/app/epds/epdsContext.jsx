@@ -1,28 +1,29 @@
-import { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext } from "react";
 
+// 1️⃣ Create Context
 const EpdsContext = createContext();
 
-export const useEpds = () => useContext(EpdsContext);
-
+// 2️⃣ Create Provider Component
 export const EpdsProvider = ({ children }) => {
-    const [responses, setResponses] = useState(Array(10).fill(null))
-    const [score, setScore] = useState(0);
+  const [epdsScore, setEpdsScore] = useState(0); // Example state for EPDS score
+  const [responses, setResponses] = useState([]); // Store user responses
 
+  // Function to update score
+  const updateScore = (newScore) => {
+    setEpdsScore(newScore);
+  };
 
-    const updateResponse = (index, value) => {
-        const updateResponse = [...responses];
-        updateResponse[index] = value;
-        setResponses(updateResponse);
-    };
+  // Function to save responses
+  const saveResponses = (newResponses) => {
+    setResponses(newResponses);
+  };
 
-    const calculateScore = () => {
-        const total = responses.reduce((acc, val) => acc + (val || 0), 0);
-        setScore(total);
-    };
-
-    return (
-        <EpdsContext.Provider value={{ responses, updateResponse, score, calculateScore }}>
-            {children}
-        </EpdsContext.Provider>
-    );
+  return (
+    <EpdsContext.Provider value={{ epdsScore, updateScore, responses, saveResponses }}>
+      {children}
+    </EpdsContext.Provider>
+  );
 };
+
+// 3️⃣ Custom Hook for using EPDS Context
+export const useEpds = () => useContext(EpdsContext);
