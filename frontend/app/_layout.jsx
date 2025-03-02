@@ -35,7 +35,11 @@ function RootLayout() {
 					title: "Communities",
 				}}
 			/>
-			<Stack.Screen name="EPDS" component={EPDS} />
+			<Stack.Screen 
+			name="EPDS" 
+			options={{ 
+				headerShown: false,
+				title: "EPDS"}}/>
 		</Stack>
 	);
 }
