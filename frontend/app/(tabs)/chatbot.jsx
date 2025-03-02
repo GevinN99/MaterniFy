@@ -151,6 +151,17 @@ export default function ChatBotScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Header with icon + title */}
+      <View style={styles.header}>
+        <Image
+          source={{
+            uri: 'https://cdn-icons-png.flaticon.com/512/8943/8943377.png',
+          }}
+          style={styles.headerIcon}
+        />
+        <Text style={styles.headerTitle}>MaterniFy Bot</Text>
+      </View>
+
       <ScrollView
         style={styles.chatContainer}
         contentContainerStyle={styles.chatContentContainer}
@@ -241,6 +252,26 @@ const styles = StyleSheet.create({
   },
   chatContentContainer: {
     paddingVertical: 10,
+  },
+
+  // Header
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0078fe',
+    paddingHorizontal: 10,
+    height: 60,
+  },
+  headerIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+  },
+  headerTitle: {
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
   },
 
   // Each message row takes full width
