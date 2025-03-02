@@ -6,6 +6,7 @@ import {
   Button,
   View,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
@@ -87,6 +88,7 @@ export default function ChatBotScreen() {
         })}
       </ScrollView>
 
+      {/* Rounded input field & custom send button */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -94,7 +96,9 @@ export default function ChatBotScreen() {
           value={inputText}
           onChangeText={setInputText}
         />
-        <Button title="Send" onPress={handleSend} />
+        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+          <Text style={styles.sendButtonText}>Send</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -166,8 +170,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     height: 40,
-    borderRadius: 5,
-    paddingHorizontal: 10,
+    borderRadius: 20, // Half of the height for a full "pill" shape
+    paddingHorizontal: 12,
     marginRight: 10,
+  },
+  sendButton: {
+    backgroundColor: '#0078fe',
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 20, // Matches input's rounding
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
 });
