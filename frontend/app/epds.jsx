@@ -72,7 +72,7 @@ const epds = () => {
                 {!submitted ? (
                     <TouchableOpacity
                         onPress={handleSubmit}
-                        className="bg-green-500 p-4 rounded-lg mt-4"
+                        className="bg-blue-300 p-4 rounded-lg mt-4"
                     >
                         <Text className="text-white text-center text-lg font-bold">Submit</Text>
                     </TouchableOpacity>
