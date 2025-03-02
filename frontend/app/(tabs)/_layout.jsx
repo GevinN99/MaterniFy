@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native';
 
 import HealthPlanScreen from './HealthPlanScreen';
 import AiGeneratedHealthTipsScreen from './AiGeneratedHealthTipsScreen';
+import DailyHealthChecklistScreen from './DailyHealthChecklistScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -39,6 +40,7 @@ export default function TabsLayout() {
           ),
         }}
       />
+      
 
       {/* HIDDEN TAB (AiTips) */}
       <Tab.Screen
@@ -51,6 +53,19 @@ export default function TabsLayout() {
           headerShown: false,
         }}
       />
+
+       {/* HIDDEN TAB (AiTips) */}
+       <Tab.Screen
+        name="Checklist"
+        component={DailyHealthChecklistScreen}
+        options={{
+          // Hide this tab from the bar
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
+          headerShown: false,
+        }}
+      /> 
+
     </Tab.Navigator>
   );
 }

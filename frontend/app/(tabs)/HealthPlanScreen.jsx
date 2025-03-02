@@ -39,6 +39,15 @@ export default function HealthPlanScreen() {
         >
           <Text style={styles.buttonText}>GET STARTED</Text>
         </TouchableOpacity>
+
+         {/* "Daily Health Check" button -> navigates to the Daily Health Checklist screen */}
+         <TouchableOpacity
+          style={[styles.button, styles.dailyButton]}
+          onPress={() => navigation.navigate('Checklist')}
+        >
+          <Text style={styles.buttonText}>Daily Health Check</Text>
+        </TouchableOpacity>
+
       </View>
     </LinearGradient>
   );
@@ -95,12 +104,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
   },
-  // "GET STARTED" button
+  //  button
   button: {
     backgroundColor: '#007AFF',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
+  },
+  dailyButton: {
+    marginTop: 20,
   },
   // Button text
   buttonText: {
