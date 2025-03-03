@@ -27,6 +27,24 @@ export default function DailyHealthChecklistScreen() {
      (mindfulSleep ? 1 : 0);
    const progressPercent = Math.round((completedTasks / totalTasks) * 100);
 
+    // Determine motivational message based on progress
+  let progressMessage;
+  if (progressPercent === 0) {
+    progressMessage = "Let's get started!";
+  } else if (progressPercent < 20) {
+    progressMessage = "You can do it!";
+  } else if (progressPercent < 40) {
+    progressMessage = "Keep going!";
+  } else if (progressPercent < 60) {
+    progressMessage = "Don't give up!";
+  } else if (progressPercent < 80) {
+    progressMessage = "Almost there!";
+  } else if (progressPercent < 100) {
+    progressMessage = "You're almost done!";
+  } else {
+    progressMessage = "Great job, complete!";
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
      
@@ -37,6 +55,10 @@ export default function DailyHealthChecklistScreen() {
       <View style={styles.imageContainer}>
               <Image source={checklist} style={styles.image} />
               </View>
+               {/* Progress Message Section */}
+      <View style={styles.progressContainer}>
+        <Text style={styles.progressText}>{progressMessage}</Text>
+      </View>
 
               <View style={styles.progressContainer}>
         <Text style={styles.progressText}>
@@ -161,6 +183,12 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
     alignItems: 'center',
+  },
+  progressText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 5,
   },
   progressText: {
     fontSize: 16,
