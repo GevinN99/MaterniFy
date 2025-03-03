@@ -1,84 +1,89 @@
 import { useRouter } from "expo-router";
-import { Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ScrollView } from "react-native";
 
 export default function Location() {
     const router = useRouter();
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Nearest Hospital</Text>
+        <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.container}>
+
+
+            <Text>1 / 3</Text>
+            <Text style={styles.title}>Location</Text>
             <Text style={styles.subtitle}>Add your Home Address</Text>
 
-            <View style={styles.searchContainer}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search for a location..."
-                />
-                <TouchableOpacity style={styles.searchButton}>
-                    <Text style={styles.buttonText}>Search</Text>
-                </TouchableOpacity>
-            </View>
+            <Text style={styles.label}>Full Name*</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
+
+            <Text style={styles.label}>House Number*</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
+
+            <Text style={styles.label}>Street Name*</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" keyboardType="email-address" />
+
+            <Text style={styles.label}>Village (If you are far from the Nearest City)</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" keyboardType="phone-pad" />
+
+            <Text style={styles.label}>City*</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
 
             <TouchableOpacity style={styles.nextButton} onPress={() => router.push("/doctor")}>
                 <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: "center",
         alignItems: "center",
         paddingVertical: 20,
     },
+    container: {
+        flex: 1,
+        backgroundColor: "#E7EDEF",
+        padding: 10,
+    },
     title: {
-        fontSize: 50,
+        fontSize: 48,
         fontWeight: "bold",
     },
     subtitle: {
-        margin: 20,
-        fontSize: 30,
+        margin: 15,
+        fontSize: 24,
         alignSelf: "flex-start",
-        marginLeft: 30,
+        marginLeft: 20,
     },
-    searchContainer: {
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 5,
-        flexDirection: "row",
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
-        width: "90%",
-    },
-    searchInput: {
-        flex: 1,
-        height: 40,
-        paddingHorizontal: 10,
+    label: {
         fontSize: 16,
+        fontWeight: 1000,
+        marginTop: 10,
+        alignSelf: "flex-start",
+        marginLeft: 20,
     },
-    searchButton: {
-        backgroundColor: "#007AFF",
-        paddingVertical: 10,
+    input: {
+        width: "90%",
+        height: 50,
+        borderColor: "#007AFF",
+        borderWidth: 1,
+        borderRadius: 10,
         paddingHorizontal: 15,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: "#fff",
-        fontWeight: "bold",
+        fontSize: 16,
+        backgroundColor: "#fff",
+        marginBottom: 15,
     },
     nextButton: {
         backgroundColor: "#64A8F1",
         borderRadius: 10,
         marginTop: 20,
         paddingHorizontal: 40,
-        paddingVertical: 15,
-        position: "fixed",
-        bottom: -400,
+        paddingVertical: 10,
+        alignSelf: "center",
     },
     nextButtonText: {
-        fontSize: 30,
-        color: "#FFFF",
+        fontSize: 28,
+        color: "#FFFFFF",
+        fontWeight: "bold",
     },
 });
