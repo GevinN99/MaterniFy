@@ -1,12 +1,11 @@
-import { View, Text, ScrollView, Image } from "react-native"
+import { View, Text, ScrollView } from "react-native"
 import React, { useEffect, useState } from "react"
-import { Link, useRouter, useLocalSearchParams } from "expo-router"
-import { Ionicons } from "@expo/vector-icons"
-import { SafeAreaView } from "react-native-safe-area-context"
+import { useLocalSearchParams } from "expo-router"
 import CommunityDetails from "../../components/CommunityDetails"
 import { getCommunityById } from "../../api/communityApi"
 import Post from "../../components/Post"
 import { useCommunity } from "../../context/communityContext"
+import { SafeAreaView } from "react-native-safe-area-context"
 
 const Community = () => {
 	const [community, setCommunity] = useState(null)	
@@ -30,20 +29,7 @@ const Community = () => {
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="p-4">
-				<View className="flex flex-row items-center mb-4">
-					<Link
-						href="/communities"
-						className="mr-2"
-					>
-						<Ionicons
-							name="arrow-back"
-							size={24}
-							color="black"
-						/>
-					</Link>
-					<Text className="text-2xl font-bold">Community Details</Text>
-				</View>
+			<ScrollView className="px-4">				
 				{community && (
 					<View>
 						<CommunityDetails
@@ -58,7 +44,8 @@ const Community = () => {
 								{community.posts.map((post, index) => (
 									<Post
 										key={index}
-										post={post}										
+										post={post}		
+										community={community}
 									/>
 								))}
 							</View>
