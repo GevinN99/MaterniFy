@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, ScrollView, Image,TouchableOpacity } from 'react-native';
 import checklist from '../../assets/images/checklist.png';
 import { useNavigation } from '@react-navigation/native';
+import Checkbox from 'expo-checkbox';
 
 
 export default function DailyHealthChecklistScreen() {
@@ -29,7 +30,11 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 1: Hydration */}
       <View style={[styles.card, styles.cardHydration]}>
         <View style={styles.row}>
-          <Switch value={hydration} onValueChange={setHydration} />
+        <Checkbox
+            value={hydration}
+            onValueChange={setHydration}
+            color={hydration ? "#007AFF" : undefined}
+          />
           <View style={styles.textColumn}>
             <Text style={styles.cardTitle}>💧 Hydration Reminder</Text>
             <Text style={styles.cardSubtext}>“Drink 8 glasses of water”</Text>
@@ -40,7 +45,11 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 2: Physical Activity */}
       <View style={[styles.card, styles.cardPhysical]}>
         <View style={styles.row}>
-          <Switch value={physicalActivity} onValueChange={setPhysicalActivity} />
+        <Checkbox
+            value={physicalActivity}
+            onValueChange={setPhysicalActivity}
+            color={physicalActivity ? "#007AFF" : undefined}
+          />
           <View style={styles.textColumn}>
             <Text style={styles.cardTitle}>🚶 Physical Activity</Text>
             <Text style={styles.cardSubtext}>“Walk for 15 minutes”</Text>
@@ -51,7 +60,11 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 3: Prenatal Care */}
       <View style={[styles.card, styles.cardPrenatal]}>
         <View style={styles.row}>
-          <Switch value={prenatalCare} onValueChange={setPrenatalCare} />
+        <Checkbox
+            value={prenatalCare}
+            onValueChange={setPrenatalCare}
+            color={prenatalCare ? "#007AFF" : undefined}
+          />
           <View style={styles.textColumn}>
             <Text style={styles.cardTitle}>💊 Prenatal Care</Text>
             <Text style={styles.cardSubtext}>“Take prenatal vitamins”</Text>
@@ -62,7 +75,11 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 4: Balanced Diet */}
       <View style={[styles.card, styles.cardDiet]}>
         <View style={styles.row}>
-          <Switch value={balancedDiet} onValueChange={setBalancedDiet} />
+        <Checkbox
+            value={balancedDiet}
+            onValueChange={setBalancedDiet}
+            color={balancedDiet ? "#007AFF" : undefined}
+          />
           <View style={styles.textColumn}>
             <Text style={styles.cardTitle}>🥗 Balanced Diet</Text>
             <Text style={styles.cardSubtext}>“Include fruits, veggies, and protein daily”</Text>
@@ -73,7 +90,11 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 5: Kegel Exercises */}
       <View style={[styles.card, styles.cardKegel]}>
         <View style={styles.row}>
-          <Switch value={kegel} onValueChange={setKegel} />
+        <Checkbox
+            value={kegel}
+            onValueChange={setKegel}
+            color={kegel ? "#007AFF" : undefined}
+          />
           <View style={styles.textColumn}>
             <Text style={styles.cardTitle}>🩺 Kegel Exercises</Text>
             <Text style={styles.cardSubtext}>“Strengthen pelvic floor daily”</Text>
@@ -84,7 +105,11 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 6: Mindful Sleep */}
       <View style={[styles.card, styles.cardSleep]}>
         <View style={styles.row}>
-          <Switch value={mindfulSleep} onValueChange={setMindfulSleep} />
+        <Checkbox
+            value={mindfulSleep}
+            onValueChange={setMindfulSleep}
+            color={mindfulSleep ? "#007AFF" : undefined}
+          />
           <View style={styles.textColumn}>
             <Text style={styles.cardTitle}>😴 Mindful Sleep</Text>
             <Text style={styles.cardSubtext}>“Aim for at least 8 hours of restful sleep”</Text>
