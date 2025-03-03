@@ -8,6 +8,7 @@ import HealthPlanScreen from './HealthPlanScreen';
 import AiGeneratedHealthTipsScreen from './AiGeneratedHealthTipsScreen';
 import DailyHealthChecklistScreen from './DailyHealthChecklistScreen';
 import chatbot from './chatbot';
+import community from './community';
 
 const Tab = createBottomTabNavigator();
 
@@ -58,6 +59,25 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+<Tab.Screen
+        name="community"
+        component={community}
+        options={{
+          headerTitle: 'Comminty',
+          title: '',
+          headerShown: false,
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+							name={focused ? "people": "people-outline"}
+							size={30}
+							color={color}
+						/>
+          ),
+        }}
+      />
+      
+    
       
 
       {/* HIDDEN TAB (AiTips) */}
