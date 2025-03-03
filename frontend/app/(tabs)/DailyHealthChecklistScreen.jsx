@@ -16,6 +16,17 @@ export default function DailyHealthChecklistScreen() {
   const [kegel, setKegel] = useState(false);
   const [mindfulSleep, setMindfulSleep] = useState(false);
 
+   // Calculate progress
+   const totalTasks = 6;
+   const completedTasks =
+     (hydration ? 1 : 0) +
+     (physicalActivity ? 1 : 0) +
+     (prenatalCare ? 1 : 0) +
+     (balancedDiet ? 1 : 0) +
+     (kegel ? 1 : 0) +
+     (mindfulSleep ? 1 : 0);
+   const progressPercent = Math.round((completedTasks / totalTasks) * 100);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
      
@@ -26,6 +37,15 @@ export default function DailyHealthChecklistScreen() {
       <View style={styles.imageContainer}>
               <Image source={checklist} style={styles.image} />
               </View>
+
+              <View style={styles.progressContainer}>
+        <Text style={styles.progressText}>
+          {progressPercent === 100 ? 'Complete!' : `Progress: ${progressPercent}%`}
+        </Text>
+        <View style={styles.progressBarBackground}>
+          <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
+        </View>
+      </View>
 
       {/* Card 1: Hydration */}
       <View style={[styles.card, styles.cardHydration]}>
@@ -136,6 +156,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: 'center',
     backgroundColor: '#FFF',
+  },
+  progressContainer: {
+    width: '100%',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  progressText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 5,
+  },
+  progressBarBackground: {
+    width: '100%',
+    height: 10,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#007AFF',
   },
   illustration: {
     width: 300,
