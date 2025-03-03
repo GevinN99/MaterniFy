@@ -7,6 +7,7 @@ import { StyleSheet } from 'react-native';
 import HealthPlanScreen from './HealthPlanScreen';
 import AiGeneratedHealthTipsScreen from './AiGeneratedHealthTipsScreen';
 import DailyHealthChecklistScreen from './DailyHealthChecklistScreen';
+import chatbot from './chatbot';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,6 +35,23 @@ export default function TabsLayout() {
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? 'home' : 'home-outline'}
+              size={30}
+              color={color}
+            />
+          ),
+        }}
+      />
+       {/* VISIBLE TAB (Home) */}
+       <Tab.Screen
+        name="chatbot"
+        component={chatbot}
+        options={{
+          headerTitle: 'Chatbot',
+          title: '',
+          headerShown: false,
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? 'chatbot' : 'hchatbot-outline'}
               size={30}
               color={color}
             />
