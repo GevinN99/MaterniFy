@@ -1,33 +1,44 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { questions, getRecommendations } from "../api/epdsData";
 
 const epds = () => {
-    const [answers, setAnswers] = useState(Array(10).fill(null));
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [answers, setAnswers] = useState([]);
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
-    const [loadedQuestions, setLoadedQuestions] = useState([]);
+    
 
     // Ensure questions are loaded properly
     useEffect(() => {
-        if (Array.isArray(questions) && questions.length > 0) {
-            setLoadedQuestions(questions);
+        if (questions && Array.isArray(questions)) {
+            setAnswers(Array(questions.length).fill(null));
+            setLoading(false);
         } else {
-            console.error("Error: 'questions' is not defined or is empty.");
+            console.error("Error: 'questions' is not defined or is empty.", questions);
+            setLoading(false);
         }
     }, []);
 
-    const handleAnswer = (questionIndex, score) => {
+    const handleAnswer = (score) => {
         const newAnswers = [...answers];
-        newAnswers[questionIndex] = score;
+        newAnswers[currentQuestionIndex] = score;
         setAnswers(newAnswers);
+
+        if (currentQuestionIndex < questions.length - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        } else {
+            setSubmitted(true);
+        }
     };
 
     const calculateScore = () => {
         return answers.reduce((sum, score) => sum + (score !== null ? score : 0), 0);
     };
+
 
     const handleSubmit = () => {
         if (answers.includes(null)) {
@@ -40,58 +51,54 @@ const epds = () => {
     const score = calculateScore();
     const recommendations = getRecommendations(score) || { message: "", actions: [] };
 
-    return (
-        <SafeAreaView className="flex-1 bg-white p-4">
-            <ScrollView>
-                <Text className="text-xl font-bold mb-4 text-center">
-                    Edinburgh Postnatal Depression Scale (EPDS)
-                </Text>
-                
-                {/* Ensure questions is an array before using map */}
-                {loadedQuestions.length > 0 ? (
-                    loadedQuestions.map((q, index) => (
-                        <View key={index} className="mb-4">
-                            <Text className="text-lg font-semibold">{index + 1}. {q.question}</Text>
-                            {q.options?.map((option, optionIndex) => (
-                                <TouchableOpacity
-                                    key={optionIndex}
-                                    onPress={() => handleAnswer(index, option.score)}
-                                    className={`p-3 my-1 rounded-lg ${answers[index] === option.score ? 'bg-blue-500' : 'bg-gray-200'}`}
-                                >
-                                    <Text className="text-base">{option.text}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    ))
-                ) : (
-                    <Text className="text-red-500 text-center mt-4">
-                        Error loading questions. Please try again.
-                    </Text>
-                )}
+    if (loading) {
+        return (
+            <SafeAreaView className="flex-1 bg-white p-4 items-center justify-center">
+                <ActivityIndicator size="large" color="#0000ff" />
+            </SafeAreaView>
+        );
+    }
 
-                {!submitted ? (
-                    <TouchableOpacity
-                        onPress={handleSubmit}
-                        className="bg-blue-300 p-4 rounded-lg mt-4"
-                    >
-                        <Text className="text-white text-center text-lg font-bold">Submit</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <View className="mt-6">
-                        <Text className="text-lg font-bold text-center">Your Score: {score}</Text>
-                        <Text className="text-md text-center mt-2">{recommendations.message}</Text>
-                        {recommendations.actions.map((action, i) => (
-                            <TouchableOpacity
-                                key={i}
-                                onPress={() => router.push(action.route)}
-                                className="bg-blue-500 p-3 rounded-lg mt-3"
-                            >
-                                <Text className="text-white text-center">{action.label}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                )}
-            </ScrollView>
+    if (submitted) {
+        return (
+            <SafeAreaView className="flex-1 bg-white p-4">
+                <View className="flex-1 items-center justify-center">
+                    <Text className="text-xl font-bold text-center">Your Score: {score}</Text>
+                    <Text className="text-lg text-center mt-2">{recommendations.message}</Text>
+                    {recommendations.actions.map((action, i) => (
+                        <TouchableOpacity
+                            key={i}
+                            onPress={() => router.push(action.route)}
+                            className="bg-blue-500 p-3 rounded-lg mt-3"
+                        >
+                            <Text className="text-white text-center">{action.label}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            </SafeAreaView>
+        );
+    }
+
+    const currentQuestion = questions[currentQuestionIndex];
+
+    return (
+        <SafeAreaView className="flex-1 bg-white p-6 justify-center">
+            <Text className="text-xl font-bold mb-6 text-center">
+                Question {currentQuestionIndex + 1} of {questions.length}
+            </Text>
+            <Text className="text-lg font-semibold mb-4 text-center">
+                {currentQuestion.question}
+            </Text>
+
+            {currentQuestion.options.map((option, optionIndex) => (
+                <TouchableOpacity
+                    key={optionIndex}
+                    onPress={() => handleAnswer(option.score)}
+                    className="p-3 my-2 rounded-lg bg-gray-200"
+                >
+                    <Text className="text-base text-center">{option.text}</Text>
+                </TouchableOpacity>
+            ))}
         </SafeAreaView>
     );
 };
