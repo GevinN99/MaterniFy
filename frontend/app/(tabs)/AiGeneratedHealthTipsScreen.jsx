@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     color: 'red',
   },
   tipCard: {
-    backgroundColor: '#E8F4FA',
+    backgroundColor: '#CAF4FF',
     padding: 15,
     borderRadius: 8,
     marginBottom: 15,
