@@ -51,10 +51,10 @@ export default function TabsLayout() {
           headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
-              name={focused ? 'chatbot' : 'hchatbot-outline'}
-              size={30}
-              color={color}
-            />
+							name={focused ? "chatbubble" : "chatbubble-outline"}
+							size={30}
+							color={color}
+						/>
           ),
         }}
       />
