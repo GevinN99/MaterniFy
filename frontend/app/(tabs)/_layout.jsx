@@ -1,103 +1,101 @@
-// app/(tabs)/_layout.tsx
-import { Tabs } from "expo-router";
-import React from "react";
-import TabBar from "../../components/TabBar";
-import { House, Bot, UsersRound } from "lucide-react-native";
+// app/(tabs)/_layout.tsx (or .jsx)
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet } from 'react-native';
 
+import HealthPlanScreen from './HealthPlanScreen';
+import AiGeneratedHealthTipsScreen from './AiGeneratedHealthTipsScreen';
+import DailyHealthChecklistScreen from './DailyHealthChecklistScreen';
+import chatbot from './chatbot';
 
-// Import visible and hidden screens
-import HealthPlanScreen from "./HealthPlanScreen";
-import AiGeneratedHealthTipsScreen from "./AiGeneratedHealthTipsScreen";
-import DailyHealthChecklistScreen from "./DailyHealthChecklistScreen";
-import chatbot from "./chatbot";
+const Tab = createBottomTabNavigator();
 
 export default function TabsLayout() {
   return (
-    // Use your custom TabBar provided by your main branch
-    <Tabs tabBar={(props) => <TabBar {...props} />}>
-      {/* Visible Tab: Home */}
-      <Tabs.Screen
-        name="index"
+    <Tab.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        tabBarActiveTintColor: '#38BDF8',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: 'bold',
+        },
+        tabBarStyle: styles.tabBar,
+      }}
+    >
+      {/* VISIBLE TAB (Home) */}
+      <Tab.Screen
+        name="Home"
+        component={HealthPlanScreen}
         options={{
-          headerTitle: "Home",
+          headerTitle: 'Home',
+          title: '',
           headerShown: false,
-          tabBarLabel: "Home",
-          tabBarIcon: ({ focused }) => (
-            <House
-              className={`text-${focused ? "blue-500" : "gray-500"}`}
-              size={26}
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={30}
+              color={color}
             />
           ),
         }}
       />
-
-      {/* Visible Tab: Chatbot */}
-      <Tabs.Screen
+       {/* VISIBLE TAB (Home) */}
+       <Tab.Screen
         name="chatbot"
+        component={chatbot}
         options={{
-          headerTitle: "Chatbot",
+          headerTitle: 'Chatbot',
+          title: '',
           headerShown: false,
-          tabBarLabel: "Chatbot",
-          tabBarIcon: ({ focused }) => (
-            <Bot
-              className={`text-${focused ? "blue-500" : "gray-500"}`}
-              size={26}
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? 'chatbot' : 'hchatbot-outline'}
+              size={30}
+              color={color}
             />
           ),
         }}
       />
+      
 
-      {/* Visible Tab: Community */}
-      <Tabs.Screen
-        name="community"
-        options={{
-          headerTitle: "Community",
-          headerShown: false,
-          tabBarLabel: "Community",
-          tabBarIcon: ({ focused }) => (
-            <UsersRound
-              className={`text-${focused ? "blue-500" : "gray-500"}`}
-              size={26}
-            />
-          ),
-        }}
-      />
-
-      {/* Hidden Tab: AiTips */}
-      <Tabs.Screen
+      {/* HIDDEN TAB (AiTips) */}
+      <Tab.Screen
         name="AiTips"
         component={AiGeneratedHealthTipsScreen}
         options={{
-          headerTitle: "AI Tips",
+          // Hide this tab from the bar
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
           headerShown: false,
-          tabBarItemStyle: { display: "none" },
-          tabBarStyle: { display: "none" },
         }}
       />
 
-      {/* Hidden Tab: Checklist */}
-      <Tabs.Screen
+       {/* HIDDEN TAB (AiTips) */}
+       <Tab.Screen
         name="Checklist"
         component={DailyHealthChecklistScreen}
         options={{
-          headerTitle: "Checklist",
+          // Hide this tab from the bar
+          tabBarItemStyle: { display: 'none' },
+          tabBarStyle: { display: 'none' },
           headerShown: false,
-          tabBarItemStyle: { display: "none" },
-          tabBarStyle: { display: "none" },
         }}
-      />
-    </Tabs>
+      /> 
+
+    </Tab.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: "#fff",
-    display: "flex",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    display: 'flex',
+    justifyContent: 'center',
     borderRadius: 50,
     margin: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
