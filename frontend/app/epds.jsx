@@ -180,7 +180,7 @@ const epds = () => {
     if (loading) {
         return (
             <SafeAreaView className="flex-1 items-center justify-center bg-white">
-                <ActivityIndicator size="large" color="#0000ff" />
+                <ActivityIndicator size="large" color="#0077b6" />
             </SafeAreaView>
         );
     }
@@ -189,12 +189,12 @@ const epds = () => {
         return (
             <SafeAreaView className="flex-1 bg-white p-6 justify-center">
                 <Text className="text-xl font-bold text-center mb-4">Your Score: {score}</Text>
-                <Text className="text-md text-center mb-6">{recommendations.message}</Text>
+                <Text className="text-md text-center mb-6 text - [#3c6e71]">{recommendations.message}</Text>
                 {recommendations.actions.map((action, i) => (
                     <TouchableOpacity 
                         key={i} 
                         onPress={() => router.push(action.route)} 
-                        className="bg-blue-500 p-3 rounded-lg mb-3"
+                        className="bg-[#0077b6] py-3 px-6 rounded-lg mb-3"
                     >
                         <Text className="text-white text-center">{action.label}</Text>
                     </TouchableOpacity>
@@ -207,10 +207,10 @@ const epds = () => {
 
     return (
         <SafeAreaView className="flex-1 bg-white p-6 justify-center">
-            <Text className="text-xl font-bold mb-6 text-center">
+            <Text className="text-xl font-bold mb-6 text-center text-[#005f73]">
                 Question {currentQuestionIndex + 1} of {questions?.length || 0}
             </Text>
-            <Text className="text-lg font-semibold mb-4 text-center">
+            <Text className="text-lg font-semibold mb-4 text-center text-[#3c6e71]">
                 {currentQuestion?.question || "Loading question..."}
             </Text>
 
@@ -221,11 +221,11 @@ const epds = () => {
                         onPress={() => handleAnswer(option.score)}
                         className="p-3 my-2 rounded-lg bg-gray-200"
                     >
-                        <Text className="text-base text-center">{option.text}</Text>
+                        <Text className="text-base text-center text-[#0077b6]">{option.text}</Text>
                     </TouchableOpacity>
                 ))
             ) : (
-                <Text className="text-center">Loading options...</Text>
+                <Text className="text-center text-[#3c6e71]">Loading options...</Text>
             )}
         </SafeAreaView>
     );
