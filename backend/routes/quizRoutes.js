@@ -1,10 +1,9 @@
 const express = require('express');
-const { getQuizzes, submitAnswer, addQuiz } = require('../controllers/quizController');
+const { saveEpdsResponse, fetchUserEpdsResponses } = require('../controllers/quizController');
 
 const router = express.Router();
 
-router.get('/quizzes', getQuizzes);
-router.post('/submit', submitAnswer);
-router.post('/add', addQuiz);
+router.post('/submit-response', saveEpdsResponse);
+router.get('/get-response/:userId', fetchUserEpdsResponses);
 
 module.exports = router;

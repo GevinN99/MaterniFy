@@ -1,47 +1,38 @@
-const Quiz = require('../models/epdsTest/QuizModel');
-const UserResponse = require('../models/epdsTest/UserResponseModel');
+const EpdsResponse = require("../models/EpdsResponse");
 
-const getQuizzes = async (req, res) => {
-    try {
-        const quizzes = await Quiz.find();
-        res.status(200).json(quizzes);
-    } catch (err) {
-        res.status(500).json({ error: "Failed to fetch quizzes" });
-    }
-};
-
-const submitAnswer = async (req, res) => {
-    try {
-        const { userId, quizId, selectedAnswer } = req.body;
-        const quiz = await Quiz.findById(quizId);
-        if (!quiz) return res.status(404).json({ error: "Quiz not found" });
-
-    const isCorrect = quiz.correctAnswer === selectedAnswer;
-
-    const response = new UserResponse({
-      userId,
-      quizId,
-      selectedAnswer,
-      isCorrect,
-    });
-
-    await response.save();
-    res.status(200).json({ message: "Answer submitted", isCorrect });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to submit answer" });
-  }
-};
-
-// Add a new quiz question
-const addQuiz = async (req, res) => {
+// Save user EPDS response
+export const saveEpdsResponse = async (req, res) => {
   try {
-    const { question, options, correctAnswer } = req.body;
-    const quiz = new Quiz({ question, options, correctAnswer });
-    await quiz.save();
-    res.status(201).json({ message: "Quiz added successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to add quiz" });
+      const { userId, responses, totalScore } = req.body;
+      if (!userId || !responses || totalScore === undefined) {
+        return res.status(400).json({ message: "Invalid data provided" });
+    }
+
+    const newResponse = new EpdsResponse({
+      userId,
+      responses,
+      totalScore
+  });
+
+    await newResponse.save();
+    res.status(201).json({ message: "Response saved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-module.exports = { getQuizzes, submitAnswer, addQuiz };
+// Fetch user responses
+export const fetchUserEpdsResponses = async (req, res) => {
+  try {
+    const { userId } = req.params;
+      const responses = await EpdsResponse.find({ userId }).sort({ createdAt: -1 });
+
+      if (!responses.length) {
+          return res.status(404).json({ message: "No responses found for this user" });
+      }
+
+      res.status(200).json(responses);
+  } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
