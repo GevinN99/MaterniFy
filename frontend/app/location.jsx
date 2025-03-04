@@ -26,6 +26,12 @@ export default function Location() {
             <Text style={styles.label}>City*</Text>
             <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
 
+            <Text style={styles.label}>District*</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
+
+            <Text style={styles.label}>Province*</Text>
+            <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
+
             <TouchableOpacity style={styles.nextButton} onPress={() => router.push("/doctor")}>
                 <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>

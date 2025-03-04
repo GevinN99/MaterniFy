@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { Text, TextInput, TouchableOpacity, View, StyleSheet, ScrollView } from "react-native";
+import { Text, TextInput, TouchableOpacity, View, StyleSheet, ScrollView, Image } from "react-native";
 import Stars from "react-native-stars";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -19,22 +19,153 @@ export default function Doctor() {
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContainer}>
+                
                 <View style={styles.doctorCard}>
-                    <Text style={styles.doctorName}>Dr. Suresh Sagala</Text>
-                    <Text style={styles.doctorSpecialty}>Perinatologist</Text>
+                    <View style={styles.doccontainer}>
+                    
+                        <View>
+                            <Text style={styles.doctorName}>Dr. Suresh Sagala</Text>
+                            <Text style={styles.doctorSpecialty}>Perinatologist</Text>
 
-                    <View style={styles.starContainer}>
-                        <Text style={styles.starTitle}>Rating</Text>
+                        <View style={styles.starContainer}>
                         <Stars
                             default={4.5} // Default rating
                             count={5} // Total stars
                             half={true} // Allow half stars
-                            fullStar={<FontAwesome name="star" size={30} color="#FFD700" />}
-                            emptyStar={<FontAwesome name="star-o" size={30} color="#D3D3D3" />}
-                            halfStar={<FontAwesome name="star-half-full" size={30} color="#FFD700" />}
+                            fullStar={<FontAwesome name="star" size={20} color="#FFD700" />}
+                            emptyStar={<FontAwesome name="star-o" size={20} color="#D3D3D3" />}
+                            halfStar={<FontAwesome name="star-half-full" size={20} color="#FFD700" />}
                         />
-                    </View>
+                        </View>
+                        <Text style={styles.cardtxt}>Experience</Text>
+                        <Text style={styles.cardsub}>8 Years</Text>
+                        <Text style={styles.cardtxt}>Patients</Text>
+                        <Text style={styles.cardsub}>1.3k</Text>
+
+                        </View>
+                        <Image 
+                        source={require("../assets/images/doctor.png")}
+                        style={styles.docimg}/>
+                    </View>        
+                    
                 </View>
+                <View style={styles.doctorCard}>
+                    <View style={styles.doccontainer}>
+                    
+                        <View>
+                            <Text style={styles.doctorName}>Dr. Suresh Sagala</Text>
+                            <Text style={styles.doctorSpecialty}>Perinatologist</Text>
+
+                        <View style={styles.starContainer}>
+                        <Stars
+                            default={4.5} // Default rating
+                            count={5} // Total stars
+                            half={true} // Allow half stars
+                            fullStar={<FontAwesome name="star" size={20} color="#FFD700" />}
+                            emptyStar={<FontAwesome name="star-o" size={20} color="#D3D3D3" />}
+                            halfStar={<FontAwesome name="star-half-full" size={20} color="#FFD700" />}
+                        />
+                        </View>
+                        <Text style={styles.cardtxt}>Experience</Text>
+                        <Text style={styles.cardsub}>8 Years</Text>
+                        <Text style={styles.cardtxt}>Patients</Text>
+                        <Text style={styles.cardsub}>1.3k</Text>
+
+                        </View>
+                        <Image 
+                        source={require("../assets/images/doctor.png")}
+                        style={styles.docimg}/>
+                    </View>        
+                    
+                </View>
+                <View style={styles.doctorCard}>
+                    <View style={styles.doccontainer}>
+                    
+                        <View>
+                            <Text style={styles.doctorName}>Dr. Suresh Sagala</Text>
+                            <Text style={styles.doctorSpecialty}>Perinatologist</Text>
+
+                        <View style={styles.starContainer}>
+                        <Stars
+                            default={4.5} // Default rating
+                            count={5} // Total stars
+                            half={true} // Allow half stars
+                            fullStar={<FontAwesome name="star" size={20} color="#FFD700" />}
+                            emptyStar={<FontAwesome name="star-o" size={20} color="#D3D3D3" />}
+                            halfStar={<FontAwesome name="star-half-full" size={20} color="#FFD700" />}
+                        />
+                        </View>
+                        <Text style={styles.cardtxt}>Experience</Text>
+                        <Text style={styles.cardsub}>8 Years</Text>
+                        <Text style={styles.cardtxt}>Patients</Text>
+                        <Text style={styles.cardsub}>1.3k</Text>
+
+                        </View>
+                        <Image 
+                        source={require("../assets/images/doctor.png")}
+                        style={styles.docimg}/>
+                    </View>        
+                    
+                </View>
+                <View style={styles.doctorCard}>
+                    <View style={styles.doccontainer}>
+                    
+                        <View>
+                            <Text style={styles.doctorName}>Dr. Suresh Sagala</Text>
+                            <Text style={styles.doctorSpecialty}>Perinatologist</Text>
+
+                        <View style={styles.starContainer}>
+                        <Stars
+                            default={4.5} // Default rating
+                            count={5} // Total stars
+                            half={true} // Allow half stars
+                            fullStar={<FontAwesome name="star" size={20} color="#FFD700" />}
+                            emptyStar={<FontAwesome name="star-o" size={20} color="#D3D3D3" />}
+                            halfStar={<FontAwesome name="star-half-full" size={20} color="#FFD700" />}
+                        />
+                        </View>
+                        <Text style={styles.cardtxt}>Experience</Text>
+                        <Text style={styles.cardsub}>8 Years</Text>
+                        <Text style={styles.cardtxt}>Patients</Text>
+                        <Text style={styles.cardsub}>1.3k</Text>
+
+                        </View>
+                        <Image 
+                        source={require("../assets/images/doctor.png")}
+                        style={styles.docimg}/>
+                    </View>        
+                    
+                </View>
+                <View style={styles.doctorCard}>
+                    <View style={styles.doccontainer}>
+                    
+                        <View>
+                            <Text style={styles.doctorName}>Dr. Suresh Sagala</Text>
+                            <Text style={styles.doctorSpecialty}>Perinatologist</Text>
+
+                        <View style={styles.starContainer}>
+                        <Stars
+                            default={4.5} // Default rating
+                            count={5} // Total stars
+                            half={true} // Allow half stars
+                            fullStar={<FontAwesome name="star" size={20} color="#FFD700" />}
+                            emptyStar={<FontAwesome name="star-o" size={20} color="#D3D3D3" />}
+                            halfStar={<FontAwesome name="star-half-full" size={20} color="#FFD700" />}
+                        />
+                        </View>
+                        <Text style={styles.cardtxt}>Experience</Text>
+                        <Text style={styles.cardsub}>8 Years</Text>
+                        <Text style={styles.cardtxt}>Patients</Text>
+                        <Text style={styles.cardsub}>1.3k</Text>
+
+                        </View>
+                        <Image 
+                        source={require("../assets/images/doctor.png")}
+                        style={styles.docimg}/>
+                    </View>        
+                    
+                </View>
+                
             </ScrollView>
 
             <TouchableOpacity style={styles.nextButton} onPress={() => router.push("/partner")}>
@@ -50,6 +181,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 20,
         backgroundColor: "#F5F5F5",
+        
     },
     scrollContainer: {
         paddingBottom: 100,
@@ -99,7 +231,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 20,
         borderRadius: 10,
-        width: "90%",
+        width: 350,
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -138,4 +270,25 @@ const styles = StyleSheet.create({
         color: "#FFFF",
         fontWeight: "bold",
     },
+    cardtxt:{
+        fontSize:18,
+        marginVertical:5
+    },
+    cardsub:{
+        fontSize:20,
+        fontWeight:"bold"
+    },
+    doccontainer:{
+        flexDirection: "row",
+        alignItems: "center", 
+    },
+    docimg:{
+        width: 150,  
+        height: 160, 
+        borderRadius: 20, 
+        alignContent:"space-around"
+        
+         
+    }
+
 });
