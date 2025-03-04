@@ -1,13 +1,14 @@
 // app/(tabs)/HealthPlanScreen.jsx
+// app/HealthPlanScreen.jsx
 import React from 'react';
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import helthplanImg from '../../assets/images/helthplan1.png';
+import { useRouter } from 'expo-router'; // <-- from expo-router
+import helthplanImg from '../assets/images/helthplan1.png';
 
 export default function HealthPlanScreen() {
-  const navigation = useNavigation();
+  const router = useRouter(); // expo-router navigation
 
   return (
     <LinearGradient
@@ -26,9 +27,9 @@ export default function HealthPlanScreen() {
           Your Personalized Pregnancy Plan Starts Here
         </Text>
 
-        {/* "GET STARTED" button -> navigates to the hidden AiTips tab */}
+        {/* "GET STARTED" -> AiGeneratedHealthTipsScreen */}
         <Pressable
-          onPress={() => navigation.navigate('AiTips')}
+          onPress={() => router.push('/AiGeneratedHealthTipsScreen')}
           style={({ pressed }) => [
             styles.button,
             pressed && styles.buttonPressed,
@@ -39,18 +40,16 @@ export default function HealthPlanScreen() {
           </Text>
         </Pressable>
 
-        {/* "Daily Health Check" button -> navigates to the Daily Health Checklist screen */}
+        {/* "Daily Health Check" -> navigate to DailyHealthChecklistScreen */}
         <Pressable
-          onPress={() => navigation.navigate('Checklist')}
+          onPress={() => router.push('/DailyHealthChecklistScreen')}
           style={({ pressed }) => [
             styles.button,
             styles.dailyButton,
             pressed && styles.buttonPressed,
           ]}
         >
-          <Text style={styles.buttonText}>
-            Daily Health Check 
-          </Text>
+          <Text style={styles.buttonText}>Daily Health Check</Text>
         </Pressable>
       </View>
     </LinearGradient>

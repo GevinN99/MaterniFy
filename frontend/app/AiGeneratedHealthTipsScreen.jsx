@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 /**
  * AiGeneratedHealthTipsScreen
@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
  *  - Has a GO BACK button to navigate to Home
  */
 export default function AiGeneratedHealthTipsScreen() {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   // Example function triggered when user taps the edit icon
   const handleEditConditions = () => {
@@ -99,14 +99,13 @@ export default function AiGeneratedHealthTipsScreen() {
           )}
         </View>
 
-        {/* GO BACK button -> navigate to Home */}
-        <TouchableOpacity
+         {/* GO BACK to HealthPlanScreen */}
+         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => router.push('/HealthPlanScreen')}
         >
           <Text style={styles.buttonText}>GO BACK</Text>
         </TouchableOpacity>
-
       </ScrollView>
     </LinearGradient>
   );

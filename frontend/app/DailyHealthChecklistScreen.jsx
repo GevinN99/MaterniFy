@@ -1,14 +1,13 @@
 // app/(tabs)/DailyHealthChecklistScreen.jsx
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Switch, ScrollView, Image,TouchableOpacity } from 'react-native';
-import checklist from '../../assets/images/checklist.png';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import Checkbox from 'expo-checkbox';
+import { useRouter } from 'expo-router';
 
 
 export default function DailyHealthChecklistScreen() {
-  const navigation = useNavigation();
-  // State variables to track if the user has completed each task
+  const router = useRouter();
+  // State variables for each checklist item
   const [hydration, setHydration] = useState(false);
   const [physicalActivity, setPhysicalActivity] = useState(false);
   const [prenatalCare, setPrenatalCare] = useState(false);
@@ -16,18 +15,18 @@ export default function DailyHealthChecklistScreen() {
   const [kegel, setKegel] = useState(false);
   const [mindfulSleep, setMindfulSleep] = useState(false);
 
-   // Calculate progress
-   const totalTasks = 6;
-   const completedTasks =
-     (hydration ? 1 : 0) +
-     (physicalActivity ? 1 : 0) +
-     (prenatalCare ? 1 : 0) +
-     (balancedDiet ? 1 : 0) +
-     (kegel ? 1 : 0) +
-     (mindfulSleep ? 1 : 0);
-   const progressPercent = Math.round((completedTasks / totalTasks) * 100);
+  // Calculate progress (6 tasks total)
+  const totalTasks = 6;
+  const completedTasks =
+    (hydration ? 1 : 0) +
+    (physicalActivity ? 1 : 0) +
+    (prenatalCare ? 1 : 0) +
+    (balancedDiet ? 1 : 0) +
+    (kegel ? 1 : 0) +
+    (mindfulSleep ? 1 : 0);
+  const progressPercent = Math.round((completedTasks / totalTasks) * 100);
 
-    // Determine motivational message based on progress
+  // Determine motivational message based on progress
   let progressMessage;
   if (progressPercent === 0) {
     progressMessage = "Let's get started!";
@@ -47,23 +46,14 @@ export default function DailyHealthChecklistScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-     
-
       {/* Main title */}
       <Text style={styles.title}>Your Daily Health Checklist</Text>
 
-      <View style={styles.imageContainer}>
-              <Image source={checklist} style={styles.image} />
-              </View>
-               {/* Progress Message Section */}
+      
+
+      {/* Progress Message Section */}
       <View style={styles.progressContainer}>
         <Text style={styles.progressText}>{progressMessage}</Text>
-      </View>
-
-              <View style={styles.progressContainer}>
-        <Text style={styles.progressText}>
-          {progressPercent === 100 ? 'Complete!' : `Progress: ${progressPercent}%`}
-        </Text>
         <View style={styles.progressBarBackground}>
           <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
         </View>
@@ -72,7 +62,7 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 1: Hydration */}
       <View style={[styles.card, styles.cardHydration]}>
         <View style={styles.row}>
-        <Checkbox
+          <Checkbox
             value={hydration}
             onValueChange={setHydration}
             color={hydration ? "#007AFF" : undefined}
@@ -87,7 +77,7 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 2: Physical Activity */}
       <View style={[styles.card, styles.cardPhysical]}>
         <View style={styles.row}>
-        <Checkbox
+          <Checkbox
             value={physicalActivity}
             onValueChange={setPhysicalActivity}
             color={physicalActivity ? "#007AFF" : undefined}
@@ -102,7 +92,7 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 3: Prenatal Care */}
       <View style={[styles.card, styles.cardPrenatal]}>
         <View style={styles.row}>
-        <Checkbox
+          <Checkbox
             value={prenatalCare}
             onValueChange={setPrenatalCare}
             color={prenatalCare ? "#007AFF" : undefined}
@@ -117,7 +107,7 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 4: Balanced Diet */}
       <View style={[styles.card, styles.cardDiet]}>
         <View style={styles.row}>
-        <Checkbox
+          <Checkbox
             value={balancedDiet}
             onValueChange={setBalancedDiet}
             color={balancedDiet ? "#007AFF" : undefined}
@@ -132,7 +122,7 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 5: Kegel Exercises */}
       <View style={[styles.card, styles.cardKegel]}>
         <View style={styles.row}>
-        <Checkbox
+          <Checkbox
             value={kegel}
             onValueChange={setKegel}
             color={kegel ? "#007AFF" : undefined}
@@ -147,7 +137,7 @@ export default function DailyHealthChecklistScreen() {
       {/* Card 6: Mindful Sleep */}
       <View style={[styles.card, styles.cardSleep]}>
         <View style={styles.row}>
-        <Checkbox
+          <Checkbox
             value={mindfulSleep}
             onValueChange={setMindfulSleep}
             color={mindfulSleep ? "#007AFF" : undefined}
@@ -159,15 +149,13 @@ export default function DailyHealthChecklistScreen() {
         </View>
       </View>
 
-   
-
-    {/* "GO BACK" button -> navigate to HealthPlanScreen; assuming route name is 'index' */}
-        <TouchableOpacity
-      style={styles.goBackButton}
-      onPress={() => navigation.navigate('Home')}
-    >
-      <Text style={styles.goBackButtonText}>GO BACK</Text>
-    </TouchableOpacity>
+      {/* "GO BACK" button -> using router to navigate to HealthPlanScreen */}
+      <TouchableOpacity
+        style={styles.goBackButton}
+        onPress={() => router.push('/HealthPlanScreen')}
+      >
+        <Text style={styles.goBackButtonText}>GO BACK</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -190,12 +178,6 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 5,
   },
-  progressText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 5,
-  },
   progressBarBackground: {
     width: '100%',
     height: 10,
@@ -207,11 +189,13 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#007AFF',
   },
-  illustration: {
+  imageContainer: {
+    marginBottom: 20,
+  },
+  image: {
     width: 300,
     height: 200,
     resizeMode: 'contain',
-    marginBottom: 20,
   },
   title: {
     fontSize: 22,
@@ -220,40 +204,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
   },
-  // Base card style
   card: {
     width: '100%',
     borderRadius: 12,
     padding: 15,
     marginBottom: 15,
-    // iOS shadow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    // Android elevation
     elevation: 2,
   },
-  // Distinct card colors for each item
   cardHydration: {
-    backgroundColor: '#D0F8FE', // Light teal
+    backgroundColor: '#D0F8FE',
   },
   cardPhysical: {
-    backgroundColor: '#E0ECFF', // Light blue
+    backgroundColor: '#E0ECFF',
   },
   cardPrenatal: {
-    backgroundColor: '#FFE3E3', // Light pink
+    backgroundColor: '#FFE3E3',
   },
   cardDiet: {
-    backgroundColor: '#F9FAD0', // Light yellow
+    backgroundColor: '#F9FAD0',
   },
   cardKegel: {
-    backgroundColor: '#FFF2E7', // Light peach
+    backgroundColor: '#FFF2E7',
   },
   cardSleep: {
-    backgroundColor: '#E9E6FF', // Light purple
+    backgroundColor: '#E9E6FF',
   },
-  // Row for Switch + text
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -272,8 +251,7 @@ const styles = StyleSheet.create({
     color: '#555',
     fontStyle: 'italic',
   },
-   // GO BACK button
-   goBackButton: {
+  goBackButton: {
     backgroundColor: '#007AFF',
     paddingVertical: 12,
     paddingHorizontal: 30,
@@ -287,4 +265,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-

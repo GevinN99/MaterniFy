@@ -1,52 +1,69 @@
 import "../global.css"
-import { Text } from "react-native"
-import { useFonts } from "expo-font"
-
-import { Stack } from 'expo-router';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useColorScheme } from 'react-native';
-
+import { Stack } from "expo-router"
+import { CommunityProvider } from "../context/communityContext"
+import Header from "../components/Header" 
 
 function RootLayout() {
-	const colorScheme = useColorScheme();
-	// const [fontsLoaded] = useFonts({
-	// 	Thin: require("../assets/fonts/Poppins-Thin.ttf"),
-	// 	ExtraLight: require("../assets/fonts/Poppins-ExtraLight.ttf"),
-	// 	Light: require("../assets/fonts/Poppins-Light.ttf"),
-	// 	Regular: require("../assets/fonts/Poppins-Regular.ttf"),
-	// 	Medium: require("../assets/fonts/Poppins-Medium.ttf"),
-	// 	SemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
-	// 	Bold: require("../assets/fonts/Poppins-Bold.ttf"),
-	// 	ExtraBold: require("../assets/fonts/Poppins-ExtraBold.ttf"),
-	// 	Black: require("../assets/fonts/Poppins-Black.ttf"),
-	// })
-
-	// if (!fontsLoaded) {
-	// 	return <Text>Loading...</Text>
-	// }
-
 	return (
-		<Stack>
-			<Stack.Screen
-				name="(tabs)"
-				options={{ headerShown: false }}
-			/>
+		<CommunityProvider>
+			<Stack>
+				<Stack.Screen
+					name="(tabs)"
+					options={{ headerShown: false }}
+				/>
 
-			<Stack.Screen
-				name="communities"
-				options={{
-					headerShown: false,
-					title: "Communities",
-				}}
-			/>
-		</Stack>
+				<Stack.Screen
+					name="communities"
+					options={{
+						header: () => (
+							<Header
+								backLink="/community"
+								title="Communities"
+							/>
+						),
+					}}
+				/>
+
+				<Stack.Screen
+					name="community/[id]"
+					options={{
+						header: () => (
+							<Header
+								backLink="/communities"
+								title="Community Details"
+							/>
+						),
+					}}
+				/>
+
+				<Stack.Screen
+					name="communityUserProfile/[userId]"
+					options={{
+						header: () => (
+							<Header
+								backLink="/community"
+								title="Community User Profile"
+							/>
+						),
+					}}
+				/>	
+				<Stack.Screen
+					name="HealthPlanScreen"
+					options={{
+						headerShown: false,
+						// header: () => (
+						// 	<Header
+						// 		backLink="/"
+						// 		title="Health Plan Screen"
+						// 	/>
+						// ),
+					}}
+				/>			
+			</Stack>
+		</CommunityProvider>
 	)
-	return (
-		<ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-		  <Stack screenOptions={{ headerShown: false }} />
-		</ThemeProvider>
-	  );
-	
 }
 
 export default RootLayout
+
+
