@@ -8,6 +8,7 @@ export default function Doctor() {
 
     return (
         <View style={styles.container}>
+            <Text>2 / 3</Text>
             <Text style={styles.title}>Find Doctors</Text>
             <Text style={styles.subtitle}>Add your Doctor Details</Text>
 
