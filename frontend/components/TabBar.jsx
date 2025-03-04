@@ -29,9 +29,11 @@ const TabBar = ({ state, descriptors, navigation }) => {
 						navigation.navigate(route.name, route.params)
 					}
 				}				
-
+				const color = isFocused ? "#3b82f6" : "#6b7280"
+				
 				const icon = options.tabBarIcon({
-					focused: isFocused,					
+					// focused: isFocused,		
+					color
 				})
 
 				return (

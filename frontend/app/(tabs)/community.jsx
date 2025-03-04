@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, ActivityIndicator } from "react-native"
 import React, { useEffect, useState } from "react"
 import CommunityHeader from "../../components/CommunityHeader"
-import Post from "../../components/Post"
+//import Post from "../../components/Post"
 import { getPostsFromAllUsersCommunities } from "../../api/communityApi"
 
 const Community = () => {
