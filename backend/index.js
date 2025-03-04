@@ -11,6 +11,7 @@ const healthPlanRoutes = require('./routes/healthPlanRoutes');
 const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
 const postRoutes = require('./routes/PostRoutes');
 const communityRoutes = require('./routes/communityRoutes')
+const quizRoutes = require('./routes/quizRoutes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/health-plans', healthPlanRoutes);
 app.use('/api/emergency-contacts', emergencyContactRoutes);
 app.use('/api/community-posts', postRoutes);
 app.use('/api/communities', communityRoutes)
+app.use('/api/quizzes', quizRoutes);
 
 
 const PORT = process.env.PORT || 8070;
