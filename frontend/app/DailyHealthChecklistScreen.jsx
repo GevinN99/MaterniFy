@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import Checkbox from 'expo-checkbox';
 import { useRouter } from 'expo-router';
+import checklist from '../assets/images/checklist.png';
 
 
 export default function DailyHealthChecklistScreen() {
@@ -48,6 +49,10 @@ export default function DailyHealthChecklistScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       {/* Main title */}
       <Text style={styles.title}>Your Daily Health Checklist</Text>
+      
+      <View style={styles.imageContainer}>
+                <Image source={checklist} style={styles.image} />
+              </View>
 
       
 
@@ -58,6 +63,8 @@ export default function DailyHealthChecklistScreen() {
           <View style={[styles.progressBarFill, { width: `${progressPercent}%` }]} />
         </View>
       </View>
+
+      
 
       {/* Card 1: Hydration */}
       <View style={[styles.card, styles.cardHydration]}>
@@ -193,8 +200,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   image: {
-    width: 300,
-    height: 200,
+    width: 700,
+    height: 300,
     resizeMode: 'contain',
   },
   title: {
