@@ -89,7 +89,7 @@ const Landing = () => {
 
         <View style={styles.secContainer}>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
+            <TouchableOpacity onPress={() => router.push("/getstart")}>
               <Image source={require("../../assets/images/Healthplan.png")} style={styles.sectors} />
               <Text style={styles.topic}>Health Plan</Text>
             </TouchableOpacity>

@@ -4,31 +4,40 @@ import CommunityModel from '../../models/community/communityModel.js'
 // Create a new post
 export const createPost = async (req, res) => {
 	try {
+		console.log("creatign post")
 		// Get the content and communityId from the request body
-		const { content, communityId } = req.body
+		const { content, communityId, imageUrl } = req.body
 		// Get the userId from the request object
 		const userId = req.user.id
 
 		// Check if content exists
-		if (!content) { 
-			return res.status(400).json({ error: 'Content required' })
+		if (!content) {
+			return res.status(400).json({ error: "Content required" })
 		}
 
 		// Check if communityId exists
 		if (!communityId) {
-			return res.status(400).json({ error: 'Community ID required' })
+			return res.status(400).json({ error: "Community ID required" })
 		}
-		
+
 		const newPost = new PostModel({
 			content,
 			userId,
-			communityId,			
+			communityId,
+			imageUrl,
 		})
 
 		// Save the new post
 		await newPost.save()
 
-		res.status(201).json({ message: 'Post created successfully', post: newPost })
+		// Add the post ID to the community's posts array
+		await CommunityModel.findByIdAndUpdate(communityId, {
+			$push: { posts: newPost._id },
+		})
+
+		res
+			.status(201)
+			.json({ message: "Post created successfully", post: newPost })
 	} catch(error) {
 		console.error(error)
 		res.status(500).json({ error: 'Failed to create post' })
@@ -62,7 +71,7 @@ export const getPostsByCommunity = async (req, res) => {
 // Get all posts belonging to all communities that the user has joined
 export const getPostsByAllCommunities = async (req, res) => {
 	try {
-		const { userId } = req.params
+		const { userId } = req.params		
 
 		// Find the communities that the user is a member of
 		const userCommunities = await CommunityModel.find({
@@ -71,8 +80,8 @@ export const getPostsByAllCommunities = async (req, res) => {
 
 		if (!userCommunities || userCommunities.length === 0) {
 			return res
-				.status(404)
-				.json({ message: "No communities found for this user" })
+				.status(200)
+				.json({ message: "User has not joined any community", posts: [] })
 		}
 
 		// Get all posts from the communities the user has joined
@@ -93,9 +102,6 @@ export const getPostsByAllCommunities = async (req, res) => {
 	}
 }
 
-
-
-
 // // Delete a post
 export const deletePost = async (req, res) => {
 	try {
@@ -111,5 +117,36 @@ export const deletePost = async (req, res) => {
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: 'Internal server error' })
+	}
+}
+
+// Like or unlike a post
+export const likeUnlikePost = async (req, res) => {
+	try {
+		const { postId } = req.params
+		const userId = req.user.id
+
+		const post = await PostModel.findById(postId)
+
+		if (!post) {
+			return res.status(404).json({ message: "Post not found" })
+		}
+
+		let message = ""
+		if (post.likes.includes(userId)) {
+			// Unlike the post
+			post.likes = post.likes.filter((id) => id.toString() !== userId.toString())
+			message = "Post unliked"
+		} else {
+			// Like the post
+			post.likes.push(userId)
+			message = "Post liked"
+		}
+
+		await post.save()
+		return res.status(200).json (post)
+	} catch (error) {
+		console.error("Error liking/unliking post:", error)
+		return res.status(500).json({ message: "Internal server error" })
 	}
 }

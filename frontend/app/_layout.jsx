@@ -1,7 +1,7 @@
 import "../global.css"
-import { Stack } from "expo-router"
-import { CommunityProvider } from "../context/communityContext"
-import Header from "../components/Header" 
+import {Stack} from "expo-router"
+import {CommunityProvider} from "../context/communityContext"
+import Header from "../components/Header"
 
 function RootLayout() {
 	return (
@@ -46,7 +46,7 @@ function RootLayout() {
 							/>
 						),
 					}}
-				/>	
+				/>
 				<Stack.Screen
 					name="HealthPlanScreen"
 					options={{
@@ -58,7 +58,7 @@ function RootLayout() {
 						// 	/>
 						// ),
 					}}
-				/>			
+				/>
 			</Stack>
 		</CommunityProvider>
 	)
