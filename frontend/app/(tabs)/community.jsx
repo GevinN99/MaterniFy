@@ -8,10 +8,9 @@ import CreatePost from "../../components/CreatePost"
 import { useCommunity } from "../../context/communityContext"
 import LoadingSpinner from "../../components/LoadingSpinner"
 
-
 const Community = () => {
 	const { posts, loading, error } = useCommunity()
-	const [isModalVisible, setIsModalVisible] = useState(false)	
+	const [isModalVisible, setIsModalVisible] = useState(false)
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
@@ -20,7 +19,7 @@ const Community = () => {
 				<Text className="text-lg font-bold mx-6 my-2">Your feed</Text>
 				<TouchableOpacity
 					className="p-2 ml-4 bg-red-400 w-44 rounded-md"
-					onPress={() => setIsModalVisible(true)}
+					onPress={() => setIsModalVisible(true)}					
 				>
 					<Text>Create Post</Text>
 				</TouchableOpacity>
@@ -41,7 +40,7 @@ const Community = () => {
 							posts.map((post, index) => (
 								<Post
 									key={index}
-									post={post}									
+									post={post}
 								/>
 							))
 						) : (

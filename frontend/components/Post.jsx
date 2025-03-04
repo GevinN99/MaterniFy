@@ -5,11 +5,9 @@ import { likeUnlikePost } from "../api/communityApi"
 import { useCommunity } from "../context/communityContext"
 import { Ionicons } from "@expo/vector-icons"
 import { EllipsisVertical } from 'lucide-react-native'
+import Feather from "@expo/vector-icons/Feather"
 
-const Post = ({ post, community }) => {
-	if (!post) {
-		return null
-	}
+const Post = ({ post, community }) => {	
 	const {
 		_id: postId,
 		likes,
@@ -60,9 +58,10 @@ const Post = ({ post, community }) => {
 						<Text className="font-bold">{userId.fullName}</Text>
 						<Text className="text-gray-500">
 							@
-							{communityId.name || community.name
-								.replace(/\s+/g, "")
-								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+							{communityId.name ||
+								community.name
+									.replace(/\s+/g, "")
+									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>
 					</View>
 					<Text className="font-extralight">
@@ -107,16 +106,33 @@ const Post = ({ post, community }) => {
 						<Text>{likeCount}</Text>
 					</Pressable>
 				</View>
-				<Pressable onPress={toggleMenu}>					
-					<EllipsisVertical size={20} className="-mr-1 relative"/>
+				<Pressable onPress={toggleMenu}>
+					{/* <EllipsisVertical
+						size={20}
+						className="-mr-1 relative"
+					/> */}
+					<Ionicons
+						name="ellipsis-vertical-sharp"
+						size={20}
+						color="black"
+						// style={{ position: 'relative', marginLeft: -1}}
+					/>
 				</Pressable>
 				{showMenu && (
 					<View className="absolute right-5 bottom-1 rounded-md shadow-md z-10 p-1">
 						<Pressable
 							onPress={handleDelete}
 							className="p-2 rounded-md flex flex-row gap-2 items-center"
-						>							
-							<Trash size={20} className="text-red-500"/>
+						>
+							{/* <Trash
+								size={20}
+								className="text-red-500"
+							/> */}
+							<Feather
+								name="trash"
+								size={20}
+								color="#ef4444"
+							/>
 							<Text className="text-red-500">Delete</Text>
 						</Pressable>
 					</View>

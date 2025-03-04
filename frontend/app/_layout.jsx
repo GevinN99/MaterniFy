@@ -27,7 +27,7 @@ function RootLayout() {
 				<Stack.Screen
 					name="community/[id]"
 					options={{
-						header: ({ route }) => (
+						header: () => (
 							<Header
 								backLink="/communities"
 								title="Community Details"
@@ -46,7 +46,7 @@ function RootLayout() {
 							/>
 						),
 					}}
-				/>
+				/>				
 			</Stack>
 		</CommunityProvider>
 	)
