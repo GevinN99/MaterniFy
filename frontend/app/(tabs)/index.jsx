@@ -13,11 +13,17 @@ import { router } from "expo-router";
 import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
+import { LineChart } from "react-native-chart-kit";
+import { Dimensions } from "react-native";
+
 
 const Landing = () => {
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
+  const [scores, setScores] = useState([5, 10, 15]); // Dummy scores for testing
+
+  const screenWidth = Dimensions.get("window").width;
 
   const handleSelectEmotion = (emotion) => {
     setSelectedEmotion(emotion);
@@ -151,9 +157,49 @@ const Landing = () => {
           <CircularProgress percentage={100} />
           
       </LinearGradient>
+
+      <View style={{ alignItems: "center", padding: 20 }}>
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
+            Mental Health Summary
+          </Text>
+
+          <View style={{ marginTop: 5, marginBottom:20 }}>
+          <LineChart
+            data={{
+              labels: ["Last month", "Jan 26 - Feb 1", "Today"],
+              datasets: [{ data: scores }],
+            }}
+            width={screenWidth * 0.9}
+            height={250}
+            yAxisLabel=""
+            chartConfig={{
+              backgroundColor: "#E3F2FD",
+              backgroundGradientFrom: "#E3F2FD",
+              backgroundGradientTo: "#BBDEFB",
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              style: { borderRadius: 16 },
+              propsForDots: { r: "5", strokeWidth: "2", stroke: "#2196F3" },
+            }}
+            bezier
+            style={{ borderRadius: 16 }}
+          />
+          
+            <Text style={{ fontSize: 18, textAlign:"center" }}>
+              ⚠ {getRiskMessage(scores[scores.length - 1])}
+            </Text>
+          </View>
+        </View>
             </ScrollView>
     </SafeAreaView>
   );
+};
+
+const getRiskMessage = (score) => {
+  if (score < 10) return "Low Risk: Keep maintaining a healthy lifestyle!";
+  if (score < 20) return "Moderate Risk: Try relaxation exercises & connect with support groups.";
+  return "High Risk: Seek professional help immediately!";
 };
 
 const styles = StyleSheet.create({
@@ -250,7 +296,8 @@ const styles = StyleSheet.create({
   },
   healthplan:{
     padding:15,
-    borderRadius:20
+    borderRadius:20,
+    width:350
   },
   healthtitle:{
     textAlign:"center",
