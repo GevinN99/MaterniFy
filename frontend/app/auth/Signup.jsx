@@ -52,7 +52,6 @@ export default function Signup() {
 
         try {
             let imageUrl = formData.profileImage;
-
             if (image) {
                 imageUrl = await uploadImage(image, "profile_pics"); // Upload to profile_pics folder
             }
@@ -61,7 +60,7 @@ export default function Signup() {
 
             if (response.token) {
                 await AsyncStorage.setItem("token", response.token);
-                router.replace("/"); // Redirect to Home Page
+                router.replace("/auth/Login"); // Redirect to Login Page after signup
             } else {
                 Alert.alert("Signup Failed", response.message || "Something went wrong!");
             }
