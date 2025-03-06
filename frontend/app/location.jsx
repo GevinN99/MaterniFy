@@ -7,7 +7,7 @@ export default function Location() {
         <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.container}>
 
 
-            <Text>1 / 3</Text>
+            <Text>1 / 2</Text>
             <Text style={styles.title}>Location</Text>
             <Text style={styles.subtitle}>Add your Home Address</Text>
 
@@ -32,7 +32,7 @@ export default function Location() {
             <Text style={styles.label}>Province*</Text>
             <TextInput style={styles.input} placeholder="Type here..." placeholderTextColor="#666" />
 
-            <TouchableOpacity style={styles.nextButton} onPress={() => router.push("/doctor")}>
+            <TouchableOpacity style={styles.nextButton} onPress={() => router.push("/partner")}>
                 <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
         </ScrollView>

@@ -96,21 +96,21 @@ const Landing = () => {
         <View style={styles.secContainer}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Healthplan.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
               <Text style={styles.topic}>Health Plan</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Mentalhealth.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/mental-health (1).png")} style={styles.sectors} />
               <Text style={styles.topic}>Mental Health</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Appoinments.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
               <Text style={styles.topic}>Appointments</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Emmergency.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/first-aid-kit.png")} style={styles.sectors} />
               <Text style={styles.topic}>Emergency</Text>
             </TouchableOpacity>
           </View>
@@ -238,9 +238,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectors: {
-    width: 130,
-    height: 130,
-    margin: 20,
+    width: 100,
+    height: 100,
+    margin: 30,
   },
   secContainer: {
     alignItems: "center",

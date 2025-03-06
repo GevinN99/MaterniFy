@@ -22,7 +22,7 @@ export default function DateInputScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.container}>
-      <Text>3 / 3</Text>
+      <Text>2 / 2</Text>
       <Text style={styles.title}>Partner</Text>
       <Text style={styles.subtitle}>Add your Partner's Details.</Text>
 
