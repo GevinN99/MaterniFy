@@ -193,7 +193,7 @@ const epds = () => {
                 {recommendations.actions.map((action, i) => (
                     <TouchableOpacity 
                         key={i} 
-                        onPress={() => router.push(action.route)} 
+                        onPress={() => router.push(`/exercises?score=${score}`)} 
                         className="bg-[#0077b6] py-3 px-6 rounded-lg mb-3"
                     >
                         <Text className="text-white text-center">{action.label}</Text>
