@@ -1,0 +1,21 @@
+import axiosInstance from "./axiosInstance";
+
+export const registerUser = async (userData) => {
+    try {
+        const response = await axiosInstance.post("/users/register", userData);
+        return response.data;
+    } catch (error) {
+        console.error("Signup Error:", error.response?.data || error.message);
+        return { error: error.response?.data || "Signup failed!" };
+    }
+};
+
+export const loginUser = async (credentials) => {
+    try {
+        const response = await axiosInstance.post("/users/login", credentials);
+        return response.data;
+    } catch (error) {
+        console.error("Login Error:", error.response?.data || error.message);
+        return { error: error.response?.data || "Login failed!" };
+    }
+};
