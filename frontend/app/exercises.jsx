@@ -1,39 +1,53 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, ActivityIndicator } from "react-native";
+import axios from "axios";
+import { SafeAreaView } from "react-native-safe-area-context";
+import ExerciseCard from "../components/ExerciseCard";
 
-const Exercises = ({ userId }) => {
-    const [exercises, setExercises] = useState([]);
+const Exercises = ({ route }) => {
+  console.log(route);
+  const score = route?.params?.score || 0; // Get score from previous screen
+  const [exerciseList, setExerciseList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchExercises = async () => {
-            try {
-                const response = await fetch(`http://localhost:8070/api/exercises/${userId}`);
-                if (!response.ok) throw new Error("Failed to fetch exercises");
-                const data = await response.json();
-                setExercises(data);
-            } catch (error) {
-                console.error("Failed to fetch exercises:", error);
-            }
-        };
+  useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/exercises/${score}`);
+        setExerciseList(response.data);
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        fetchExercises();
-    }, [userId]);
+    fetchExercises();
+  }, [score]);
 
-    return (
-        <div>
-            <h2>Recommended Mental Exercises</h2>
-            <ul>
-                {exercises.map((exercise) => (
-                    <li key={exercise._id}>
-                        <h3>{exercise.title}</h3>
-                        <p>{exercise.description}</p>
-                        {exercise.type === "text" && <p>{exercise.content}</p>}
-                        {exercise.type === "audio" && <audio controls src={exercise.content}></audio>}
-                        {exercise.type === "video" && <video controls src={exercise.content}></video>}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+  if (loading) {
+    return <ActivityIndicator size="large" className="mt-10" color="#0077B6" />;
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-maternifyWhite p-5">
+      <Text className="text-xl font-bold text-maternifyBlue text-center mb-4">
+        Recommended Exercises
+      </Text>
+
+      {exerciseList.length === 0 ? (
+        <Text className="text-maternifyBlue text-center mt-5">
+          No exercises available for this score.
+        </Text>
+      ) : (
+        <FlatList
+          data={exerciseList}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => <ExerciseCard exercise={item} />}
+        />
+      )}
+    </SafeAreaView>
+  );
 };
 
 export default Exercises;
