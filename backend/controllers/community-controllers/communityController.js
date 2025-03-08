@@ -58,12 +58,12 @@ export const createCommunity = async (req, res) => {
 
 		if (!description) {
 			return res.status(400).json({ error: "Community description required" })
-		}
+		}				
 
 		const newCommunity = new CommunityModel({
 			name,
 			description,
-			imageUrl,
+			imageUrl,			
 			admin,
 			members: [admin],
 		})

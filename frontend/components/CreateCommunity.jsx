@@ -1,4 +1,4 @@
-import { View, Text, Modal, TextInput, StyleSheet } from "react-native"
+import { View, Text, Modal, TextInput, StyleSheet, Alert } from "react-native"
 import React, { useState } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
@@ -6,7 +6,6 @@ import { TouchableOpacity } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 import { Image } from "expo-image"
 import { createCommunity } from "../api/communityApi"
-import { Alert } from "react-native"
 import uploadImage from "../utils/uploadImage"
 
 const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
@@ -14,7 +13,7 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 	const [communityDetails, setCommunityDetails] = useState({
 		name: "",
 		description: "",
-		imageUrl: "",
+		imageUrl: "",		
 	})
 	const [image, setImage] = useState(null)
 
@@ -27,15 +26,14 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 		})
 
 		if (!result.canceled) {
-			setImage(result.assets[0].uri)
-			console.log(result)
+			const imageUri = result.assets[0].uri
+			setImage(imageUri)			
 		}
 	}
 
 	const handleSubmit = async () => {
 		if (!communityDetails.name || !communityDetails.description) {
 			Alert.alert("Please fill in all fields")
-			console.log("fill all")
 			return
 		}
 
@@ -86,9 +84,9 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 										source={{ uri: image }}
 										style={[styles.postImage]}
 										contentFit="cover"
+										placeholder={{ blurhash: communityDetails.blurHash }}
 										transition={1000}
 									/>
-									{/* </TouchableOpacity> */}
 									<TouchableOpacity
 										className="absolute -right-2 -bottom-2 bg-gray-100 border border-gray-200 p-1 rounded-full"
 										onPress={pickImage}
@@ -148,7 +146,7 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 							disabled={loading}
 						>
 							<Text className="font-bold text-white">
-								{loading ? "Creating..." : "Create Communtiy"}
+								{loading ? "Creating..." : "Create Community"}
 							</Text>
 						</TouchableOpacity>
 					</View>
