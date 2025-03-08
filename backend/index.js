@@ -38,6 +38,7 @@ app.use('/api/emergency-contacts', emergencyContactRoutes);
 app.use('/api/community-posts', postRoutes);
 app.use('/api/communities', communityRoutes)
 app.use('/api/quizzes', quizRoutes);
+app.use('/api/exercises', require('./routes/exerciseRoutes'));
 
 
 const PORT = process.env.PORT || 8070;
