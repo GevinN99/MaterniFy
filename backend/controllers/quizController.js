@@ -1,4 +1,4 @@
-import EpdsResponse from "../../models/epdsTest/EpdsResponse.js";
+import EpdsResponse from "../models/epdsTest/EpdsResponse";
 
 // Save user EPDS response
 export const saveEpdsResponse = async (req, res) => {
