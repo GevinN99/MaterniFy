@@ -4,10 +4,13 @@ import { Image } from "expo-image"
 import { likeUnlikePost } from "../api/communityApi"
 import { useCommunity } from "../context/communityContext"
 import { Ionicons } from "@expo/vector-icons"
-import { EllipsisVertical } from 'lucide-react-native'
+import { EllipsisVertical } from "lucide-react-native"
 import Feather from "@expo/vector-icons/Feather"
+import { useRouter } from "expo-router"
 
-const Post = ({ post, community }) => {	
+const Post = ({ post, community }) => {
+	const router = useRouter()
+	const { selectPost } = useCommunity()
 	const {
 		_id: postId,
 		likes,
@@ -16,7 +19,7 @@ const Post = ({ post, community }) => {
 		createdAt,
 		imageUrl,
 		content,
-	} = post
+	} = post	
 	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [likeCount, setLikeCount] = useState(likes.length)
@@ -43,11 +46,12 @@ const Post = ({ post, community }) => {
 	}
 
 	const handleReply = () => {
-		// Like Reply
+		selectPost(post)		
+		router.push(`/community/post/reply/${postId}`)
 	}
 
-	return (
-		<View className="bg-white p-4 my-2 rounded-2xl">
+	return (		
+		<View className="bg-white p-4 my-2 rounded-2xl" >
 			<View className="flex flex-row items-center">
 				<Image
 					source={{ uri: userId.profileImage }}
@@ -70,7 +74,7 @@ const Post = ({ post, community }) => {
 				</View>
 			</View>
 			<Text className="mt-4">{content}</Text>
-			{post.imageUrl && (
+			{imageUrl && (
 				<View className="flex my-4 items-center w-full overflow-hidden rounded-2xl">
 					<Image
 						source={{ uri: imageUrl }}
@@ -119,7 +123,7 @@ const Post = ({ post, community }) => {
 					/>
 				</Pressable>
 				{showMenu && (
-					<View className="absolute right-5 bottom-1 rounded-md shadow-md z-10 p-1">
+					<View className="absolute right-5 bottom-1 bg-white rounded-md shadow-lg z-10 p-1">
 						<Pressable
 							onPress={handleDelete}
 							className="p-2 rounded-md flex flex-row gap-2 items-center"
@@ -146,7 +150,7 @@ const styles = StyleSheet.create({
 	profileImage: {
 		width: 40,
 		height: 40,
-		borderRadius: 20,
+		borderRadius: 50,
 	},
 	postImage: {
 		width: "100%",
