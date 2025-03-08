@@ -1,26 +1,16 @@
 const express = require("express");
+const {
+    createLocation,
+    getAllLocations,
+    updateLocation,
+    deleteLocation,
+} = require("../controllers/locationController");
+
 const router = express.Router();
-const Location = require("../models/locationModel");
 
-// Save Location Data
-router.post("/", async (req, res) => {
-  try {
-    const newLocation = new Location(req.body);
-    await newLocation.save();
-    res.status(201).json({ message: "Location saved successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// Get All Locations
-router.get("/", async (req, res) => {
-  try {
-    const locations = await Location.find();
-    res.json(locations);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+router.post("/", createLocation); // Save a new location
+router.get("/", getAllLocations); // Get all locations
+router.put("/:id", updateLocation); // Update a location
+router.delete("/:id", deleteLocation); // Delete a location
 
 module.exports = router;

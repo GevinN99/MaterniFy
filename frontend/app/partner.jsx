@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, Platform, StyleSheet, ScrollView } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+
 
 export default function DateInputScreen() {
   const router = useRouter();
@@ -19,6 +20,47 @@ export default function DateInputScreen() {
     }
     setShowPicker(false);
   };
+
+  const handleSavePartner = async () => {
+    try {
+      const response = await fetch("http://localhost:8070/api/partner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          contactNumber,
+          relationship,
+          selectedDate,
+        }),
+      });
+  
+      if (response.ok) {
+        alert("Partner details saved!");
+        router.push("/emergency"); // Navigate to next step
+      } else {
+        alert("Failed to save partner details");
+      }
+    } catch (error) {
+      console.error("Error saving partner:", error);
+    }
+  };
+  
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const response = await fetch("http://localhost:8070/api/partner");
+        const data = await response.json();
+        console.log("Partners:", data);
+      } catch (error) {
+        console.error("Error fetching partners:", error);
+      }
+    };
+  
+    fetchPartners();
+  }, []);
+  
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer} style={styles.container}>
@@ -65,9 +107,10 @@ export default function DateInputScreen() {
         />
       )}
 
-      <TouchableOpacity style={styles.button} onPress={() => router.push("/emergency")}>
+      <TouchableOpacity style={styles.button} onPress={handleSavePartner}>
         <Text style={styles.buttonText}>Done</Text>
       </TouchableOpacity>
+
     </ScrollView>
   );
 }
