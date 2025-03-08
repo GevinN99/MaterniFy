@@ -1,9 +1,9 @@
-import express from 'express';
-import { getExercises, addExercise } from '../controllers/exerciseController.js';
+const express = require("express");
+const { getExercisesByScore, addExercise } = require("../controllers/exerciseController");
 
 const router = express.Router();
 
-router.get('/', getExercises);
-router.post('/add', addExercise);
+router.get("/:userId", getExercisesByScore);
+router.post("/add", addExercise);
 
-export default router;
+module.exports = router;

@@ -1,47 +1,39 @@
-import { SafeAreaView, Text, View, TouchableOpacity, FlatList } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { fetchExercises } from "../api/exercisesApi";
 
-const exercises = () => {
-    const router = useRouter();
-    const { score } = useLocalSearchParams(); // Get the EPDS score from query params
+const Exercises = ({ userId }) => {
     const [exercises, setExercises] = useState([]);
 
     useEffect(() => {
-        const getExercises = async () => {
-            const data = await fetchExercises();
-            
-            // Filter exercises based on the score (you can adjust this logic)
-            const recommendedExercises = data.filter(exercise => {
-                if (score < 5) return exercise.category === "mild";
-                if (score < 10) return exercise.category === "moderate";
-                return exercise.category === "severe";
-            });
-
-            setExercises(recommendedExercises);
+        const fetchExercises = async () => {
+            try {
+                const response = await fetch(`http://localhost:8070/api/exercises/${userId}`);
+                if (!response.ok) throw new Error("Failed to fetch exercises");
+                const data = await response.json();
+                setExercises(data);
+            } catch (error) {
+                console.error("Failed to fetch exercises:", error);
+            }
         };
-        getExercises();
-    }, [score]);
+
+        fetchExercises();
+    }, [userId]);
 
     return (
-        <SafeAreaView className="flex-1 bg-white p-6 justify-center">
-            <Text className="text-xl font-bold text-center mb-4">Recommended Exercises</Text>
-
-            <FlatList
-                data={exercises}
-                keyExtractor={(item) => item._id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity 
-                        className="p-3 bg-blue-500 rounded-lg mb-3"
-                        onPress={() => router.push(`/exercise-details?id=${item._id}`)}
-                    >
-                        <Text className="text-white text-center">{item.title}</Text>
-                    </TouchableOpacity>
-                )}
-            />
-        </SafeAreaView>
+        <div>
+            <h2>Recommended Mental Exercises</h2>
+            <ul>
+                {exercises.map((exercise) => (
+                    <li key={exercise._id}>
+                        <h3>{exercise.title}</h3>
+                        <p>{exercise.description}</p>
+                        {exercise.type === "text" && <p>{exercise.content}</p>}
+                        {exercise.type === "audio" && <audio controls src={exercise.content}></audio>}
+                        {exercise.type === "video" && <video controls src={exercise.content}></video>}
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
 };
 
-export default exercises;
+export default Exercises;
