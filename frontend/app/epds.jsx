@@ -98,7 +98,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
@@ -179,7 +179,7 @@ const epds = () => {
 
     if (loading) {
         return (
-            <SafeAreaView className="flex-1 items-center justify-center bg-white">
+            <SafeAreaView className="flex-1 items-center justify-center bg-[#f0f4f8]">
                 <ActivityIndicator size="large" color="#0077b6" />
             </SafeAreaView>
         );
@@ -187,8 +187,9 @@ const epds = () => {
 
     if (submitted) {
         return (
-            <SafeAreaView className="flex-1 bg-white p-6 justify-center">
-                <Text className="text-xl font-bold text-center mb-4">Your Score: {score}</Text>
+            <SafeAreaView className="flex-1 bg-[#f0f4f8] p-6 justify-center items-center mt-4 mb-4">
+                <Image source={require('../assets/images/epdsHome.jpeg')} className="w-40 h-40 rounded-full mb-4" resizeMode="cover" />
+                <Text className="text-xl font-bold text-center mb-5">Your Score: {score}</Text>
                 <Text className="text-md text-center mb-6 text - [#3c6e71]">{recommendations.message}</Text>
                 {recommendations.actions.map((action, i) => (
                     <TouchableOpacity 
@@ -204,31 +205,51 @@ const epds = () => {
     }
 
     const currentQuestion = questions?.[currentQuestionIndex] || {};
+    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
     return (
-        <SafeAreaView className="flex-1 bg-white p-6 justify-center">
-            <Text className="text-xl font-bold mb-6 text-center text-[#005f73]">
+        <SafeAreaView className="flex-1 bg-[#f0f4f8] p-4">
+          <View className="flex-1 justify-center">
+            {/* Progress Bar & Question Count */}
+            <View className="mb-6">
+              <View className="w-full bg-gray-200 h-2 rounded-full">
+                <View
+                  className="bg-[#0077b6] h-2 rounded-full"
+                  style={{ width: `${progress}%` }}
+                />
+              </View>
+              <Text className="text-lg font-bold text-center text-[#005f73] mt-3">
                 Question {currentQuestionIndex + 1} of {questions?.length || 0}
-            </Text>
-            <Text className="text-lg font-semibold mb-4 text-center text-[#3c6e71]">
+              </Text>
+            </View>
+    
+            {/* Question Card */}
+            <View className="bg-white shadow-md p-6 rounded-lg">
+              <Text className="text-xl font-semibold mb-4 text-center text-[#3c6e71]">
                 {currentQuestion?.question || "Loading question..."}
-            </Text>
-
-            {currentQuestion?.options?.length > 0 ? (
+              </Text>
+    
+              {currentQuestion?.options?.length > 0 ? (
                 currentQuestion.options.map((option, optionIndex) => (
-                    <TouchableOpacity
-                        key={optionIndex}
-                        onPress={() => handleAnswer(option.score)}
-                        className="p-3 my-2 rounded-lg bg-gray-200"
-                    >
-                        <Text className="text-base text-center text-[#0077b6]">{option.text}</Text>
-                    </TouchableOpacity>
+                  <TouchableOpacity
+                    key={optionIndex}
+                    onPress={() => handleAnswer(option.score)}
+                    className="p-4 my-2 rounded-md bg-gray-100 border border-gray-300"
+                  >
+                    <Text className="text-base text-center text-[#0077b6]">
+                      {option.text}
+                    </Text>
+                  </TouchableOpacity>
                 ))
-            ) : (
-                <Text className="text-center text-[#3c6e71]">Loading options...</Text>
-            )}
+              ) : (
+                <Text className="text-center text-[#3c6e71]">
+                  Loading options...
+                </Text>
+              )}
+            </View>
+          </View>
         </SafeAreaView>
-    );
+      );
 };
 
 export default epds;

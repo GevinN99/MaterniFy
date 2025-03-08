@@ -13,8 +13,7 @@ exports.addExercise = async (req, res) => {
 
 exports.fetchExercises = async (req, res) => {
     try {
-        const { score } = req.params;
-        const exercises = await Exercise.find({ minScore: { $lte: score }, maxScore: { $gte: score } });
+        const exercises = await Exercise.find({});
         res.json(exercises);
     } catch (error) {
         console.error("Error fetching exercises:", error);

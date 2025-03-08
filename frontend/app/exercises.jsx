@@ -4,16 +4,14 @@ import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ExerciseCard from "../components/ExerciseCard";
 
-const Exercises = ({ route }) => {
-  console.log(route);
-  const score = route?.params?.score || 0; // Get score from previous screen
+const Exercises = () => {
   const [exerciseList, setExerciseList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/exercises/${score}`);
+        const response = await axios.get(`http://localhost:5000/api/exercises/fetch-exercises`);
         setExerciseList(response.data);
       } catch (error) {
         console.error("Error fetching exercises:", error);
@@ -23,7 +21,7 @@ const Exercises = ({ route }) => {
     };
 
     fetchExercises();
-  }, [score]);
+  }, []);
 
   if (loading) {
     return <ActivityIndicator size="large" className="mt-10" color="#0077B6" />;
