@@ -1,4 +1,4 @@
-const EpdsResponse = require("../models/EpdsResponse");
+import EpdsResponse from "../../models/epdsTest/EpdsResponse.js";
 
 // Save user EPDS response
 export const saveEpdsResponse = async (req, res) => {
