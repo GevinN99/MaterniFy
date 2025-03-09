@@ -9,7 +9,7 @@ import PostActionSection from "./PostActionSection"
 
 const Post = ({ post, community }) => {
 	const router = useRouter()
-	const { selectPost } = useCommunity()
+	const { selectPost } = useCommunity()	
 	const {
 		_id: postId,
 		likes,
@@ -18,6 +18,7 @@ const Post = ({ post, community }) => {
 		createdAt,
 		imageUrl,
 		content,
+		replies
 	} = post
 	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
@@ -88,6 +89,7 @@ const Post = ({ post, community }) => {
 				likeCount={likeCount}
 				onLike={handleLikeUnlike}
 				onReply={onReply}
+				replyCount={replies.length}
 				onToggleMenu={toggleMenu}
 				onDelete={onDelete}
 				showMenu={showMenu}

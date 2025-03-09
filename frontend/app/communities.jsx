@@ -29,16 +29,15 @@ const Communities = () => {
 	} = useCommunity()
 	const router = useRouter()
 
-	const handleNavigateToCommunity = (communityId, isMember) => {
-		router.push({
-			pathname: `/community/${communityId}`,
-			query: { isMember },
-		})
+	// console.log(userCommunities, nonUserCommunities)
+
+	const handleNavigateToCommunity = (communityId, isUserMember) => {
+		router.push(`/community/${communityId}`)
 	}
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="px-4">				
+			<ScrollView className="px-4">
 				{/* Search bar */}
 				<View className="relative flex justify-center">
 					<Ionicons

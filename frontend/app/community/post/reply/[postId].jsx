@@ -12,9 +12,9 @@ import Post from "../../../../components/Post"
 import { createReply } from "../../../../api/communityApi"
 import { useRouter } from "expo-router"
 
-const postId = () => {
+const reply = () => {
     const router = useRouter()
-	const { selectedPost } = useCommunity()
+	const { selectedPost, setUpdateTrigger } = useCommunity()
 	const [loading, setLoading] = useState(false)	
 	const { userId, communityId } = selectedPost
 	const [replyData, setReplyData] = useState({
@@ -29,12 +29,11 @@ const postId = () => {
 		}
 		setLoading(true)
 
-        try {
-            console.log('axios calling')
-			const response = await createReply(replyData)
-			console.log(response)
-            setLoading(false)
-            router.push('/community')
+        try {            
+			const response = await createReply(replyData)			
+			setLoading(false)		
+			setUpdateTrigger((prev) => !prev)
+			router.back()
 		} catch (error) {
 			console.log(error)
 			setLoading(false)
@@ -85,4 +84,4 @@ const postId = () => {
 	)
 }
 
-export default postId
+export default reply

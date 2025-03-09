@@ -1,5 +1,5 @@
 const express = require('express')
-const userModel = require('../models/userModel.js')
+const userModel = require("../../models/userModel.js")
 const {
 	getAllCommunities,
 	// getUserCommunities,
@@ -10,7 +10,7 @@ const {
 	deleteCommunity,
 	joinCommunity,
 	leaveCommunity,
-} = require('../controllers/community-controllers/communityController.js')
+} = require('../../controllers/community-controllers/communityController.js')
 const router = express.Router()
 
 // Helper function to inject dummy user for testing
