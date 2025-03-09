@@ -12,6 +12,8 @@ const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
 const postRoutes = require('./routes/PostRoutes');
 const communityRoutes = require('./routes/communityRoutes')
 const replyRoutes = require('./routes/replyRoutes')
+const appointmentRoutes = require('./routes/appointmentRoutes');
+const availableSlotRoutes = require('./routes/availableSlotRoutes');
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use('/api/emergency-contacts', emergencyContactRoutes);
 app.use('/api/community-posts', postRoutes);
 app.use('/api/communities', communityRoutes)
 app.use('/api/community-replies', replyRoutes)
+app.use('api/appointments', appointmentRoutes);
+app.use('api/available-slots', availableSlotRoutes);
 
 
 const PORT = process.env.PORT || 8070;
