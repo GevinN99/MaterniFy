@@ -106,7 +106,7 @@ export const getRecommendations = (score) => {
         message: "Your score indicates high risk of depression. We recommend speaking to a professional.",
         actions: [
           { label: "Find a Therapist", route: "/therapist-list" },
-          { label: "Emergency Help", route: "/emergency" }
+        //   { label: "Emergency Help", route: "/emergency" }
         ]
       };
     }

@@ -18,7 +18,7 @@ const exerciseDetails = () => {
             // e.g. "Line1\nLine2\nLine3"
             // We'll split into an array for bullet points
             if (exercise.instructions) {
-              const lines = exercise.instructions.split("\n");
+              const lines = exercise.instructions.split(/\r?\n/);
               setInstructions(lines);
             } else {
               setInstructions([]);
