@@ -4,7 +4,7 @@ import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ExerciseCard from "../components/ExerciseCard";
 
-const Exercises = () => {
+const Exercises = ({ route }) => {
   const [exerciseList, setExerciseList] = useState([]);
   const [loading, setLoading] = useState(true);
 
