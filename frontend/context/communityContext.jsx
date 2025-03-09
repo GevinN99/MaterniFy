@@ -14,7 +14,8 @@ export const CommunityProvider = ({ children }) => {
 	const [posts, setPosts] = useState([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
-	const [updateTrigger, setUpdateTrigger] = useState(false) 
+	const [updateTrigger, setUpdateTrigger] = useState(false)	
+	const [selectedPost, setSelectedPost] = useState(null)
 
 	useEffect(() => {
 		const fetchCommunities = async () => {
@@ -23,9 +24,11 @@ export const CommunityProvider = ({ children }) => {
 					await getAllCommunities()
 				setUserCommunities(userCommunities || [])
 				setNonUserCommunities(nonUserCommunities || [])
-            } catch (error) {
-                setError(error)
+			} catch (error) {				
+				setError(error)
 				console.error(error)
+			} finally {
+				setLoading(false)
 			}
 		}
 
@@ -34,15 +37,22 @@ export const CommunityProvider = ({ children }) => {
 				const fetchedPosts = await getPostsFromAllUsersCommunities()
 				setPosts(fetchedPosts || [])
 			} catch (error) {
-                setError(error)
-                console.error(error)
+				// setLoading(false)
+				setError(error)
+				console.error(error)
+			} finally {
+				setLoading(false)
 			}
 		}
 
-        setLoading(false)
 		fetchCommunities()
 		fetchPosts()
-	}, [updateTrigger])
+	}, [updateTrigger])	
+
+	// Set selected post
+	const selectPost = (post) => {
+		setSelectedPost(post)
+	}
 
 	const handleJoinCommunity = async (communityId) => {
 		try {
@@ -62,6 +72,8 @@ export const CommunityProvider = ({ children }) => {
 		}
 	}
 
+	
+
 	return (
 		<CommunityContext.Provider
 			value={{
@@ -72,7 +84,9 @@ export const CommunityProvider = ({ children }) => {
 				error,
 				handleJoinCommunity,
 				handleLeaveCommunity,
-				setUpdateTrigger,
+				setUpdateTrigger,				
+				selectPost,
+				selectedPost				
 			}}
 		>
 			{children}

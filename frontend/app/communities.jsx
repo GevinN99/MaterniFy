@@ -14,7 +14,6 @@ import CreateCommunity from "../components/CreateCommunity"
 import { useCommunity } from "../context/communityContext"
 import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
-import Header from "../components/Header"
 
 const Communities = () => {
 	const [searchQuery, setSearchQuery] = useState("")

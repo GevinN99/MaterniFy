@@ -10,9 +10,9 @@ const CommunityCard = ({
 	handleJoin,
 	handleLeave
 }) => {
-	if (!community) {
-		return null
-	}
+	// if (!community) {
+	// 	return null
+	// }
 	const { imageUrl, name, members, description, _id:communityId } = community
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
@@ -33,12 +33,12 @@ const CommunityCard = ({
 					style={styles.communityImage}
 					contentFit="cover"
 					placeholder={{ blurhash }}
-					transition={1000}
+					transition={300}
 				/>
 			)}
 			<View className="flex-1 ml-4">
 				<Text className="font-medium">{name}</Text>
-				<Text className="font-light">{members.length} members</Text>
+				<Text className="font-light">{members.length} {members.length===1 ? "member" : "members"}</Text>
 				<Text
 					className="mt-1"
 					numberOfLines={1}

@@ -10,13 +10,13 @@ import { SafeAreaView } from "react-native-safe-area-context"
 const Community = () => {
 	const [community, setCommunity] = useState(null)	
 	const { handleJoinCommunity, handleLeaveCommunity } = useCommunity()
-	const { id, isMember } = useLocalSearchParams()	
+	const { communityId, isMember } = useLocalSearchParams()	
 
 	useEffect(() => {
 		const fetchCommunityDetails = async () => {
 			try {
-				if (id) {
-					const fetchedCommunity = await getCommunityById(id)
+				if (communityId) {
+					const fetchedCommunity = await getCommunityById(communityId)
 					setCommunity(fetchedCommunity || {})
 				}
 			} catch (error) {
@@ -25,7 +25,7 @@ const Community = () => {
 		}
 
 		fetchCommunityDetails()
-	}, [id])	
+	}, [communityId])	
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
@@ -39,8 +39,7 @@ const Community = () => {
 							handleLeave={handleLeaveCommunity}
 						/>
 						{community.posts.length > 0 && (
-							<View>
-								<Text className="text-xl font-semibold mt-4">Posts</Text>
+							<View>								
 								{community.posts.map((post, index) => (
 									<Post
 										key={index}
