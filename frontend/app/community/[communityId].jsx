@@ -39,8 +39,7 @@ const Community = () => {
 							handleLeave={handleLeaveCommunity}
 						/>
 						{community.posts.length > 0 && (
-							<View>
-								<Text className="text-xl font-semibold mt-4">Posts</Text>
+							<View>								
 								{community.posts.map((post, index) => (
 									<Post
 										key={index}

@@ -33,7 +33,7 @@ const CommunityCard = ({
 					style={styles.communityImage}
 					contentFit="cover"
 					placeholder={{ blurhash }}
-					transition={1000}
+					transition={300}
 				/>
 			)}
 			<View className="flex-1 ml-4">
