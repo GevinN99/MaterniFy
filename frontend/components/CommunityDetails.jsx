@@ -30,7 +30,7 @@ const CommunityDetails = ({
 				style={styles.communityImage}
 				contentFit="cover"
 				placeholder={{ blurhash }}
-				transition={1000}
+				transition={300}
 			/>
 			<Text className="font-bold text-xl mt-2">{name}</Text>
 			<Text>{description}</Text>
