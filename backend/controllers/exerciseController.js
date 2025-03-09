@@ -2,8 +2,8 @@ const Exercise = require('../models/epdsTest/exercise');
 
 exports.addExercise = async (req, res) => {
     try {
-        const { title, description, minScore, maxScore } = req.body;
-        const exercise = new Exercise({ title, description, minScore, maxScore });
+        const { title, description, instructions, minScore, maxScore } = req.body;
+        const exercise = new Exercise({ title, description, instructions, minScore, maxScore });
         await exercise.save();
         res.status(201).json({ message: "Exercise added successfully!" });
       } catch (error) {

@@ -13,7 +13,7 @@ const exerciseDetails = () => {
     useEffect(() => {
         const fetchExerciseDetails = async () => {
             try {
-                const text = exercise.description + " This exercise helps improve mental well-being by promoting relaxation and reducing stress. Follow the instruction carfully for best results.";
+                const text = `${exercise.description}\n\nInstructions:\n${exercise.instructions}`;
                 setDetailedText(text);
             } catch (error) {
                 console.error("Error fetching exercise details:", error);
