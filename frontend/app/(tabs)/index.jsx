@@ -13,15 +13,21 @@ import { router } from "expo-router";
 import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
+import { LineChart } from "react-native-chart-kit";
+import { Dimensions } from "react-native";
+
 
 const Landing = () => {
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
+  const [scores, setScores] = useState([5, 10, 15]); // Dummy scores for testing
+
+  const screenWidth = Dimensions.get("window").width;
 
   const handleSelectEmotion = (emotion) => {
     setSelectedEmotion(emotion);
-    console.log(`Selected Emotion: ${emotion}`);
+    console.log('Selected Emotion: ${emotion}');
   };
 
   const getWeekDates = () => {
@@ -75,36 +81,42 @@ const Landing = () => {
         <Text style={styles.subtitle}>How are you feeling today?</Text>
 
         <View style={styles.emojiContainer}>
-          {[{ name: "happy", label: "Happy", color: "green" },
-            { name: "happy-outline", label: "Calm", color: "lightgreen" },
-            { name: "help-circle", label: "Confused", color: "#E0C412" },
-            { name: "sad", label: "Sad", color: "orange" },
-            { name: "close-circle", label: "Angry", color: "red" },
+          {[{ name: require("../../assets/images/sunglasses.png"), label: "Happy"  },
+            { name: require("../../assets/images/smile.png"), label: "Calm"},
+            { name: require("../../assets/images/thinking.png"), label: "Confused"},
+            { name: require("../../assets/images/sad.png"), label: "Sad" },
+            { name: require("../../assets/images/angry.png"), label: "Angry" },
           ].map(({ name, label, color }) => (
             <TouchableOpacity key={label} onPress={() => handleSelectEmotion(label)}>
-              <Ionicons name={name} size={35} color={selectedEmotion === label ? color : "#64A8F1"} />
-            </TouchableOpacity>
+      <Image
+        source={name}
+        style={[
+          styles.emojiImage,
+          { opacity: selectedEmotion === label ? 1 : 0.5 }, // Highlight selected emoji
+        ]}
+      />
+    </TouchableOpacity>
           ))}
         </View>
 
         <View style={styles.secContainer}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Healthplan.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
               <Text style={styles.topic}>Health Plan</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Mentalhealth.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/mental-health (1).png")} style={styles.sectors} />
               <Text style={styles.topic}>Mental Health</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Appoinments.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
               <Text style={styles.topic}>Appointments</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/getstart")}>
-              <Image source={require("../../assets/images/Emmergency.png")} style={styles.sectors} />
+              <Image source={require("../../assets/images/first-aid-kit.png")} style={styles.sectors} />
               <Text style={styles.topic}>Emergency</Text>
             </TouchableOpacity>
           </View>
@@ -151,9 +163,50 @@ const Landing = () => {
           <CircularProgress percentage={100} />
           
       </LinearGradient>
+
+      <View style={{ alignItems: "center", padding: 20 }}>
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
+            Mental Health Summary
+          </Text>
+
+          <View style={{ marginTop: 5, marginBottom:20 }}>
+          <LineChart
+            data={{
+              labels: ["Last month", "Jan 26 - Feb 1", "Today"],
+              datasets: [{ data: scores }],
+            }}
+            width={screenWidth * 0.9}
+            height={250}
+            yAxisLabel=""
+            chartConfig={{
+              backgroundColor: "#E3F2FD",
+              backgroundGradientFrom: "#E3F2FD",
+              backgroundGradientTo: "#BBDEFB",
+              decimalPlaces: 0,
+              color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+
+              style: { borderRadius: 16 },
+              propsForDots: { r: "5", strokeWidth: "2", stroke: "#2196F3" },
+            }}
+            bezier
+            style={{ borderRadius: 16 }}
+          />
+          
+            <Text style={{ fontSize: 18, textAlign:"center" }}>
+              ⚠ {getRiskMessage(scores[scores.length - 1])}
+            </Text>
+          </View>
+        </View>
             </ScrollView>
     </SafeAreaView>
   );
+};
+
+const getRiskMessage = (score) => {
+  if (score < 10) return "Low Risk: Keep maintaining a healthy lifestyle!";
+  if (score < 20) return "Moderate Risk: Try relaxation exercises & connect with support groups.";
+  return "High Risk: Seek professional help immediately!";
 };
 
 const styles = StyleSheet.create({
@@ -184,7 +237,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     width: "80%",
-    marginBottom: 20,
+    marginVertical:10
   },
   row: {
     flexDirection: "row",
@@ -192,9 +245,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectors: {
-    width: 130,
-    height: 130,
-    margin: 20,
+    width: 100,
+    height: 100,
+    margin: 30,
   },
   secContainer: {
     alignItems: "center",
@@ -250,7 +303,8 @@ const styles = StyleSheet.create({
   },
   healthplan:{
     padding:15,
-    borderRadius:20
+    borderRadius:20,
+    width:350
   },
   healthtitle:{
     textAlign:"center",
@@ -262,6 +316,11 @@ const styles = StyleSheet.create({
   texthealth:{
     textAlign:"center",
     paddingVertical:5,
+  },
+  emojiImage: {
+    width: 40, // Adjust size as needed
+    height: 40,
+    resizeMode: "contain",
   },
   
 });
