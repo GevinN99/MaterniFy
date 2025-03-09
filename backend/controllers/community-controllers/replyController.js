@@ -1,6 +1,6 @@
-import ReplyModel from "../../models/community/replyModel.js"
-import PostModel from "../../models/community/postModel.js"
-import CommunityModel from "../../models/community/communityModel.js"
+import ReplyModel from "../../models/community-models/replyModel.js"
+import PostModel from "../../models/community-models/postModel.js"
+import CommunityModel from "../../models/community-models/communityModel.js"
 import UserModel from "../../models/userModel.js"
 
 // Create a new reply
@@ -71,31 +71,33 @@ export const getRepliesForPost = async (req, res) => {
 
 // Like or unlike a reply
 export const likeUnlikeReply = async (req, res) => {
-    try {
-        const { replyId } = req.params
-        const userId = req.user.id
+	try {
+		const { replyId } = req.params
+		const userId = req.user.id
 
-        const reply = await ReplyModel.findById(replyId)
+		const reply = await ReplyModel.findById(replyId)
 
-        if (!reply) {
-            return res.status(404).json({ message: "Reply not found" })
-        }
+		if (!reply) {
+			return res.status(404).json({ message: "Reply not found" })
+		}
 
-        let message = ""
-        if (reply.likes.includes(userId)) {
-            // Unlike the reply
-            reply.likes = reply.likes.filter((id) => id.toString() !== userId.toString())
-            message = "Reply unliked"
-        } else {
-            // Like the reply
-            reply.likes.push(userId)
-            message = "Reply liked"
-        }
+		let message = ""
+		if (reply.likes.includes(userId)) {
+			// Unlike the reply
+			reply.likes = reply.likes.filter(
+				(id) => id.toString() !== userId.toString()
+			)
+			message = "Reply unliked"
+		} else {
+			// Like the reply
+			reply.likes.push(userId)
+			message = "Reply liked"
+		}
 
-        await reply.save()
-        return res.status(200).json({ message, likes: reply.likes })
-    } catch (error) {
-        console.error("Error liking/unliking reply:", error)
-        return res.status(500).json({ message: "Internal server error" })
-    }
+		await reply.save()
+		return res.status(200).json({ message, likes: reply.likes })
+	} catch (error) {
+		console.error("Error liking/unliking reply:", error)
+		return res.status(500).json({ message: "Internal server error" })
+	}
 }

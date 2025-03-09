@@ -1,7 +1,7 @@
 const express = require("express")
-const userModel = require("../models/userModel")
+const userModel = require("../../models/userModel.js")
 
-const { createReply, getRepliesForPost, likeUnlikeReply } = require("../controllers/community-controllers/replyController.js")
+const { createReply, getRepliesForPost, likeUnlikeReply } = require("../../controllers/community-controllers/replyController.js")
 const router = express.Router()
 
 // Helper function to inject dummy user for testing

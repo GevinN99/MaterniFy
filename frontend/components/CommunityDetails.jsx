@@ -3,13 +3,14 @@ import React, { useState } from "react"
 import { Image } from "expo-image"
 
 const CommunityDetails = ({
-	community,
-	initialIsMember,
+	community,	
 	handleJoin,
 	handleLeave,
 }) => {
-	const {imageUrl, name, description, admin, members } = community
-	const [isMember, setIsMember] = useState(initialIsMember)
+	const { imageUrl, name, description, admin, members } = community
+	const [isMember, setIsMember] = useState(
+		members?.includes("67bc9ceff607c265056765af")
+	)
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
 
@@ -44,7 +45,9 @@ const CommunityDetails = ({
 				/>
 				<Text>{admin.fullName}</Text>
 			</View>
-			<Text>{members.length} {members.length === 1 ? "member" : "members"}</Text>
+			<Text>
+				{members.length} {members.length === 1 ? "member" : "members"}
+			</Text>
 			{isMember ? (
 				<TouchableOpacity onPress={() => handleLeaveCommunity()}>
 					<View className="bg-red-400 p-2 rounded-md mt-4">

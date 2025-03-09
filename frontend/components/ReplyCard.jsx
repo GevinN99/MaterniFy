@@ -60,6 +60,7 @@ const ReplyCard = ({ reply }) => {
 						onToggleMenu={toggleMenu}
 						onDelete={onDelete}
 						showMenu={showMenu}
+						// replyCount={replies.length}
 					/>
 				</View>
 			</View>

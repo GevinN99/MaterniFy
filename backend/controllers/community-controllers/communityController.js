@@ -1,4 +1,4 @@
-import CommunityModel from "../../models/community/communityModel.js"
+import CommunityModel from "../../models/community-models/communityModel.js"
 
 // Get all communities
 // export const getAllCommunities = async (req, res) => {
@@ -58,24 +58,22 @@ export const createCommunity = async (req, res) => {
 
 		if (!description) {
 			return res.status(400).json({ error: "Community description required" })
-		}				
+		}
 
 		const newCommunity = new CommunityModel({
 			name,
 			description,
-			imageUrl,			
+			imageUrl,
 			admin,
 			members: [admin],
 		})
 
 		await newCommunity.save()
 
-		res
-			.status(201)
-			.json({
-				message: "Community created successfully",
-				community: newCommunity,
-			})
+		res.status(201).json({
+			message: "Community created successfully",
+			community: newCommunity,
+		})
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Failed to create community" })
@@ -96,7 +94,6 @@ export const getCommunityById = async (req, res) => {
 					select: "fullName profileImage email", // Fetches only these fields from the user
 				},
 			})
-
 
 		if (!community) {
 			return res.status(404).json({ error: "Community not found" })
@@ -131,9 +128,9 @@ export const deleteCommunity = async (req, res) => {
 // Join community
 export const joinCommunity = async (req, res) => {
 	try {
-		const {communityId } = req.params
+		const { communityId } = req.params
 		const userId = req.user.id
-		
+
 		const community = await CommunityModel.findById(communityId)
 		if (!community) {
 			return res.status(404).json({ message: "Community not found" })
@@ -154,7 +151,7 @@ export const joinCommunity = async (req, res) => {
 export const leaveCommunity = async (req, res) => {
 	try {
 		const { communityId } = req.params
-		const userId  = req.user.id
+		const userId = req.user.id
 		const community = await CommunityModel.findById(communityId)
 		if (!community) {
 			return res.status(404).json({ message: "Community not found" })
@@ -164,7 +161,9 @@ export const leaveCommunity = async (req, res) => {
 				.status(400)
 				.json({ message: "User is not a member of the community" })
 		}
-		community.members = community.members.filter((member) => member.toString() !== userId.toString())
+		community.members = community.members.filter(
+			(member) => member.toString() !== userId.toString()
+		)
 		await community.save()
 		res.status(200).json({ message: "Left community successfully" })
 	} catch (error) {
