@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://10.31.30.84:8070/api";
+const API_URL = "http://192.168.1.6:8070/api";
 
 export const fetchExercises = async () => {
     try{

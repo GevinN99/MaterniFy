@@ -11,7 +11,7 @@ const Exercises = () => {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/exercises/fetch-exercises`);
+        const response = await axios.get(`http://192.168.1.6:8070/api/exercises/fetch-exercises`);
         setExerciseList(response.data);
       } catch (error) {
         console.error("Error fetching exercises:", error);
