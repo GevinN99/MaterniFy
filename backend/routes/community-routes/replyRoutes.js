@@ -1,19 +1,14 @@
-const express = require('express')
-const userModel = require('../models/userModel.js')
-const {
-	createPost,
-	getPostsByCommunity,
-    deletePost,
-    getPostsByAllCommunities,
-} = require('../controllers/community-controllers/postController.js')
+const express = require("express")
+const userModel = require("../../models/userModel.js")
 
+const { createReply, getRepliesForPost, likeUnlikeReply } = require("../../controllers/community-controllers/replyController.js")
 const router = express.Router()
 
 // Helper function to inject dummy user for testing
 const injectDummyUser = async (req, res, next) => {
 	if (process.env.NODE_ENV === 'development' || req.query.bypassAuth) {
 		try {
-			const dummyUserId = "67bc9ceff607c265056765af" // Replace with actual ID
+			const dummyUserId = "67bc9ceff607c265056765af" 
 
 			// Use userModel instead of undefined User
 			const dummyUser = await userModel.findById(dummyUserId).exec()
@@ -34,10 +29,8 @@ const injectDummyUser = async (req, res, next) => {
 	}
 }
 
-// Define routes
-router.post('/create', injectDummyUser, createPost)
-router.get('/community/:communityId', injectDummyUser, getPostsByCommunity)
-router.get('/:userId', getPostsByAllCommunities)
-router.delete('/delete/:postId', injectDummyUser, deletePost)
+router.post("/create", injectDummyUser, createReply)
+router.get("/post/:postId", getRepliesForPost)
+router.post("/like-unlike/:replyId", injectDummyUser, likeUnlikeReply)
 
 module.exports = router

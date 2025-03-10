@@ -1,58 +1,71 @@
-import { View, Text, ScrollView, ActivityIndicator } from "react-native"
-import React, { useEffect, useState } from "react"
+import { View, Text, ScrollView, TouchableOpacity, Pressable } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
+import React, { useState } from "react"
 import CommunityHeader from "../../components/CommunityHeader"
 import Post from "../../components/Post"
-import { getPostsFromAllUsersCommunities } from "../../api/communityApi"
+import ErrorMessage from "../../components/ErrorMessage"
+import CreatePost from "../../components/CreatePost"
+import { useCommunity } from "../../context/communityContext"
+import LoadingSpinner from "../../components/LoadingSpinner"
+import { useRouter } from "expo-router"
 
 const Community = () => {
-	const [posts, setPosts] = useState([])
-	const [loading, setLoading] = useState(true)
+	const { posts, loading, error, selectPost } = useCommunity()
+	const [isModalVisible, setIsModalVisible] = useState(false)
+	const router = useRouter()
 
-	useEffect(() => {
-		const fetchPosts = async () => {
-			try {
-				const fetchedPosts = await getPostsFromAllUsersCommunities()
-				setPosts(fetchedPosts)
-			} catch (error) {
-				console.error("Failed to fetch posts:", error)
-			} finally {
-				setLoading(false)
-			}
-		}
+	const handleNavigation = (postId, post) => { 	
+		selectPost(post)
+		router.push(`/community/post/${postId}`)
+	}
 
-		fetchPosts()
-	}, [])
 
 	return (
-		<ScrollView className="bg-[#E7EDEF] h-screen">
-			<CommunityHeader />
-			<Text className="text-lg font-bold mx-6 my-2">Your feed</Text>
-			{loading ? (
-				<View className="flex-1 justify-center items-center mt-52">
-					<ActivityIndicator
-						size="large"
-                        color="#38BDF8"                        
+		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
+			<ScrollView className="px-4 pb-28">
+				<CommunityHeader />
+				<View className="flex flex-row justify-between">
+					<Text className="text-lg font-bold my-2">Your feed</Text>
+					<TouchableOpacity
+						className="p-2 bg-red-400 w-44 rounded-md"
+						onPress={() => setIsModalVisible(true)}
+					>
+						<Text className="text-center">Create Post</Text>
+					</TouchableOpacity>
+				</View>
+				<CreatePost
+					visible={isModalVisible}
+					onClose={() => setIsModalVisible(false)}
+				/>
+				{loading ? (
+					<LoadingSpinner styles={"mt-44"} />
+				) : error ? (
+					<ErrorMessage
+						error="Failed to load posts"
+						styles="mt-44"
 					/>
-					<Text>Loading...</Text>
-				</View>
-			) : (
-				<View>
-					{posts.map((post, index) => (
-						<Post
-							key={index}
-							profile={{ uri: post.userId.profileImage }}
-							user={post.userId.fullName}
-							community={post.communityId}
-							date={new Date(post.createdAt).toLocaleDateString()}
-							content={post.content}
-							image={post.imageUrl ? { uri: post.imageUrl } : null} // Conditionally pass image
-							likes={post.likes.length}
-							replies={post.replies.length}
-						/>
-					))}
-				</View>
-			)}
-		</ScrollView>
+				) : (
+					<View>
+						{posts.length > 0 ? (
+							posts.map((post, index) => (
+								<Pressable
+									key={index}
+									onPress={() => handleNavigation(post._id, post)}
+								>
+									<Post post={post} />
+								</Pressable>
+							))
+						) : (
+							<View className="flex-1 justify-center items-center mt-52">
+								<Text className="text-gray-500">
+									User has not joined any community
+								</Text>
+							</View>
+						)}
+					</View>
+				)}
+			</ScrollView>
+		</SafeAreaView>
 	)
 }
 

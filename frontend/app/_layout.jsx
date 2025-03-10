@@ -1,47 +1,90 @@
 import "../global.css"
-import { Text } from "react-native"
-import { useFonts } from "expo-font"
 import { Stack } from "expo-router"
 import epds from "./epds";
+import { CommunityProvider } from "../context/communityContext"
+import { AuthProvider } from "../context/AuthContext"
+import Header from "../components/Header"
+
 
 function RootLayout() {
-	// const [fontsLoaded] = useFonts({
-	// 	Thin: require("../assets/fonts/Poppins-Thin.ttf"),
-	// 	ExtraLight: require("../assets/fonts/Poppins-ExtraLight.ttf"),
-	// 	Light: require("../assets/fonts/Poppins-Light.ttf"),
-	// 	Regular: require("../assets/fonts/Poppins-Regular.ttf"),
-	// 	Medium: require("../assets/fonts/Poppins-Medium.ttf"),
-	// 	SemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
-	// 	Bold: require("../assets/fonts/Poppins-Bold.ttf"),
-	// 	ExtraBold: require("../assets/fonts/Poppins-ExtraBold.ttf"),
-	// 	Black: require("../assets/fonts/Poppins-Black.ttf"),
-	// })
-
-	// if (!fontsLoaded) {
-	// 	return <Text>Loading...</Text>
-	// }
-
 	return (
-		<Stack>
-			<Stack.Screen
-				name="(tabs)"
-				options={{ headerShown: false }}
-			/>
+		<AuthProvider>
+			<CommunityProvider>
+				<Stack>
+					<Stack.Screen
+						name="(tabs)"
+						options={{ headerShown: false }}
+					/>
 
-			<Stack.Screen
-				name="communities"
-				options={{
-					headerShown: false,
-					title: "Communities",
-				}}
-			/>
-			<Stack.Screen 
-			name="epds" 
-			options={{ 
-				headerShown: false,
-				title: "epds"}}/>
-		</Stack>
-	);
+					<Stack.Screen
+						name="communities"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Communities"
+								/>
+							),
+						}}
+					/>
+
+         <Stack.Screen 
+			     name="epds" 
+			      options={{ 
+				    headerShown: false,
+				    title: "epds"}}/>
+
+					<Stack.Screen
+						name="community/[communityId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/communities"
+									title="Community Details"
+								/>
+							),
+						}}
+					/>
+
+					<Stack.Screen
+						name="communityUser/[userId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Community User Profile"
+								/>
+							),
+						}}
+					/>
+
+					<Stack.Screen
+						name="community/post/[postId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Post"
+								/>
+							),
+						}}
+					/>
+
+					<Stack.Screen
+						name="community/post/reply/[postId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Reply"
+								/>
+							),
+						}}
+					/>
+				</Stack>
+			</CommunityProvider>
+		</AuthProvider>
+	)
 }
 
 export default RootLayout;

@@ -1,74 +1,99 @@
-import { View, Text, Image, StyleSheet, Dimensions } from "react-native"
-import React from "react"
-import { Ionicons } from "@expo/vector-icons"
+import { View, Text, StyleSheet } from "react-native"
+import React, { useState } from "react"
+import { Image } from "expo-image"
+import { likeUnlikePost } from "../api/communityApi"
+import { useCommunity } from "../context/communityContext"
+import { useRouter } from "expo-router"
+import { timeAgo } from "../utils/timeAgo"
+import PostActionSection from "./PostActionSection"
 
-const { width } = Dimensions.get("window")
+const Post = ({ post, community }) => {
+	const router = useRouter()
+	const { selectPost } = useCommunity()	
+	const {
+		_id: postId,
+		likes,
+		userId,
+		communityId,
+		createdAt,
+		imageUrl,
+		content,
+		replies
+	} = post
+	const { setUpdateTrigger } = useCommunity()
+	const [showMenu, setShowMenu] = useState(false)
+	const [likeCount, setLikeCount] = useState(likes.length)
+	const usertest = "67bc9ceff607c265056765af"
+	const [liked, setLiked] = useState(likes.includes(usertest))
 
-const Post = ({
-	profile,
-	user,
-	community,
-	date,
-	content,
-	image,
-	likes,
-	replies,
-}) => {
+	const handleLikeUnlike = async () => {
+		try {
+			const { likes } = await likeUnlikePost(postId)
+			setLikeCount(likes.length)
+			setLiked(likes.includes(usertest))
+			setUpdateTrigger((prev) => !prev)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const toggleMenu = () => {
+		setShowMenu(!showMenu)
+	}
+
+	const onDelete = () => {
+		// Delete post
+	}
+
+	const onReply = () => {
+		selectPost(post)
+		router.push(`/community/post/reply/${postId}`)
+	}
+
 	return (
-		<View className="bg-white p-4 my-2 mx-6 rounded-2xl">
+		<View className="bg-white p-4 my-2 rounded-2xl">
 			<View className="flex flex-row items-center">
 				<Image
-					source={profile}
+					source={{ uri: userId.profileImage }}
 					style={styles.profileImage}
 				/>
 				<View className="ml-4 flex gap-1">
 					<View className="flex flex-row gap-1">
-						<Text className="font-bold">{user}</Text>
-						<Text className="text-gray-500">
-							@
-							{community?.name
+						<Text className="font-bold">{userId.fullName}</Text>
+						<Text>•</Text>
+						<Text className="font-extralight">{timeAgo(createdAt)}</Text>
+					</View>
+
+					<Text className="text-gray-500">
+						@
+						{communityId.name ||
+							community.name
 								.replace(/\s+/g, "")
 								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
-						</Text>
-					</View>
-					<Text className="font-extralight">{date}</Text>
+					</Text>
 				</View>
 			</View>
 			<Text className="mt-4">{content}</Text>
-			{image && (
-				<View className="flex items-center w-full my-4 overflow-hidden rounded-2xl">
+			{imageUrl && (
+				<View className="flex my-4 items-center w-full overflow-hidden rounded-2xl">
 					<Image
-						source={image}
-						style={[styles.postImage, { width: width - 48 }]} // Adjust width dynamically
-						resizeMode="cover"
+						source={{ uri: imageUrl }}
+						style={[styles.postImage]}
+						contentFit="cover"
+						transition={300}
 					/>
 				</View>
 			)}
-			<View className="flex flex-row justify-between mt-4">
-				<View className="flex flex-row gap-4">
-					<View className="flex flex-row items-center">
-						<Ionicons
-							name="chatbubble-outline"
-							size={20}
-							className="mr-1"
-						/>
-						<Text>{replies}</Text>
-					</View>
-					<View className="flex flex-row items-center">
-						<Ionicons
-							name="heart-outline"
-							size={20}
-							className="mr-1"
-						/>
-						<Text>{likes}</Text>
-					</View>
-				</View>
-				<Ionicons
-					name="ellipsis-vertical-outline"
-					size={20}
-					className="-mr-1"
-				/>
-			</View>
+			<PostActionSection
+				liked={liked}
+				likeCount={likeCount}
+				onLike={handleLikeUnlike}
+				onReply={onReply}
+				replyCount={replies.length}
+				onToggleMenu={toggleMenu}
+				onDelete={onDelete}
+				showMenu={showMenu}
+			/>
 		</View>
 	)
 }
@@ -77,7 +102,7 @@ const styles = StyleSheet.create({
 	profileImage: {
 		width: 40,
 		height: 40,
-		borderRadius: 20,
+		borderRadius: 50,
 	},
 	postImage: {
 		width: "100%",
