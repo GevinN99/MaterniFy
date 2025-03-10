@@ -91,3 +91,14 @@ exports.updateDoctorProfile = async (req, res) => {
         res.status(500).json({message: 'Internal server error'});
     }
 };
+
+// Get all available doctors (online: true)
+exports.getAvailableDoctors = async (req, res) => {
+    try {
+        const doctors = await Doctor.find({ online: true }); // Fetch only doctors who are online
+        res.status(200).json(doctors);
+    } catch (error) {
+        console.error("Error fetching available doctors:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};

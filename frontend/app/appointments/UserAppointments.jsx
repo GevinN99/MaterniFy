@@ -9,6 +9,7 @@ import {
     Alert,
 } from "react-native";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
+import AvailableDoctors from "../../components/AvailableDoctors";
 
 export default function UserAppointments() {
     const [appointments, setAppointments] = useState([]);
@@ -93,6 +94,7 @@ export default function UserAppointments() {
                     )}
                 />
             )}
+            <AvailableDoctors />
         </View>
     );
 }

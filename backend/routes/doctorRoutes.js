@@ -6,6 +6,7 @@ const auth = require('../middlewares/auth');
 // Public Routes
 router.post('/register', doctorController.registerDoctor);
 router.post('/login', doctorController.loginDoctor);
+router.get('/doctors', doctorController.getAvailableDoctors);
 
 // Protected Routes
 router.get('/profile', auth.authenticate, doctorController.getDoctorProfile);

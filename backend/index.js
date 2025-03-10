@@ -21,7 +21,7 @@ const app = express();
 // Middleware
 app.use(
 	cors({
-		origin: ["http://localhost:8081", "http://172.20.10.2:8081"],
+		origin: "*",
 		methods: ["GET", "POST", "PUT", "DELETE"],
 		credentials: true,
 	})
