@@ -1,3 +1,4 @@
+export default home;
 import React, { useState } from "react";
 import {
   View,
@@ -8,6 +9,7 @@ import {
   StyleSheet,
   SafeAreaView,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import moment from "moment";
@@ -22,6 +24,8 @@ const Landing = () => {
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
   const [scores, setScores] = useState([5, 10, 15]); // Dummy scores for testing
+  
+	const router = useRouter();
 
   const screenWidth = Dimensions.get("window").width;
 
@@ -198,7 +202,17 @@ const Landing = () => {
             </Text>
           </View>
         </View>
-            </ScrollView>
+
+        // -Karunya-
+        <View className="flex-1 items-center justify-center bg-gray-100 px-6">
+			    <Text className="text-2xl font-bold text-gray-800 mb-6">Welcome to Maternify!</Text>
+			    <TouchableOpacity className="w-full bg-blue-300 p-6 rounded-xl shadow-md items-center" onPress={() => router.push("epds")}>
+				    <Text className="text-xl font-bold text-white">EPDS Assessment</Text>
+				    <Text className="text-sm text-white">Take the Edinburgh Postnatal Depression Scale</Text>
+			    </TouchableOpacity>
+		    </View>
+
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -318,7 +332,7 @@ const styles = StyleSheet.create({
     paddingVertical:5,
   },
   emojiImage: {
-    width: 40, // Adjust size as needed
+    width: 40,
     height: 40,
     resizeMode: "contain",
   },

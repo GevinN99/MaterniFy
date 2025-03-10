@@ -1,8 +1,10 @@
 import "../global.css"
 import { Stack } from "expo-router"
+import epds from "./epds";
 import { CommunityProvider } from "../context/communityContext"
 import { AuthProvider } from "../context/AuthContext"
 import Header from "../components/Header"
+
 
 function RootLayout() {
 	return (
@@ -25,6 +27,12 @@ function RootLayout() {
 							),
 						}}
 					/>
+
+         <Stack.Screen 
+			     name="epds" 
+			      options={{ 
+				    headerShown: false,
+				    title: "epds"}}/>
 
 					<Stack.Screen
 						name="community/[communityId]"
@@ -79,4 +87,4 @@ function RootLayout() {
 	)
 }
 
-export default RootLayout
+export default RootLayout;

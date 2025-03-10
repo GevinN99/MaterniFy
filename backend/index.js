@@ -5,27 +5,18 @@ const cors = require("cors")
 const session = require("express-session")
 require("dotenv").config()
 
-
-const connectDB = require("./config/db")
-const userRoutes = require("./routes/userRoutes")
-const healthPlanRoutes = require("./routes/healthPlanRoutes")
-const emergencyContactRoutes = require("./routes/emergencyContactRoutes")
-const postRoutes = require("./routes/community-routes/postRoutes")
-const communityRoutes = require("./routes/community-routes/communityRoutes")
+const connectDB = require('./config/db');
+const userRoutes = require('./routes/userRoutes');
+const healthPlanRoutes = require('./routes/healthPlanRoutes');
+const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
+const postRoutes = require('./routes/PostRoutes');
+const communityRoutes = require('./routes/communityRoutes')
+const quizRoutes = require('./routes/quizRoutes');
 const replyRoutes = require("./routes/community-routes/replyRoutes")
-
-const app = express()
-
-
 const locationRoutes = require('./routes/locationRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
 
-
-
-
-
-
-
+const app = express()
 
 // Middleware
 app.use(
@@ -51,7 +42,8 @@ app.use(
 connectDB()
 
 // Routes
-
+app.use('/api/quizzes', quizRoutes);
+app.use('/api/exercises', require('./routes/exerciseRoutes'));
 app.use("/api/users", userRoutes)
 app.use("/api/health-plans", healthPlanRoutes)
 app.use("/api/emergency-contacts", emergencyContactRoutes)
