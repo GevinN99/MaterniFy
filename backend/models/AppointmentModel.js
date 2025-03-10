@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const appointmentSchema = new mongoose.Schema({
-    motherId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    motherId: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor', required: true },
-    appointmentType: { type: String, enum: ['emergency', 'scheduled'], required: true },
-    appointmentDate: { type: Date }, // Used for scheduled appointments
+    appointmentType: {type: String, enum: ['emergency', 'scheduled', 'any'], default: 'any'},
+    appointmentDate: {type: Date},
+    appointmentTime: {type: String},
+    url: {type: String},
     status: { type: String, enum: ['pending', 'confirmed', 'completed', 'cancelled'], default: 'pending' },
-    online: { type: Boolean, default: false }, // True if it's an online appointment (video)
     createdAt: { type: Date, default: Date.now }
 });
 

@@ -99,7 +99,7 @@ const Landing = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/getstart")}>
+            <TouchableOpacity onPress={() => router.push("/appointments/UserAppointments")}>
               <Image source={require("../../assets/images/Appoinments.png")} style={styles.sectors} />
               <Text style={styles.topic}>Appointments</Text>
             </TouchableOpacity>

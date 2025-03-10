@@ -73,6 +73,10 @@ function RootLayout() {
 							),
 						}}
 					/>
+
+					<Stack.Screen name="appointments/UserAppointments" options={{ header: () => <Header backLink="/" title="My Appointments" /> }} />
+					<Stack.Screen name="appointments/DoctorAppointments" options={{ header: () => <Header backLink="/" title="Doctor Appointments" /> }} />
+
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>

@@ -1,18 +1,24 @@
-const express = require('express');
+const express = require("express");
+const {authenticate} = require("../middlewares/auth");
+const {
+    createAppointment,
+    getDoctorAppointments,
+    cancelAppointment,
+    getAvailableAppointments,
+    bookAppointment,
+    getUserBookedAppointments,
+} = require("../controllers/appointmentController");
+
 const router = express.Router();
-const appointmentController = require('../controllers/appointmentController');
-const auth = require('../middlewares/auth');
 
-// Create Appointment
-router.post('/create', auth.authenticate, appointmentController.createAppointment);
+// Doctor Routes
+router.post("/create", authenticate, createAppointment);
+router.get("/doctor", authenticate, getDoctorAppointments);
+router.delete("/cancel/:appointmentId", authenticate, cancelAppointment);
 
-// Get Available Doctors for online consultation
-router.get('/available-doctors', auth.authenticate, appointmentController.getAvailableDoctors);
-
-// Get all appointments for a mother
-router.get('/appointments', auth.authenticate, appointmentController.getAppointments);
-
-// Update Doctor availability (only accessible by the doctor)
-router.put('/doctor/availability', auth.authenticate, appointmentController.updateDoctorAvailability);
+// User Routes
+router.get("/available", getAvailableAppointments);
+router.post("/book", authenticate, bookAppointment);
+router.get("/my-booked", authenticate, getUserBookedAppointments);
 
 module.exports = router;
