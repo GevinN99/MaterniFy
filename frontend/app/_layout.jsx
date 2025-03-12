@@ -1,90 +1,81 @@
-import "../global.css"
-import { Stack } from "expo-router"
-import epds from "./epds";
-import { CommunityProvider } from "../context/communityContext"
-import { AuthProvider } from "../context/AuthContext"
-import Header from "../components/Header"
-
+import "../global.css";
+import { Stack } from "expo-router";
+import { AuthProvider } from "../context/AuthContext";
+import { CommunityProvider } from "../context/communityContext";
+import Header from "../components/Header";
 
 function RootLayout() {
 	return (
 		<AuthProvider>
 			<CommunityProvider>
 				<Stack>
+					{/* This screen will show the tabs after login */}
 					<Stack.Screen
 						name="(tabs)"
-						options={{ headerShown: false }}
+						options={{ headerShown: false }} // Hides the default header
 					/>
 
+					{/* Auth Screens */}
 					<Stack.Screen
-						name="communities"
+						name="auth/Login"
 						options={{
-							header: () => (
-								<Header
-									backLink="/community"
-									title="Communities"
-								/>
-							),
+							headerShown: false, // No header for login
+						}}
+					/>
+					<Stack.Screen
+						name="auth/Signup"
+						options={{
+							headerShown: false, // No header for signup
 						}}
 					/>
 
-         <Stack.Screen 
-			     name="epds" 
-			      options={{ 
-				    headerShown: false,
-				    title: "epds"}}/>
+					{/* Community Screens */}
+					<Stack.Screen
+						name="communities"
+						options={{
+							header: () => <Header backLink="/community" title="Communities" />,
+						}}
+					/>
+
+					<Stack.Screen
+						name="epds"
+						options={{
+							headerShown: false, // No header for EPDS
+							title: "EPDS",
+						}}
+					/>
 
 					<Stack.Screen
 						name="community/[communityId]"
 						options={{
-							header: () => (
-								<Header
-									backLink="/communities"
-									title="Community Details"
-								/>
-							),
+							header: () => <Header backLink="/communities" title="Community Details" />,
 						}}
 					/>
 
 					<Stack.Screen
 						name="communityUser/[userId]"
 						options={{
-							header: () => (
-								<Header
-									backLink="/community"
-									title="Community User Profile"
-								/>
-							),
+							header: () => <Header backLink="/community" title="Community User Profile" />,
 						}}
 					/>
 
 					<Stack.Screen
 						name="community/post/[postId]"
 						options={{
-							header: () => (
-								<Header
-									backLink="/community"
-									title="Post"
-								/>
-							),
+							header: () => <Header backLink="/community" title="Post" />,
 						}}
 					/>
 
 					<Stack.Screen
 						name="community/post/reply/[postId]"
 						options={{
-							header: () => (
-								<Header
-									backLink="/community"
-									title="Reply"
-								/>
-							),
+							header: () => <Header backLink="/community" title="Reply" />,
 						}}
 					/>
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>
-	)
+	);
 }
 
 export default RootLayout;

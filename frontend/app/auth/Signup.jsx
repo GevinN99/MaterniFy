@@ -11,14 +11,14 @@ import {
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { registerUser } from "../../api/authApi";
-import uploadImage from "../../utils/uploadImage";
+import uploadImage from "../../utils/uploadImage";  // Import the uploadImage function
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Signup() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState(null); // State for image
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
@@ -37,7 +37,7 @@ export default function Signup() {
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri);
+            setImage(result.assets[0].uri); // Save the picked image URI to the state
         }
     };
 
@@ -52,14 +52,20 @@ export default function Signup() {
 
         try {
             let imageUrl = formData.profileImage;
+
+            // If the user selects an image, upload it to Firebase and get the URL
             if (image) {
                 imageUrl = await uploadImage(image, "profile_pics"); // Upload to profile_pics folder
+            } else {
+                // If no image is selected, use the default image URL
+                imageUrl = "https://www.w3schools.com/w3images/avatar2.png";
             }
 
+            // Register the user with the data
             const response = await registerUser({ ...formData, profileImage: imageUrl });
 
             if (response.token) {
-                await AsyncStorage.setItem("token", response.token);
+                await AsyncStorage.setItem("token", response.token); // Save the token to AsyncStorage
                 router.replace("/auth/Login"); // Redirect to Login Page after signup
             } else {
                 Alert.alert("Signup Failed", response.message || "Something went wrong!");
@@ -79,7 +85,7 @@ export default function Signup() {
             <TouchableOpacity onPress={pickImage}>
                 <Image
                     source={{
-                        uri: image || "https://www.w3schools.com/w3images/avatar2.png",
+                        uri: image || "https://www.w3schools.com/w3images/avatar2.png", // Default image if no selection
                     }}
                     style={styles.profileImage}
                 />
