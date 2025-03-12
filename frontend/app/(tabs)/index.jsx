@@ -1,4 +1,4 @@
-export default home;
+//export default home;
 import React, { useState } from "react";
 import {
   View,
@@ -203,7 +203,7 @@ const Landing = () => {
           </View>
         </View>
 
-        // -Karunya-
+        {/* -Karunya- */}
         <View className="flex-1 items-center justify-center bg-gray-100 px-6">
 			    <Text className="text-2xl font-bold text-gray-800 mb-6">Welcome to Maternify!</Text>
 			    <TouchableOpacity className="w-full bg-blue-300 p-6 rounded-xl shadow-md items-center" onPress={() => router.push("epds")}>
