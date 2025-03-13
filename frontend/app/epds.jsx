@@ -143,7 +143,7 @@ const epds = () => {
         try {
             console.log("Saving responses:", finalAnswers);
     
-            const userId = "65f0c3b27a1d2c001cb3b4f8"; // Replace with actual user ID
+            const userId = localStorage.getItem("userId"); 
             const totalScore = finalAnswers.reduce((sum, score) => sum + (score !== null ? score : 0), 0);
     
             // Construct responses in the expected format
