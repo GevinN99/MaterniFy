@@ -1,7 +1,7 @@
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebaseConfig";
 
-const uploadImage = async (uri, folder = "uploads") => {
+const uploadImage = async (uri, folder = "profile_pics") => {
 	try {
 		// Convert image to blob
 		const response = await fetch(uri);
