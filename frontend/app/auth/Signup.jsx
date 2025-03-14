@@ -11,22 +11,24 @@ import {
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { registerUser } from "../../api/authApi";
-import uploadImage from "../../utils/uploadImage";  // Import the uploadImage function
+import uploadImage from "../../utils/uploadImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
 export default function Signup() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [image, setImage] = useState(null); // State for image
+    const [image, setImage] = useState(null);
     const [formData, setFormData] = useState({
         fullName: "",
         email: "",
         password: "",
-        role: "mother", // Default role
+        role: "mother",
         languagePreference: "English",
         profileImage: "",
     });
+    const [successMessage, setSuccessMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     // Pick an Image from Gallery
     const pickImage = async () => {
@@ -37,7 +39,7 @@ export default function Signup() {
         });
 
         if (!result.canceled) {
-            setImage(result.assets[0].uri); // Save the picked image URI to the state
+            setImage(result.assets[0].uri);
         }
     };
 
@@ -49,13 +51,14 @@ export default function Signup() {
         }
 
         setLoading(true);
+        setErrorMessage("");
 
         try {
             let imageUrl = formData.profileImage;
 
             // If the user selects an image, upload it to Firebase and get the URL
             if (image) {
-                imageUrl = await uploadImage(image, "profile_pics"); // Upload to profile_pics folder
+                imageUrl = await uploadImage(image, "profile_pics");
             } else {
                 // If no image is selected, use the default image URL
                 imageUrl = "https://www.w3schools.com/w3images/avatar2.png";
@@ -64,15 +67,21 @@ export default function Signup() {
             // Register the user with the data
             const response = await registerUser({ ...formData, profileImage: imageUrl });
 
+            // Handle successful response
             if (response.token) {
-                await AsyncStorage.setItem("token", response.token); // Save the token to AsyncStorage
-                router.replace("/auth/Login"); // Redirect to Login Page after signup
+                await AsyncStorage.setItem("token", response.token);
+                setSuccessMessage("Account created successfully!");
+
+                // Wait for 2 seconds to show success message before redirecting
+                setTimeout(() => {
+                    router.replace("/auth/Login");
+                }, 2000);
             } else {
-                Alert.alert("Signup Failed", response.message || "Something went wrong!");
+                setErrorMessage(response.message || "Signup failed!");
             }
         } catch (error) {
             console.error("Signup Error:", error);
-            Alert.alert("Signup Error", error.message || "Please try again!");
+            setErrorMessage(error.message || "Please try again!");
         }
 
         setLoading(false);
@@ -85,7 +94,7 @@ export default function Signup() {
             <TouchableOpacity onPress={pickImage}>
                 <Image
                     source={{
-                        uri: image || "https://www.w3schools.com/w3images/avatar2.png", // Default image if no selection
+                        uri: image || "https://www.w3schools.com/w3images/avatar2.png",
                     }}
                     style={styles.profileImage}
                 />
@@ -121,6 +130,14 @@ export default function Signup() {
             <TouchableOpacity onPress={() => router.push("/auth/Login")}>
                 <Text style={styles.link}>Already have an account? Log in</Text>
             </TouchableOpacity>
+
+            {successMessage && (
+                <Text style={styles.successMessage}>{successMessage}</Text>
+            )}
+
+            {errorMessage && (
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+            )}
         </View>
     );
 }
@@ -133,4 +150,6 @@ const styles = StyleSheet.create({
     buttonText: { color: "#fff", fontWeight: "bold" },
     link: { marginTop: 10, color: "#007AFF" },
     profileImage: { width: 80, height: 80, borderRadius: 50, marginBottom: 20, borderWidth: 2, borderColor: "#ccc" },
+    successMessage: { color: "green", fontSize: 18, marginTop: 20 },
+    errorMessage: { color: "red", fontSize: 18, marginTop: 20 },
 });
