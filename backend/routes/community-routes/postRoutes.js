@@ -1,13 +1,6 @@
 const express = require("express")
 const userModel = require("../../models/userModel.js")
-const {
-	createPost,
-	getPostById,
-	getPostsByCommunity,
-	deletePost,
-	getPostsByAllCommunities,
-	likeUnlikePost,
-} = require("../../controllers/community-controllers/postController.js")
+const postController = require("../../controllers/community-controllers/postController")
 
 const router = express.Router()
 
@@ -37,11 +30,11 @@ const injectDummyUser = async (req, res, next) => {
 }
 
 // Define routes
-router.post("/create", injectDummyUser, createPost)
-router.get("/post/:postId", getPostById)
-router.get("/community/:communityId", injectDummyUser, getPostsByCommunity)
-router.get("/:userId", getPostsByAllCommunities)
-router.delete("/delete/:postId", injectDummyUser, deletePost)
-router.post("/like-unlike/:postId", injectDummyUser, likeUnlikePost)
+router.post("/create", injectDummyUser, postController.createPost)
+router.get("/post/:postId", postController.getPostById)
+router.get("/community/:communityId", injectDummyUser, postController.getPostsByCommunity)
+router.get("/:userId", postController.getPostsByAllCommunities)
+router.delete("/delete/:postId", injectDummyUser, postController.deletePost)
+router.post("/like-unlike/:postId", injectDummyUser, postController.likeUnlikePost)
 
 module.exports = router

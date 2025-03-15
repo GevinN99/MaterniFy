@@ -1,7 +1,6 @@
 const express = require("express")
 const userModel = require("../../models/userModel.js")
-
-const { createReply, getRepliesForPost, likeUnlikeReply } = require("../../controllers/community-controllers/replyController.js")
+const replyController = require("../../controllers/community-controllers/replyController")
 const router = express.Router()
 
 // Helper function to inject dummy user for testing
@@ -29,8 +28,8 @@ const injectDummyUser = async (req, res, next) => {
 	}
 }
 
-router.post("/create", injectDummyUser, createReply)
-router.get("/post/:postId", getRepliesForPost)
-router.post("/like-unlike/:replyId", injectDummyUser, likeUnlikeReply)
+router.post("/create", injectDummyUser, replyController.createReply)
+router.get("/post/:postId", replyController.getRepliesForPost)
+router.post("/like-unlike/:replyId", injectDummyUser, replyController.likeUnlikeReply)
 
 module.exports = router

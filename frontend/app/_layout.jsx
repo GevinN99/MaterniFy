@@ -19,7 +19,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/community"
+									// backLink="/community"
 									title="Communities"
 								/>
 							),
@@ -31,7 +31,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/communities"
+									// backLink="/communities"
 									title="Community Details"
 								/>
 							),
@@ -43,7 +43,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/community"
+									// backLink="/community"
 									title="Community User Profile"
 								/>
 							),
@@ -55,7 +55,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/community"
+									// backLink="/community"
 									title="Post"
 								/>
 							),
@@ -66,8 +66,7 @@ function RootLayout() {
 						name="community/post/reply/[postId]"
 						options={{
 							header: () => (
-								<Header
-									backLink="/community"
+								<Header									
 									title="Reply"
 								/>
 							),

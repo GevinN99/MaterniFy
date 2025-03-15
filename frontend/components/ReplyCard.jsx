@@ -1,16 +1,19 @@
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, Pressable } from "react-native"
 import React, { useState } from "react"
 import { Image } from "expo-image"
 import { likeUnlikeReply } from "../api/communityApi"
 import { timeAgo } from "../utils/timeAgo"
 import PostActionSection from "./PostActionSection"
+import { useRouter } from "expo-router"
 
 const ReplyCard = ({ reply }) => {
-	const { content, userId, createdAt, likes, _id: replyId } = reply
+	const router = useRouter()
+	const { content, userId, postId, createdAt, likes, _id: replyId, replies } = reply
 	const [likeCount, setLikeCount] = useState(likes.length)
 	const usertest = "67bc9ceff607c265056765af"
 	const [liked, setLiked] = useState(likes.includes(usertest))
 	const [showMenu, setShowMenu] = useState(false)
+	 const [showNestedReplies, setShowNestedReplies] = useState(false)
 
 	const handleLikeUnlike = async () => {
 		try {
@@ -30,8 +33,16 @@ const ReplyCard = ({ reply }) => {
 		// Delete reply
 	}
 
-	const onReply = () => {
-		// Reply to reply
+	const onReply = () => {		
+		// router.push(`/community/post/reply/${postId}`)
+		router.push({
+			pathname: `/community/post/reply/${postId}`,
+			params: { parentReplyId: replyId },
+		})
+	}
+
+	const toggleNestedReplies = () => {
+		setShowNestedReplies(!showNestedReplies)
 	}
 
 	return (
@@ -47,8 +58,8 @@ const ReplyCard = ({ reply }) => {
 						<Text>•</Text>
 						<Text className="font-extralight">{timeAgo(createdAt)}</Text>
 					</View>
-					<Text className="text-gray-500">
-						Replying to {reply.postId.userId.fullName}
+					<Text className="text-gray-500">						
+						Replying to {reply.postId?.userId?.fullName|| reply.parentReplyId?.userId?.fullName}
 					</Text>
 					<Text className="mt-2">{content}</Text>
 
@@ -60,8 +71,28 @@ const ReplyCard = ({ reply }) => {
 						onToggleMenu={toggleMenu}
 						onDelete={onDelete}
 						showMenu={showMenu}
-						// replyCount={replies.length}
+						replyCount={replies.length}
 					/>
+
+					{replies.length > 0 && (
+						<Pressable onPress={toggleNestedReplies}>
+							<Text className="text-blue-500 mt-2">
+								{showNestedReplies
+									? "Hide Replies"
+									: `View Replies (${replies.length})`}
+							</Text>
+						</Pressable>
+					)}
+
+					{showNestedReplies &&
+						replies.map((nestedReply, index) => (
+							<View
+								key={index}
+								style={styles.nestedReply}
+							>
+								<ReplyCard reply={nestedReply} />
+							</View>
+						))}
 				</View>
 			</View>
 		</View>

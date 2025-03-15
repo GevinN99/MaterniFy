@@ -10,28 +10,30 @@ import React, { useState } from "react"
 import { useCommunity } from "../../../../context/communityContext"
 import Post from "../../../../components/Post"
 import { createReply } from "../../../../api/communityApi"
-import { useRouter } from "expo-router"
+import { useRouter, useLocalSearchParams } from "expo-router"
 
 const reply = () => {
-    const router = useRouter()
+	const router = useRouter()
 	const { selectedPost, setUpdateTrigger } = useCommunity()
-	const [loading, setLoading] = useState(false)	
+	const { parentReplyId } = useLocalSearchParams()
+	const [loading, setLoading] = useState(false)
 	const { userId, communityId } = selectedPost
 	const [replyData, setReplyData] = useState({
 		content: "",
 		postId: selectedPost._id,
 		communityId: communityId._id,
+		parentReplyId: parentReplyId || null,
 	})
 
-	const handleSubmit = async () => {		
+	const handleSubmit = async () => {
 		if (!replyData.content) {
 			return
 		}
 		setLoading(true)
 
-        try {            
-			const response = await createReply(replyData)			
-			setLoading(false)		
+		try {
+			const response = await createReply(replyData)
+			setLoading(false)
 			setUpdateTrigger((prev) => !prev)
 			router.back()
 		} catch (error) {
