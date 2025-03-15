@@ -33,7 +33,12 @@ function RootLayout() {
 					<Stack.Screen
 						name="communities"
 						options={{
-							header: () => <Header backLink="/community" title="Communities" />,
+							header: () => (
+								<Header
+									// backLink="/community"
+									title="Communities"
+								/>
+							),
 						}}
 					/>
 
@@ -48,28 +53,48 @@ function RootLayout() {
 					<Stack.Screen
 						name="community/[communityId]"
 						options={{
-							header: () => <Header backLink="/communities" title="Community Details" />,
+							header: () => (
+								<Header
+									// backLink="/communities"
+									title="Community Details"
+								/>
+							),
 						}}
 					/>
 
 					<Stack.Screen
 						name="communityUser/[userId]"
 						options={{
-							header: () => <Header backLink="/community" title="Community User Profile" />,
+							header: () => (
+								<Header
+									// backLink="/community"
+									title="Community User Profile"
+								/>
+							),
 						}}
 					/>
 
 					<Stack.Screen
 						name="community/post/[postId]"
 						options={{
-							header: () => <Header backLink="/community" title="Post" />,
+							header: () => (
+								<Header
+									// backLink="/community"
+									title="Post"
+								/>
+							),
 						}}
 					/>
 
 					<Stack.Screen
 						name="community/post/reply/[postId]"
 						options={{
-							header: () => <Header backLink="/community" title="Reply" />,
+							header: () => (
+								<Header									
+									title="Reply"
+								/>
+							),
+
 						}}
 					/>
 				</Stack>

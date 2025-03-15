@@ -66,8 +66,8 @@ const Post = ({ post, community }) => {
 
 					<Text className="text-gray-500">
 						@
-						{communityId.name ||
-							community.name
+						{(communityId.name ||
+							community.name)
 								.replace(/\s+/g, "")
 								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 					</Text>

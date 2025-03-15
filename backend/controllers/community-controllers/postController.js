@@ -1,8 +1,8 @@
-import PostModel from "../../models/community-models/postModel.js"
-import CommunityModel from "../../models/community-models/communityModel.js"
+const PostModel = require("../../models/community-models/postModel")
+const CommunityModel = require("../../models/community-models/communityModel")
 
 // Create a new post
-export const createPost = async (req, res) => {
+const createPost = async (req, res) => {
 	try {
 		console.log("creatign post")
 		// Get the content and communityId from the request body
@@ -45,7 +45,7 @@ export const createPost = async (req, res) => {
 }
 
 // Get post by ID
-export const getPostById = async (req, res) => {
+const getPostById = async (req, res) => {
 	try {
 		const { postId } = req.params
 		const post = await PostModel.findById(postId)
@@ -64,7 +64,7 @@ export const getPostById = async (req, res) => {
 }
 
 // Get all posts in a community
-export const getPostsByCommunity = async (req, res) => {
+const getPostsByCommunity = async (req, res) => {
 	try {
 		const { communityId } = req.params
 
@@ -87,7 +87,7 @@ export const getPostsByCommunity = async (req, res) => {
 }
 
 // Get all posts belonging to all communities that the user has joined
-export const getPostsByAllCommunities = async (req, res) => {
+const getPostsByAllCommunities = async (req, res) => {
 	try {
 		const { userId } = req.params
 
@@ -121,7 +121,7 @@ export const getPostsByAllCommunities = async (req, res) => {
 }
 
 // // Delete a post
-export const deletePost = async (req, res) => {
+const deletePost = async (req, res) => {
 	try {
 		const { postId } = req.params
 
@@ -139,7 +139,7 @@ export const deletePost = async (req, res) => {
 }
 
 // Like or unlike a post
-export const likeUnlikePost = async (req, res) => {
+const likeUnlikePost = async (req, res) => {
 	try {
 		const { postId } = req.params
 		const userId = req.user.id
@@ -169,4 +169,13 @@ export const likeUnlikePost = async (req, res) => {
 		console.error("Error liking/unliking post:", error)
 		return res.status(500).json({ message: "Internal server error" })
 	}
+}
+
+module.exports = {
+	createPost,
+	getPostById,
+	getPostsByCommunity,
+	getPostsByAllCommunities,
+	deletePost,
+	likeUnlikePost,
 }

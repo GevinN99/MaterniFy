@@ -1,10 +1,10 @@
-import ReplyModel from "../../models/community-models/replyModel.js"
-import PostModel from "../../models/community-models/postModel.js"
-import CommunityModel from "../../models/community-models/communityModel.js"
-import UserModel from "../../models/userModel.js"
+const ReplyModel = require("../../models/community-models/replyModel")
+const PostModel = require("../../models/community-models/postModel")
+const CommunityModel = require("../../models/community-models/communityModel")
+const UserModel = require("../../models/userModel")
 
 // Create a new reply
-export const createReply = async (req, res) => {
+const createReply = async (req, res) => {
 	const { content, postId, communityId, parentReplyId } = req.body
 	const userId = req.user.id // Assuming the user is logged in and their ID is available in req.user
 
@@ -33,8 +33,20 @@ export const createReply = async (req, res) => {
 
 		await newReply.save()
 
-		// Optionally, you can also update the post with the new reply (e.g., push it to the replies array)
-		post.replies.push(newReply._id)
+		// post.replies.push(newReply._id)
+
+		// Update the parent reply or the post with the new reply
+		if (parentReplyId) {
+			// If it's a nested reply, update the parent reply's replies array
+			await ReplyModel.findByIdAndUpdate(parentReplyId, {
+				$push: { replies: newReply._id },
+			})
+		} else {
+			// If it's a top-level reply, update the post's replies array
+			post.replies.push(newReply._id)
+			await post.save()
+		}
+
 		await post.save()
 
 		res.status(201).json(newReply)
@@ -44,15 +56,40 @@ export const createReply = async (req, res) => {
 	}
 }
 
-export const getRepliesForPost = async (req, res) => {
+// const getRepliesForPost = async (req, res) => {
+// 	const { postId } = req.params
+
+// 	try {
+
+// 		const replies = await ReplyModel.find({ postId })
+// 			.populate("communityId", "name _id")
+// 			.populate("userId", "fullName profileImage")
+// 			.populate("parentReplyId")
+// 			.populate({
+// 				path: "postId",
+// 				select: "_id userId",
+// 				populate: {
+// 					path: "userId",
+// 					select: "fullName",
+// 				},
+// 			})
+
+// 		res.status(200).json(replies)
+// 	} catch (error) {
+// 		console.error(error)
+// 		res.status(500).json({ message: "Server error" })
+// 	}
+// }
+
+// Fetch replies for a post, including nested replies
+const getRepliesForPost = async (req, res) => {
 	const { postId } = req.params
 
 	try {
-		// Find the replies for the post
-		const replies = await ReplyModel.find({ postId })
-			.populate("communityId", "name _id") // Populate community name
-			.populate("userId", "fullName profileImage") // Populate user details (name, image)
-			.populate("parentReplyId") // Populate parent reply if it's a nested reply
+		const replies = await ReplyModel.find({ postId, parentReplyId: null })
+			.populate("communityId", "name _id")
+			.populate("userId", "fullName profileImage")
+			.populate("parentReplyId")
 			.populate({
 				path: "postId",
 				select: "_id userId",
@@ -62,6 +99,37 @@ export const getRepliesForPost = async (req, res) => {
 				},
 			})
 
+		const fetchNestedReplies = async (reply) => {
+			const nestedReplies = await ReplyModel.find({ parentReplyId: reply._id })
+				.populate("communityId", "name _id")
+				.populate("userId", "fullName profileImage")
+				.populate({
+					path: "replies",
+					populate: {
+						path: "userId",
+						select: "fullName profileImage",
+					},
+				})
+				.populate({
+					path: "parentReplyId",
+					select: "userId fullName",
+					populate: {
+						path: "userId",
+						select: "fullName profileImage",
+					},
+				})
+
+			reply.replies = nestedReplies
+
+			for (const nestedReply of nestedReplies) {
+				await fetchNestedReplies(nestedReply)
+			}
+		}
+
+		for (const reply of replies) {
+			await fetchNestedReplies(reply)
+		}
+
 		res.status(200).json(replies)
 	} catch (error) {
 		console.error(error)
@@ -70,7 +138,7 @@ export const getRepliesForPost = async (req, res) => {
 }
 
 // Like or unlike a reply
-export const likeUnlikeReply = async (req, res) => {
+const likeUnlikeReply = async (req, res) => {
 	try {
 		const { replyId } = req.params
 		const userId = req.user.id
@@ -100,4 +168,10 @@ export const likeUnlikeReply = async (req, res) => {
 		console.error("Error liking/unliking reply:", error)
 		return res.status(500).json({ message: "Internal server error" })
 	}
+}
+
+module.exports = {
+	createReply,
+	getRepliesForPost,
+	likeUnlikeReply,
 }
