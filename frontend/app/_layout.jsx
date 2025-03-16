@@ -1,28 +1,52 @@
-import "../global.css"
-import { Stack } from "expo-router"
-import { CommunityProvider } from "../context/communityContext"
-import { AuthProvider } from "../context/AuthContext"
-import Header from "../components/Header"
+import "../global.css";
+import { Stack } from "expo-router";
+import { AuthProvider } from "../context/AuthContext";
+import { CommunityProvider } from "../context/communityContext";
+import Header from "../components/Header";
 
 function RootLayout() {
 	return (
 		<AuthProvider>
 			<CommunityProvider>
 				<Stack>
+					{/* This screen will show the tabs after login */}
 					<Stack.Screen
 						name="(tabs)"
-						options={{ headerShown: false }}
+						options={{ headerShown: false }} // Hides the default header
 					/>
 
+					{/* Auth Screens */}
+					<Stack.Screen
+						name="auth/Login"
+						options={{
+							headerShown: false, // No header for login
+						}}
+					/>
+					<Stack.Screen
+						name="auth/Signup"
+						options={{
+							headerShown: false, // No header for signup
+						}}
+					/>
+
+					{/* Community Screens */}
 					<Stack.Screen
 						name="communities"
 						options={{
 							header: () => (
 								<Header
-									backLink="/community"
+									// backLink="/community"
 									title="Communities"
 								/>
 							),
+						}}
+					/>
+
+					<Stack.Screen
+						name="epds"
+						options={{
+							headerShown: false, // No header for EPDS
+							title: "EPDS",
 						}}
 					/>
 
@@ -31,7 +55,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/communities"
+									// backLink="/communities"
 									title="Community Details"
 								/>
 							),
@@ -43,7 +67,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/community"
+									// backLink="/community"
 									title="Community User Profile"
 								/>
 							),
@@ -55,7 +79,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/community"
+									// backLink="/community"
 									title="Post"
 								/>
 							),
@@ -66,11 +90,11 @@ function RootLayout() {
 						name="community/post/reply/[postId]"
 						options={{
 							header: () => (
-								<Header
-									backLink="/community"
+								<Header									
 									title="Reply"
 								/>
 							),
+
 						}}
 					/>
 
@@ -80,7 +104,7 @@ function RootLayout() {
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>
-	)
+	);
 }
 
-export default RootLayout
+export default RootLayout;

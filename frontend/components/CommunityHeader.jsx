@@ -1,5 +1,6 @@
-import { View, Text, Image, StyleSheet, Pressable } from "react-native"
+import { View, Text, StyleSheet, Pressable } from "react-native"
 import { useRouter } from "expo-router"
+import { Image } from "expo-image"
 import React from "react"
 
 const CommunityHeader = () => {
@@ -18,6 +19,7 @@ const CommunityHeader = () => {
 						"https://images.unsplash.com/photo-1494145904049-0dca59b4bbad?q=80&w=3388&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 					}}
 					style={styles.profileImage} // Only Image uses StyleSheet
+					transition={300}
 				/>
 			</Pressable>
 			<Pressable onPress={() => router.push("communities")}>

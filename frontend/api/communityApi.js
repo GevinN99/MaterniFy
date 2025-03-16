@@ -41,6 +41,12 @@ export const createPost = async (data) => {
 	return response.data
 }
 
+export const getPostById = async (postId) => {
+	const response = await axios.get(`${API_URL}/community-posts/post/${postId}`)
+	// console.log(response)
+	return response.data
+}
+
 export const joinCommunity = async (communityId) => {	
 	const response = await axios.post(`${API_URL}/communities/join/${communityId}`)
 	// console.log(response)

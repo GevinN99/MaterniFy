@@ -10,31 +10,32 @@ import React, { useState } from "react"
 import { useCommunity } from "../../../../context/communityContext"
 import Post from "../../../../components/Post"
 import { createReply } from "../../../../api/communityApi"
-import { useRouter } from "expo-router"
+import { useRouter, useLocalSearchParams } from "expo-router"
 
-const postId = () => {
-    const router = useRouter()
-	const { selectedPost } = useCommunity()
-	const [loading, setLoading] = useState(false)	
+const reply = () => {
+	const router = useRouter()
+	const { selectedPost, setUpdateTrigger } = useCommunity()
+	const { parentReplyId } = useLocalSearchParams()
+	const [loading, setLoading] = useState(false)
 	const { userId, communityId } = selectedPost
 	const [replyData, setReplyData] = useState({
 		content: "",
 		postId: selectedPost._id,
 		communityId: communityId._id,
+		parentReplyId: parentReplyId || null,
 	})
 
-	const handleSubmit = async () => {		
+	const handleSubmit = async () => {
 		if (!replyData.content) {
 			return
 		}
 		setLoading(true)
 
-        try {
-            console.log('axios calling')
+		try {
 			const response = await createReply(replyData)
-			console.log(response)
-            setLoading(false)
-            router.push('/community')
+			setLoading(false)
+			setUpdateTrigger((prev) => !prev)
+			router.back()
 		} catch (error) {
 			console.log(error)
 			setLoading(false)
@@ -85,4 +86,4 @@ const postId = () => {
 	)
 }
 
-export default postId
+export default reply

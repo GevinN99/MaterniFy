@@ -16,8 +16,10 @@ import { createPost, getAllCommunities } from "../api/communityApi"
 import uploadImage from "../utils/uploadImage"
 import CommunityPicker from "./CommunityPicker"
 import Feather from "@expo/vector-icons/Feather"
+import { useCommunity } from "../context/communityContext"
 
-const CreatePost = ({ visible, onClose }) => {		
+const CreatePost = ({ visible, onClose }) => {	
+	const {setUpdateTrigger} = useCommunity()
 	const [inputHeight, setInputHeight] = useState(30)
 	const [userCommunities, setUserCommunities] = useState(null)
 	const [loading, setLoading] = useState(false)
@@ -75,6 +77,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 			const response = await createPost({ ...postDetails, imageUrl })			
 			setLoading(false)
+			setUpdateTrigger((prev) => !prev)
 			onClose()
 		} catch (error) {
 			console.log(error)

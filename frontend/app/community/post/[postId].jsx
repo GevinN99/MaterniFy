@@ -1,56 +1,75 @@
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
-import React, { useEffect, useState } from "react"
-import { useLocalSearchParams } from "expo-router"
-import { likeUnlikePost, ge } from "../../../api/communityApi"
+import React, { useEffect, useState, useCallback } from "react"
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"
+import { likeUnlikePost, getPostById } from "../../../api/communityApi"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { getRepliesForPost } from "../../../api/communityApi"
 import ReplyCard from "../../../components/ReplyCard"
-import Post from "../../../components/Post"
 import { useCommunity } from "../../../context/communityContext"
 import { Image } from "expo-image"
-import { Ionicons } from "@expo/vector-icons"
-import Feather from "@expo/vector-icons/Feather"
-import { useRouter } from "expo-router"
+import { formatTime, formatDate } from "../../../utils/timeAgo"
+import PostActionSection from "../../../components/PostActionSection"
+import LoadingSpinner from "../../../components/LoadingSpinner"
 
-const postId = ({community}) => {
+const post = ({ community }) => {
 	const { postId } = useLocalSearchParams()
-	const { selectedPost, setUpdateTrigger } = useCommunity()
-	if (!selectedPost) {
-		return null
-	}
-	console.log(selectedPost)
+	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [replies, setReplies] = useState([])
-
-	const { likes, userId, communityId, createdAt, imageUrl, content } =
-		selectedPost
-	const [likeCount, setLikeCount] = useState(likes.length)
+	const [post, setPost] = useState(null)
+	const [likeCount, setLikeCount] = useState(0)
 	const usertest = "67bc9ceff607c265056765af"
-	const [liked, setLiked] = useState(likes.includes(usertest))
+	const [liked, setLiked] = useState(false)
 	const router = useRouter()
-	const { selectPost } = useCommunity()
+	const { selectPost } = useCommunity()	
 
-	useEffect(() => {
-		const fetchReplies = async () => {
-			try {
-				const response = await getRepliesForPost(postId)
-				setReplies(response)
-			} catch (error) {
-				console.log(error)
+	useFocusEffect(
+		useCallback(() => {
+			const fetchPost = async () => {
+				try {
+					const response = await getPostById(postId)
+					console.log(response)
+					setPost(response)
+					setLikeCount(response.likes.length)
+					setLiked(response.likes.includes(usertest))
+				} catch (error) {
+					console.log(error)
+				}
 			}
-		}
 
-		fetchReplies()
-	}, [postId])
+			const fetchReplies = async () => {
+				try {
+					const response = await getRepliesForPost(postId)
+					setReplies(response)
+					console.log(response)
+				} catch (error) {
+					console.log(error)
+				}
+			}
 
-	const toggleMenu = () => {
-		setShowMenu(!showMenu)
+			fetchPost()
+			fetchReplies()
+		}, [])
+	)
+
+	if (!post) {
+		return (
+			<SafeAreaView className="flex-1 bg-[#E7EDEF]">
+				<View className="flex-1 justify-center items-center">
+					<LoadingSpinner />
+				</View>
+			</SafeAreaView>
+		)
 	}
 
-	const handleReply = () => {
-		selectPost(selectedPost)
-		router.push(`/community/post/reply/${postId}`)
-	}
+	const {
+		userId,
+		communityId,
+		createdAt,
+		imageUrl,
+		content,
+		replies: postReplies,
+	} = post
 
 	const handleLikeUnlike = async () => {
 		try {
@@ -61,6 +80,19 @@ const postId = ({community}) => {
 		} catch (error) {
 			console.error(error)
 		}
+	}
+
+	const toggleMenu = () => {
+		setShowMenu(!showMenu)
+	}
+
+	const handleDelete = () => {
+		// Delete post
+	}
+
+	const handleReply = () => {
+		selectPost(post)
+		router.push(`/community/post/reply/${postId}`)
 	}
 
 	return (
@@ -77,8 +109,8 @@ const postId = ({community}) => {
 						{/* </View> */}
 						<Text className="text-gray-500">
 							@
-							{communityId.name ||
-								community.name
+							{(communityId.name ||
+								community.name)
 									.replace(/\s+/g, "")
 									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>
@@ -91,79 +123,26 @@ const postId = ({community}) => {
 							source={{ uri: imageUrl }}
 							style={[styles.postImage]}
 							contentFit="cover"
-							transition={1000}
+							transition={300}
 						/>
 					</View>
 				)}
 				<View className="flex flex-row mt-4 gap-1 border-b border-gray-400 pb-4">
-					<Text className="font-extralight">
-						{new Date(createdAt).toLocaleTimeString(undefined, {
-							hour: "2-digit",
-							minute: "2-digit",
-							hour12: true,
-							hourCycle: "h12",
-						})}
-					</Text>
+					<Text className="font-extralight">{formatTime(createdAt)}</Text>
 					<Text>•</Text>
-					<Text className="font-extralight">
-						{new Date(createdAt)
-							.toLocaleDateString("en-GB", {
-								day: "2-digit",
-								month: "short",
-								year: "2-digit",
-							})
-							.replace(",", "")}
-					</Text>
+					<Text className="font-extralight">{formatDate(createdAt)}</Text>
 				</View>
-				<View className="flex flex-row justify-between mt-4 border-b border-gray-400 pb-4">
-					<View className="flex flex-row gap-4">
-						<Pressable
-							className="flex flex-row items-center"
-							onPress={handleReply}
-						>
-							<Ionicons
-								name="chatbubble-outline"
-								size={18}
-								className="mr-1"
-							/>
-							<Text>{selectedPost.replies.length}</Text>
-						</Pressable>
-						<Pressable
-							className="flex flex-row items-center"
-							onPress={handleLikeUnlike}
-						>
-							<Ionicons
-								name={liked ? "heart" : "heart-outline"}
-								color={liked ? "red" : "black"}
-								size={20}
-								className="mr-1"
-							/>
-							<Text>{likeCount}</Text>
-						</Pressable>
-					</View>
-					<Pressable onPress={toggleMenu}>
-						<Ionicons
-							name="ellipsis-vertical-sharp"
-							size={20}
-							color="black"
-						/>
-					</Pressable>
-					{showMenu && (
-						<View className="absolute right-5 bottom-1 rounded-md shadow-md z-10 p-1 bg-white">
-							<Pressable
-								// onPress={handleDelete}
-								className="p-2 rounded-md flex flex-row gap-2 items-center"
-							>
-								<Feather
-									name="trash"
-									size={20}
-									color="#ef4444"
-								/>
-								<Text className="text-red-500">Delete</Text>
-							</Pressable>
-						</View>
-					)}
-				</View>
+
+				<PostActionSection
+					liked={liked}
+					likeCount={likeCount}
+					onLike={handleLikeUnlike}
+					onReply={handleReply}
+					onToggleMenu={toggleMenu}
+					onDelete={handleDelete}
+					showMenu={showMenu}
+					replyCount={postReplies.length}
+				/>
 
 				<View>
 					{replies.map((reply, index) => {
@@ -193,4 +172,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default postId
+export default post
