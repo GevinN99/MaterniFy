@@ -1,8 +1,8 @@
 import axios from "axios"
 
 // const API_URL = "http://localhost:8070/api"
-// const API_URL = "http://192.168.43.214:8070/api"
-const API_URL = "http://10.31.30.84:8070/api"
+const API_URL = "http://192.168.43.214:8070/api"
+// const API_URL = "http://10.31.30.84:8070/api"
 
 // Fetch posts from all the communities the user have joined
 export const getPostsFromAllUsersCommunities = async () => {
@@ -41,6 +41,12 @@ export const createPost = async (data) => {
 	return response.data
 }
 
+export const getPostById = async (postId) => {
+	const response = await axios.get(`${API_URL}/community-posts/post/${postId}`)
+	// console.log(response)
+	return response.data
+}
+
 export const joinCommunity = async (communityId) => {	
 	const response = await axios.post(`${API_URL}/communities/join/${communityId}`)
 	// console.log(response)
@@ -55,6 +61,25 @@ export const leaveCommunity = async (communityId) => {
 
 export const likeUnlikePost = async (postId) => {	
 	const response = await axios.post(`${API_URL}/community-posts/like-unlike/${postId}`)
+	// console.log(response)
+	return response.data
+}
+
+export const createReply = async (data) => {	
+	const response = await axios.post(`${API_URL}/community-replies/create/`, data)
+	// console.log(response)
+	return response.data
+}
+export const getRepliesForPost = async (postId) => {
+	const response = await axios.get(`${API_URL}/community-replies/post/${postId}`)
+	// console.log(response)
+	return response.data
+}
+
+export const likeUnlikeReply = async (replyId) => {
+	const response = await axios.post(
+		`${API_URL}/community-replies/like-unlike/${replyId}`
+	)
 	// console.log(response)
 	return response.data
 }

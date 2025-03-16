@@ -1,16 +1,6 @@
 const express = require('express')
-const userModel = require('../models/userModel.js')
-const {
-	getAllCommunities,
-	// getUserCommunities,
-	// getUserAndNonUserCommunities,
-	getCommunityById,
-	createCommunity,
-	// updateCommunity,
-	deleteCommunity,
-	joinCommunity,
-	leaveCommunity,
-} = require('../controllers/community-controllers/communityController.js')
+const userModel = require("../../models/userModel.js")
+const communityController = require('../../controllers/community-controllers/communityController')
 const router = express.Router()
 
 // Helper function to inject dummy user for testing
@@ -39,28 +29,28 @@ const injectDummyUser = async (req, res, next) => {
 }
 
 // Route to get all communities
-router.get('/:userId', injectDummyUser ,getAllCommunities)
+router.get('/:userId', injectDummyUser ,communityController.getAllCommunities)
 
 // Toute to get user communities
-// router.get("/user/:userId", injectDummyUser, getUserCommunities)
+// router.get("/user/:userId", injectDummyUser, communityController.getUserCommunities)
 
 // Route to get both user and non-user communities
-// router.get('/userandnonuser/:userId', injectDummyUser, getUserAndNonUserCommunities)
+// router.get('/userandnonuser/:userId', injectDummyUser, communityController.getUserAndNonUserCommunities)
 
 
 // Route to get a single community by ID
-router.get('/community/:communityId', getCommunityById)
+router.get('/community/:communityId', communityController.getCommunityById)
 
 // Route to create a new community
-router.post('/create', injectDummyUser, createCommunity)
+router.post('/create', injectDummyUser, communityController.createCommunity)
 
 // Route to update a community by ID
 // router.put('/:communityId', updateCommunity)
 
 // Route to delete a community by ID
-router.delete('/delete/:communityId', deleteCommunity)
+router.delete('/delete/:communityId', communityController.deleteCommunity)
 
-router.post("/join/:communityId", injectDummyUser, joinCommunity)
-router.post("/leave/:communityId", injectDummyUser ,leaveCommunity)
+router.post("/join/:communityId", injectDummyUser, communityController.joinCommunity)
+router.post("/leave/:communityId", injectDummyUser ,communityController.leaveCommunity)
 
 module.exports = router

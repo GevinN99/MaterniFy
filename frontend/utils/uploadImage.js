@@ -1,29 +1,28 @@
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { storage } from "../firebaseConfig" // Adjust the import path as needed
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebaseConfig";
 
-const uploadImage = async (uri) => {
+const uploadImage = async (uri, folder = "profile_pics") => {
 	try {
-		// Convert the image to a blob
-		const response = await fetch(uri)
-		const blob = await response.blob()
+		// Convert image to blob
+		const response = await fetch(uri);
+		const blob = await response.blob();
 
-		// Extract the original file name from the URI
-		const fileName = uri.split("/").pop()
+		// Generate a unique filename
+		const fileName = `${Date.now()}-${uri.split("/").pop()}`;
 
-		// Create a reference to the storage location using the original file name
-		const storageRef = ref(storage, `community/${fileName}`)
+		// Create a reference for the storage path dynamically
+		const storageRef = ref(storage, `${folder}/${fileName}`);
 
-		// Upload the image
-		await uploadBytes(storageRef, blob)
+		// Upload the file
+		await uploadBytes(storageRef, blob);
 
 		// Get the download URL
-		const downloadURL = await getDownloadURL(storageRef)
-
-		return downloadURL
+		const downloadURL = await getDownloadURL(storageRef);
+		return downloadURL;
 	} catch (error) {
-		console.error("Error uploading image: ", error)
-		throw error
+		console.error("Error uploading image: ", error);
+		throw error;
 	}
-}
+};
 
-export default uploadImage
+export default uploadImage;

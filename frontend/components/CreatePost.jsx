@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react"
-import { Camera } from "lucide-react-native"
 import {
 	View,
 	Text,
@@ -8,17 +7,19 @@ import {
 	Image,
 	Modal,
 	StyleSheet,
+	ScrollView
 } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
-import { Alert } from "react-native"
 import { createPost, getAllCommunities } from "../api/communityApi"
 import uploadImage from "../utils/uploadImage"
 import CommunityPicker from "./CommunityPicker"
 import Feather from "@expo/vector-icons/Feather"
+import { useCommunity } from "../context/communityContext"
 
-const CreatePost = ({ visible, onClose }) => {		
+const CreatePost = ({ visible, onClose }) => {	
+	const {setUpdateTrigger} = useCommunity()
 	const [inputHeight, setInputHeight] = useState(30)
 	const [userCommunities, setUserCommunities] = useState(null)
 	const [loading, setLoading] = useState(false)
@@ -61,9 +62,7 @@ const CreatePost = ({ visible, onClose }) => {
 	}
 
 	const handleSubmit = async () => {
-		if (!postDetails.content) {
-			Alert.alert("Please fill in all fields")
-			console.log("fill all")
+		if (!postDetails.content) {			
 			return
 		}
 
@@ -78,6 +77,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 			const response = await createPost({ ...postDetails, imageUrl })			
 			setLoading(false)
+			setUpdateTrigger((prev) => !prev)
 			onClose()
 		} catch (error) {
 			console.log(error)
@@ -94,6 +94,7 @@ const CreatePost = ({ visible, onClose }) => {
 		>
 			<View style={styles.modal}>
 				<SafeAreaView className="w-11/12 bg-white rounded-lg">
+					<ScrollView>
 					<View className="flex-row items-center p-4">
 						<TouchableOpacity onPress={onClose}>
 							<Ionicons
@@ -197,7 +198,8 @@ const CreatePost = ({ visible, onClose }) => {
 								{loading ? "Posting..." : "Post"}
 							</Text>
 						</TouchableOpacity>
-					</View>
+						</View>
+						</ScrollView>
 				</SafeAreaView>
 			</View>
 		</Modal>
