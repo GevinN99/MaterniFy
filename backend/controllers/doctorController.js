@@ -92,10 +92,11 @@ exports.updateDoctorProfile = async (req, res) => {
     }
 };
 
-// Get all available doctors (online: true)
+// Get available doctors
 exports.getAvailableDoctors = async (req, res) => {
     try {
-        const doctors = await Doctor.find({ online: true }); // Fetch only doctors who are online
+        // Fetch only doctors who are online or available for consultation
+        const doctors = await Doctor.find({ online: true }); // Ensure you are filtering by the `online` field
         res.status(200).json(doctors);
     } catch (error) {
         console.error("Error fetching available doctors:", error);

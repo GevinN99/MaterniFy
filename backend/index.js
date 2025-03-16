@@ -9,9 +9,9 @@ const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const healthPlanRoutes = require('./routes/healthPlanRoutes');
 const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
-const postRoutes = require('./routes/PostRoutes');
-const communityRoutes = require('./routes/communityRoutes')
-const replyRoutes = require('./routes/replyRoutes')
+const postRoutes = require('./routes/community-routes/postRoutes');
+const communityRoutes = require('./routes/community-routes/communityRoutes')
+const replyRoutes = require('./routes/community-routes/replyRoutes')
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const availableSlotRoutes = require('./routes/availableSlotRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
@@ -30,7 +30,7 @@ app.use(
 	})
 )
 app.use(bodyParser.json())
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({extended: false}))
 app.use(cookieParser())
 app.use(
 	session({
@@ -45,8 +45,6 @@ app.use(
 connectDB();
 
 // Routes
-app.use('/api/users', userRoutes);
-app.use('/api/health-plans', healthPlanRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/available-slots', availableSlotRoutes);
 app.use('/api/doctors', doctorRoutes);

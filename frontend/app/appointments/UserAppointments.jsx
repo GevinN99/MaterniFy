@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    TouchableOpacity,
-    FlatList,
-    ActivityIndicator,
-    StyleSheet,
-    Alert,
-} from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, Alert } from "react-native";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
-import AvailableDoctors from "../../components/AvailableDoctors";
+import { getAvailableDoctors } from "../../api/doctorApi"; // Import the function to fetch doctors
 
 export default function UserAppointments() {
     const [appointments, setAppointments] = useState([]);
     const [bookedAppointments, setBookedAppointments] = useState([]);
+    const [doctors, setDoctors] = useState([]); // State to store available doctors
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("available");
 
@@ -24,12 +17,12 @@ export default function UserAppointments() {
             const data = await getAvailableAppointments();
             setAppointments(data);
         } catch (error) {
-            Alert.alert("Error", "Failed to load appointments.");
+            Alert.alert("Error", "Failed to load available appointments.");
         }
         setLoading(false);
     };
 
-    // Fetch User Booked Appointments
+    // Fetch User's Booked Appointments
     const loadBookedAppointments = async () => {
         setLoading(true);
         try {
@@ -41,9 +34,22 @@ export default function UserAppointments() {
         setLoading(false);
     };
 
+    // Fetch Available Doctors
+    const loadDoctors = async () => {
+        setLoading(true);
+        try {
+            const data = await getAvailableDoctors(); // Fetch available doctors
+            setDoctors(data);
+        } catch (error) {
+            Alert.alert("Error", "Failed to load doctors.");
+        }
+        setLoading(false);
+    };
+
     useEffect(() => {
         loadAvailableAppointments();
         loadBookedAppointments();
+        loadDoctors(); // Load doctors on component mount
     }, []);
 
     // Handle Appointment Booking
@@ -81,7 +87,7 @@ export default function UserAppointments() {
                     renderItem={({ item }) => (
                         <View style={styles.appointmentCard}>
                             <Text>{item.appointmentDate} at {item.appointmentTime}</Text>
-                            <Text>Doctor: {item.doctorId.fullName} ({item.doctorId.specialization})</Text>
+                            <Text>Doctor: {item.doctorId?.fullName} ({item.doctorId?.specialization})</Text>
 
                             {activeTab === "available" ? (
                                 <TouchableOpacity style={styles.bookButton} onPress={() => handleBookAppointment(item._id)}>
@@ -94,7 +100,25 @@ export default function UserAppointments() {
                     )}
                 />
             )}
-            <AvailableDoctors />
+
+            {/* Display Available Doctors */}
+            <View style={styles.doctorsContainer}>
+                <Text style={styles.title}>Available Doctors</Text>
+                {doctors.length === 0 ? (
+                    <Text>No available doctors at the moment.</Text>
+                ) : (
+                    <FlatList
+                        data={doctors}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => (
+                            <View style={styles.doctorCard}>
+                                <Text style={styles.doctorName}>{item.fullName}</Text>
+                                <Text>{item.specialization}</Text>
+                            </View>
+                        )}
+                    />
+                )}
+            </View>
         </View>
     );
 }
@@ -110,4 +134,7 @@ const styles = StyleSheet.create({
     bookButton: { marginTop: 5, backgroundColor: "#007AFF", padding: 5, borderRadius: 5 },
     bookText: { color: "white", textAlign: "center" },
     statusText: { fontWeight: "bold", color: "green", marginTop: 5 },
+    doctorsContainer: { marginTop: 20 },
+    doctorCard: { padding: 10, backgroundColor: "#f9f9f9", marginBottom: 10, borderRadius: 10, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
+    doctorName: { fontSize: 18, fontWeight: "bold" },
 });

@@ -33,15 +33,18 @@ exports.createAppointment = async (req, res) => {
     }
 };
 
-// Doctor can view their own appointments
+// Doctor fetches their appointments
 exports.getDoctorAppointments = async (req, res) => {
     try {
-        const doctorId = req.user.id; // Get doctor ID from authenticated token
+        const doctorId = req.user.id;
 
-        const appointments = await Appointment.find({ doctorId });
+        // Doctor fetches their own appointments
+        const appointments = await Appointment.find({ doctorId })
+            .populate("motherId", "fullName");
+
         res.status(200).json(appointments);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching doctor appointments:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -65,19 +68,20 @@ exports.cancelAppointment = async (req, res) => {
     }
 };
 
-// User sees available appointments (only future pending ones)
+// User fetches available appointments
 exports.getAvailableAppointments = async (req, res) => {
     try {
         const currentDate = new Date();
 
+        // Ensure you filter for future appointments and only pending ones
         const appointments = await Appointment.find({
-            status: "pending" || "any",
-            appointmentDate: { $gte: currentDate } // Filter out past appointments
+            status: { $in: ["pending", "any"] },
+            appointmentDate: { $gte: currentDate }, // Filter out past appointments
         });
 
         res.status(200).json(appointments);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching available appointments:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -114,20 +118,18 @@ exports.bookAppointment = async (req, res) => {
     }
 };
 
-// User sees their booked appointments
+// User fetches their booked appointments
 exports.getUserBookedAppointments = async (req, res) => {
     try {
-        const userId = req.user.id; // Get user ID from token
+        const userId = req.user.id;
 
-        const appointments = await Appointment.find({ motherId: userId }).populate("doctorId", "fullName specialization profileImage");
-
-        if (!appointments.length) {
-            return res.status(404).json({ message: "No booked appointments found" });
-        }
+        // Find booked appointments for the user
+        const appointments = await Appointment.find({ motherId: userId })
+            .populate("doctorId", "fullName specialization profileImage");
 
         res.status(200).json(appointments);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching user booked appointments:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
