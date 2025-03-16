@@ -90,13 +90,25 @@ function RootLayout() {
 						name="community/post/reply/[postId]"
 						options={{
 							header: () => (
-								<Header									
+								<Header
 									title="Reply"
 								/>
 							),
 
 						}}
 					/>
+                    <Stack.Screen
+                        name="HealthPlanScreen"
+                        options={{
+                            headerShown: false,
+                            // header: () => (
+                            // 	<Header
+                            // 		backLink="/"
+                            // 		title="Health Plan Screen"
+                            // 	/>
+                            // ),
+                        }}
+                    />
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>
