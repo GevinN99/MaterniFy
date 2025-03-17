@@ -26,15 +26,18 @@ exports.saveEpdsResponse = async (req, res) => {
 // Fetch user responses
 exports.fetchUserEpdsResponses = async (req, res) => {
     try {
-        const { userId } = req.params;
+        console.log("Function called");
+        const { id } = req.user;
 
-        const userScores = await EpdsResponse.find({ userId }).sort({ createdAt: -1 });
+        console.log("Fetching responses for user:", id);
+        const responses = await EpdsResponse.find({ userId: id }).sort({ createdAt: -1 }).select("-__v");
 
-        if (!responses.length) {
+        if (!responses || responses.length === 0) { //Check for empty array
             return res.status(404).json({ message: "No responses found for this user" });
         }
-
+        console.log("Responses found:", responses);
         res.status(200).json(responses);
+    
     } catch (error) {
         console.error("Error fetching user EPDS responses:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });

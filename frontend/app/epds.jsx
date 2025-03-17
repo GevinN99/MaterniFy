@@ -7,7 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { questions, getRecommendations } from "../api/epdsData";
 
 const epds = () => {
-    const AP_URL = "http://10.31.30.84:8070/api/quizzes";
+    // const AP_URL = "http://10.31.30.84:8070/api/quizzes";
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState([]);
     const [submitted, setSubmitted] = useState(false);
