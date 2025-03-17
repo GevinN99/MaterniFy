@@ -4,28 +4,28 @@ const {hashPassword, comparePassword, generateToken} = require('../middlewares/a
 // Register a new doctor
 exports.registerDoctor = async (req, res) => {
     try {
-        const {fullName, email, password, experienceYears, specialization} = req.body;
+        const { fullName, email, password, experienceYears, specialization, profileImage, online } = req.body;
 
-        const existingDoctor = await Doctor.findOne({email});
+        const existingDoctor = await Doctor.findOne({ email });
         if (existingDoctor) {
-            return res.status(400).json({message: 'Email already exists'});
+            return res.status(400).json({ message: 'Email already exists' });
         }
-
-        const hashedPassword = await hashPassword(password);
 
         const newDoctor = new Doctor({
             fullName,
             email,
-            password: hashedPassword,
+            password,
             experienceYears,
             specialization,
+            profileImage,
+            online
         });
 
         await newDoctor.save();
-        res.status(201).json({message: 'Doctor registered successfully'});
+        res.status(201).json({ message: 'Doctor registered successfully', doctor: newDoctor });
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: 'Internal server error'});
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 
