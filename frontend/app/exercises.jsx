@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
-import axios from "axios";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ExerciseCard from "../components/ExerciseCard";
+import axiosInstance from "../api/axiosInstance";
 
 const Exercises = ({ route }) => {
   const [exerciseList, setExerciseList] = useState([]);
@@ -11,7 +11,7 @@ const Exercises = ({ route }) => {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await axios.get(`http://192.168.76.56:8070/api/exercises/fetch-exercises`);
+        const response = await axiosInstance.get(`/exercises/fetch-exercises`);
         setExerciseList(response.data);
       } catch (error) {
         console.error("Error fetching exercises:", error);

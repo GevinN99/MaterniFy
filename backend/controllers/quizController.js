@@ -4,7 +4,7 @@ const EpdsResponse = require("../models/epdsTest/EpdsResponse");
 exports.saveEpdsResponse = async (req, res) => {
     try {
         const { userId, responses, totalScore } = req.body;
-
+        console.log(responses, userId, totalScore);
         if (!userId || !responses || totalScore === undefined) {
             return res.status(400).json({ message: "Invalid data provided" });
         }
@@ -16,7 +16,7 @@ exports.saveEpdsResponse = async (req, res) => {
         });
 
         await newResponse.save();
-        res.status(201).json({ message: "Response saved successfully" });
+        res.status(201).json({ message: "Response saved successfully", newResponse });
     } catch (error) {
         console.error("Error saving EPDS response:", error);
         res.status(500).json({ message: "Internal server error", error: error.message });
@@ -28,7 +28,7 @@ exports.fetchUserEpdsResponses = async (req, res) => {
     try {
         const { userId } = req.params;
 
-        const responses = await EpdsResponse.find({ userId }).sort({ createdAt: -1 });
+        const userScores = await EpdsResponse.find({ userId }).sort({ createdAt: -1 });
 
         if (!responses.length) {
             return res.status(404).json({ message: "No responses found for this user" });
