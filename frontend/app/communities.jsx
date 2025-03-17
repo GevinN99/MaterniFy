@@ -1,17 +1,11 @@
-import {
-	View,
-	Text,
-	TextInput,
-	ScrollView,
-	TouchableOpacity,
-} from "react-native"
-import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useState } from "react"
-import { Ionicons } from "@expo/vector-icons"
-import { useRouter } from "expo-router"
+import {ScrollView, Text, TextInput, TouchableOpacity, View,} from "react-native"
+import {SafeAreaView} from "react-native-safe-area-context"
+import React, {useState} from "react"
+import {Ionicons} from "@expo/vector-icons"
+import {useRouter} from "expo-router"
 import CommunityCard from "../components/CommunityCard"
 import CreateCommunity from "../components/CreateCommunity"
-import { useCommunity } from "../context/communityContext"
+import {useCommunity} from "../context/communityContext"
 import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
 
