@@ -72,6 +72,7 @@ const Landing = () => {
         </View>
     );
   };
+  
 
   return (
       <SafeAreaView style={styles.safeContainer}>
@@ -111,8 +112,8 @@ const Landing = () => {
               </TouchableOpacity>
             </View>
             <View style={styles.row}>
-              <TouchableOpacity onPress={() => router.push("/getstart")}>
-                <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
+              <TouchableOpacity onPress={() => router.push("/appointments/UserAppointments")}>
+              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
                 <Text style={styles.topic}>Appointments</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/getstart")}>

@@ -13,7 +13,8 @@ axiosInstance.interceptors.request.use(
     async (config) => {
         const token = await AsyncStorage.getItem("token");
         if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+            // config.headers.Authorization = `Bearer ${token}`;
+            config.headers.Authorization = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NjI0MTcxYmViMmQ5ODYzNDVhNzRiNiIsInVzZXJuYW1lIjoiZ2V2aW5AZ21haWwuY29tIiwicm9sZSI6Im1vdGhlciIsImlhdCI6MTc0MTU2NDk4NywiZXhwIjoxNzQxNTg2NTg3fQ.KrXD5hy_tt99sC2-5cpK80oLaMQMSQa_lwuplaW6YlY`;
         }
         return config;
     },

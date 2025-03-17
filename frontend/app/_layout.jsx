@@ -97,18 +97,22 @@ function RootLayout() {
 
 						}}
 					/>
-                    <Stack.Screen
-                        name="HealthPlanScreen"
-                        options={{
-                            headerShown: false,
-                            // header: () => (
-                            // 	<Header
-                            // 		backLink="/"
-                            // 		title="Health Plan Screen"
-                            // 	/>
-                            // ),
-                        }}
-                    />
+
+					<Stack.Screen name="appointments/UserAppointments" options={{ header: () => <Header backLink="/" title="My Appointments" /> }} />
+					<Stack.Screen name="appointments/DoctorAppointments" options={{ header: () => <Header backLink="/" title="Doctor Appointments" /> }} />
+
+          <Stack.Screen
+            name="HealthPlanScreen"
+            options={{
+            headerShown: false,
+             // header: () => (
+             // 	<Header
+             // 		backLink="/"
+             // 		title="Health Plan Screen"
+             // 	/>
+             // ),
+            }}
+           />
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>
