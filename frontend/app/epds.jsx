@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Image } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Image, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axiosInstance from "../api/axiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { questions, getRecommendations } from "../api/epdsData";
+import { questions, getRecommendations, getEncourageingMessage, getPersonalizedSelfCareTips } from "../api/epdsData";
+import { Ionicons } from "@expo/vector-icons";
 
 const epds = () => {
     // const AP_URL = "http://10.31.30.84:8070/api/quizzes";
@@ -90,61 +91,83 @@ const epds = () => {
     }
 
     if (submitted) {
+      const encouragingMessage = getEncourageingMessage(score);
+      const personalizedSelfCareTips = getPersonalizedSelfCareTips(score);
         return (
-            <SafeAreaView className="flex-1 bg-[#f0f4f8] p-6 justify-center items-center mt-4 mb-4">
-                <Image source={require('../assets/images/epdsHome.jpeg')} className="w-40 h-40 rounded-full mb-4" resizeMode="cover" />
-                <Text className="text-xl font-bold text-center mb-5">Your Score: {score}</Text>
-                <Text className="text-md text-center mb-6 text-[#3c6e71]">{recommendations.message}</Text>
-                {recommendations.actions.map((action, i) => (
-                    <TouchableOpacity 
-                        key={i} 
-                        onPress={() => router.push(`/exercises?score=${score}`)} 
-                        className="bg-[#0077b6] py-3 px-6 rounded-lg mb-3"
-                    >
-                        <Text className="text-white text-center">{action.label}</Text>
-                    </TouchableOpacity>
-                ))}
-            </SafeAreaView>
-        );
+          <SafeAreaView className="flex-1 bg-[#f0f4f8] p-6">
+            <ScrollView contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Image source={require('../assets/images/epdsHome.jpeg')} className="w-40 h-40 rounded-full mb-4" resizeMode="cover" />
+            <Text className="text-xl font-bold text-center mb-5">Your Score: {score}</Text>
+            <Text className="text-md text-center mb-6 text-[#3c6e71]">{recommendations.message}</Text>
+
+            {/* Personalized Encouraging Message */}
+            <Text className="text-center mb-4 text-[#3c6e71]">
+              {encouragingMessage}
+            </Text>
+
+            {/* Self-Care Tips */}
+            <View className="mb-6">
+              <Text className="text-lg font-semibold mb-2 text-[#3c6e71]">Self-Care Tips:</Text>
+              {personalizedSelfCareTips.map((tip, i) => (
+                <View className="flex-row items-center mb-1">
+                  <Ionicons name={tip.icon} size={20} color="#0077b6" className="mr-2" />
+                    <Text>{tip.text}</Text>
+                </View>
+            ))}
+            </View>
+
+             {recommendations.actions.map((action, i) => (
+                <TouchableOpacity
+                  key={i}
+                  onPress={() => router.push(`/exercises?score=${score}`)}
+                  className="bg-[#0077b6] py-3 px-6 rounded-lg mb-3"
+                >
+                <Text className="text-white text-center">{action.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </SafeAreaView>             
+      );
     }
 
-    const currentQuestion = questions?.[currentQuestionIndex] || {};
+    const currentQuestion = questions[currentQuestionIndex] || {};
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
     return (
-        <SafeAreaView className="flex-1 bg-[#f0f4f8] p-4">
-          <View className="flex-1 justify-center">
-            <View className="mb-6">
-              <View className="w-full bg-gray-200 h-2 rounded-full">
-                <View className="bg-[#0077b6] h-2 rounded-full" style={{ width: `${progress}%` }} />
-              </View>
-              <Text className="text-lg font-bold text-center text-[#005f73] mt-3">
-                Question {currentQuestionIndex + 1} of {questions?.length || 0}
-              </Text>
-            </View>
-            <View className="bg-white shadow-md p-6 rounded-lg">
-              <Text className="text-xl font-semibold mb-4 text-center text-[#3c6e71]">
-                {currentQuestion?.question || "Loading question..."}
-              </Text>
-              {currentQuestion?.options?.length > 0 ? (
-                currentQuestion.options.map((option, optionIndex) => (
-                  <TouchableOpacity
-                    key={optionIndex}
-                    onPress={() => handleAnswer(option.score)}
-                    className="p-4 my-2 rounded-md bg-gray-100 border border-gray-300"
-                  >
-                    <Text className="text-base text-center text-[#0077b6]">
-                      {option.text}
+      <SafeAreaView className="flex-1 bg-[#f0f4f8] p-4">
+            <View className="flex-1 justify-center">
+                <View className="mb-6">
+                    <View className="w-full bg-gray-200 h-2 rounded-full">
+                        <View className="bg-[#0077b6] h-2 rounded-full" style={{ width: `${progress}%` }} />
+                    </View>
+                    <Text className="text-lg font-bold text-center text-[#005f73] mt-3">
+                        Question {currentQuestionIndex + 1} of {questions?.length || 0}
                     </Text>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text className="text-center text-[#3c6e71]">Loading options...</Text>
-              )}
+                </View>
+                <View className="bg-white shadow-md p-6 rounded-lg">
+                    <Text className="text-xl font-semibold mb-4 text-center text-[#3c6e71]">
+                        {currentQuestion?.question || "Loading question..."}
+                    </Text>
+                    {currentQuestion?.options?.length > 0 ? (
+                        currentQuestion.options.map((option, optionIndex) => (
+                            <TouchableOpacity
+                                key={optionIndex}
+                                onPress={() => handleAnswer(option.score)}
+                                className="p-4 my-2 rounded-md bg-gray-100 border border-gray-300"
+                            >
+                                <Text className="text-base text-center text-[#0077b6]">
+                                    {option.text}
+                                </Text>
+                            </TouchableOpacity>
+                        ))
+                    ) : (
+                        <Text className="text-center text-[#3c6e71]">Loading options...</Text>
+                    )}
+                </View>
             </View>
-          </View>
         </SafeAreaView>
-      );
+    );
 };
 
 export default epds;
+

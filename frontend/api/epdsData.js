@@ -111,4 +111,42 @@ export const getRecommendations = (score) => {
       };
     }
   };
+
+export const getEncourageingMessage = (score) => {
+    if (score <= 9) {
+      return "You're doing well! Remember to take care of yourself.";
+    } else if (score <= 12) {
+      return "You're taking important steps to care for your mental health. Keep going!";
+    } else {
+      return "It's brave to acknowledge your feelings. Remember, you're not alone.";
+    }
+  };
+
+  export const getPersonalizedSelfCareTips = (score) => {
+    if (score <= 9) {
+      return [
+        { icon: "bed-outline", text: "Prioritize restful sleep." },
+        { icon: "walk-outline", text: "Take a daily walk for fresh air." },
+        { icon: "book-outline", text: "Read a book for relaxation." },
+      ];
+    } else if (score <= 12) {
+      return [
+        { icon: "restaurant-outline", text: "Focus on nutritious meals." },
+        { icon: "people-outline", text: "Connect with loved ones." },
+        { icon: "medkit-outline", text: "Consider talking to a therapist." },
+      ];
+    } else if (score <= 18) {
+      return [
+        { icon: "medkit-outline", text: "Seek professional mental health support." },
+        { icon: "chatbubbles-outline", text: "Join a support group." },
+        { icon: "calendar-outline", text: "Schedule time for self-care activities." },
+      ];
+    } else {
+      return [
+        { icon: "medkit-outline", text: "Contact a mental health professional immediately." },
+        { icon: "call-outline", text: "Call a crisis hotline." },
+        { icon: "home-outline", text: "Ensure a safe environment." },
+      ];
+    }
+  };
   
