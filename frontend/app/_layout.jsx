@@ -1,10 +1,10 @@
-import "../global.css";
-import { Stack } from "expo-router";
-import { AuthProvider } from "../context/AuthContext";
-import { CommunityProvider } from "../context/communityContext";
-import Header from "../components/Header";
+import "../global.css"
+import { Stack } from "expo-router"
+import { AuthProvider } from "../context/AuthContext"
+import { CommunityProvider } from "../context/communityContext"
+import Header from "../components/Header"
 
-function RootLayout() {
+function RootLayout() {	
 	return (
 		<AuthProvider>
 			<CommunityProvider>
@@ -12,7 +12,7 @@ function RootLayout() {
 					{/* This screen will show the tabs after login */}
 					<Stack.Screen
 						name="(tabs)"
-						options={{ headerShown: false }} // Hides the default header
+						options={{ headerShown: false }}
 					/>
 
 					{/* Auth Screens */}
@@ -35,7 +35,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									// backLink="/community"
+									backLink="/community"
 									title="Communities"
 								/>
 							),
@@ -55,7 +55,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									// backLink="/communities"
+									backLink="/communities"
 									title="Community Details"
 								/>
 							),
@@ -89,18 +89,14 @@ function RootLayout() {
 					<Stack.Screen
 						name="community/post/reply/[postId]"
 						options={{
-							header: () => (
-								<Header									
-									title="Reply"
-								/>
-							),
-
+							header: () => <Header title="Reply" />,
 						}}
 					/>
 				</Stack>
+				
 			</CommunityProvider>
 		</AuthProvider>
-	);
+	)
 }
 
-export default RootLayout;
+export default RootLayout

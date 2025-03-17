@@ -10,10 +10,14 @@ import uploadImage from "../utils/uploadImage"
 
 const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 	const [loading, setLoading] = useState(false)
-	const [communityDetails, setCommunityDetails] = useState({
+	const [errors, setErrors] = useState({
 		name: "",
 		description: "",
-		imageUrl: "",		
+		server: ""
+	})
+	const [communityDetails, setCommunityDetails] = useState({
+		name: "",
+		description: ""		
 	})
 	const [image, setImage] = useState(null)
 
@@ -27,34 +31,57 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 
 		if (!result.canceled) {
 			const imageUri = result.assets[0].uri
-			setImage(imageUri)			
+			setImage(imageUri)
 		}
 	}
 
-	const handleSubmit = async () => {
-		if (!communityDetails.name || !communityDetails.description) {
-			Alert.alert("Please fill in all fields")
-			return
+	const handleSubmit = async () => {			
+		// Reset errors
+		setErrors({ name: "", description: "", server: "" })	
+		
+		let hasErrors = false
+
+		if (!communityDetails.name.trim()) {
+			setErrors((prevErros) => ({ ...prevErros, name: "Community name is required" }))			
+			hasErrors = true
 		}
 
+		if (!communityDetails.description.trim()) {
+			setErrors((prevErros) => ({ ...prevErros, description: "Community description is required" }))			
+			hasErrors = true
+		}		
+
+		if (hasErrors) {			
+			return
+		}	
+		
 		setLoading(true)
 
 		try {
-			let imageUrl = ""
+			
+			let imageUrl =
+				"https://firebasestorage.googleapis.com/v0/b/maternify-4de04.firebasestorage.app/o/other%2F3d-leadership-bunch-people-user-social-600nw-2431792393.webp?alt=media&token=18f8c074-0a4c-4c6a-aaee-0fdb24a9a783"
 
 			if (image) {
 				imageUrl = await uploadImage(image)
 			}
 
-			const response = await createCommunity({ ...communityDetails, imageUrl })
-			console.log(response)
+			const response = await createCommunity({ ...communityDetails, imageUrl })			
 			setLoading(false)
 			onCommunityCreated()
-			onClose()
+			handleClose()
 		} catch (error) {
+			setErrors({ ...errors, server: "Something went wrong! Try again later." })
 			console.log(error)
 			setLoading(false)
 		}
+	}
+
+	const handleClose = () => {
+		setCommunityDetails({ name: "", description: "" })
+		setImage(null)
+		setErrors({ name: "", description: "", server: "" })
+		onClose()
 	}
 
 	return (
@@ -62,12 +89,12 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 			animationType="fade"
 			transparent={true}
 			visible={visible}
-			onRequestClose={onClose}
+			onRequestClose={handleClose}
 		>
 			<View style={styles.modal}>
 				<SafeAreaView className="w-11/12 bg-white rounded-lg">
 					<View className="flex-row items-center mb-4 p-4">
-						<TouchableOpacity onPress={onClose}>
+						<TouchableOpacity onPress={handleClose}>
 							<Ionicons
 								name="close"
 								size={24}
@@ -83,8 +110,7 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 									<Image
 										source={{ uri: image }}
 										style={[styles.postImage]}
-										contentFit="cover"
-										placeholder={{ blurhash: communityDetails.blurHash }}
+										contentFit="cover"										
 										transition={1000}
 									/>
 									<TouchableOpacity
@@ -112,34 +138,52 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 							)}
 						</View>
 						<View>
-							<Text className="font-light">Name</Text>
+							<Text className="font-light">Community Name</Text>
+							{errors.name && (
+								<Text className="text-red-500 mt-1">*{errors.name}</Text>
+							)}
 							<TextInput
 								className="mt-2 py-2 mb-1 outline-none border-b border-gray-300 focus:border-b-2 focus:border-blue-500 transition-all duration-300"
-								placeholder="Enter a name"
+								placeholder=""
 								maxLength={40}
 								value={communityDetails.name}
-								onChangeText={(text) =>
+								onChangeText={(text) => {
 									setCommunityDetails((prev) => ({ ...prev, name: text }))
+									setErrors((prevErrors) => ({
+										...prevErrors,
+										name: "",
+									}))
+								}
+									
 								}
 							/>
 						</View>
 
 						<View>
 							<Text className="font-light">Description</Text>
+							{errors.description && (
+								<Text className="text-red-500 mt-1">*{errors.description}</Text>
+							)}
 							<TextInput
 								className="mt-2 py-2 mb-1 outline-none border-b border-gray-300 focus:border-b-2 focus:border-blue-500 transition-all duration-300"
 								placeholder=""
 								maxLength={100}
 								value={communityDetails.description}
 								multiline={true}
-								onChangeText={(text) =>
+								onChangeText={(text) => {
 									setCommunityDetails((prev) => ({
 										...prev,
 										description: text,
 									}))
+									setErrors((prevErrors) => ({
+										...prevErrors,
+										description: "",
+									}))
+								}
 								}
 							/>
 						</View>
+						{errors.server && <Text className="text-red-500">{errors.server }</Text>}
 						<TouchableOpacity
 							className="bg-blue-400 items-center py-3 rounded-md"
 							onPress={handleSubmit}
@@ -162,6 +206,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "rgba(0, 0, 0, 0.5)",
 		justifyContent: "center",
 		alignItems: "center",
+		zIndex: 1,
 	},
 
 	postImage: {

@@ -5,6 +5,7 @@ import {
 	leaveCommunity,
 	getPostsFromAllUsersCommunities,
 } from "../api/communityApi"
+import getUserId from "../utils/getUserId"
 
 const CommunityContext = createContext()
 
@@ -13,41 +14,37 @@ export const CommunityProvider = ({ children }) => {
 	const [nonUserCommunities, setNonUserCommunities] = useState([])
 	const [posts, setPosts] = useState([])
 	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(null)
-	const [updateTrigger, setUpdateTrigger] = useState(false)	
+	const [error, setError] = useState(null)	
 	const [selectedPost, setSelectedPost] = useState(null)
 
 	useEffect(() => {
-		const fetchCommunities = async () => {
-			try {
+		console.log("running the function")
+		fetchData()
+	}, [])
+
+	const fetchData = async (fetchType = "both") => {
+		setLoading(true)
+		try {			
+			const userId = await getUserId()				
+
+			if (fetchType === "communities" || fetchType === "both") {
 				const { userCommunities, nonUserCommunities } =
-					await getAllCommunities()
+					await getAllCommunities(userId)
 				setUserCommunities(userCommunities || [])
-				setNonUserCommunities(nonUserCommunities || [])
-			} catch (error) {				
-				setError(error)
-				console.error(error)
-			} finally {
-				setLoading(false)
+				setNonUserCommunities(nonUserCommunities || [])				
 			}
-		}
 
-		const fetchPosts = async () => {
-			try {
-				const fetchedPosts = await getPostsFromAllUsersCommunities()
-				setPosts(fetchedPosts || [])
-			} catch (error) {
-				// setLoading(false)
-				setError(error)
-				console.error(error)
-			} finally {
-				setLoading(false)
+			if (fetchType === "posts" || fetchType === "both") {
+				const postsData = await getPostsFromAllUsersCommunities(userId)
+				setPosts(postsData || [])				
 			}
+		} catch (error) {
+			setError(error)
+			console.error(error)
+		} finally {
+			setLoading(false)
 		}
-
-		fetchCommunities()
-		fetchPosts()
-	}, [updateTrigger])	
+	}
 
 	// Set selected post
 	const selectPost = (post) => {
@@ -57,7 +54,18 @@ export const CommunityProvider = ({ children }) => {
 	const handleJoinCommunity = async (communityId) => {
 		try {
 			await joinCommunity(communityId)
-			setUpdateTrigger((prev) => !prev)
+			
+			setUserCommunities((prevCommunities) => [
+				...prevCommunities,
+				...nonUserCommunities.filter(
+					(community) => community._id === communityId
+				),
+			])
+			setNonUserCommunities((prevCommunities) =>
+				prevCommunities.filter((community) => community._id !== communityId)
+			)
+
+			fetchData("posts")
 		} catch (error) {
 			console.error(error)
 		}
@@ -66,17 +74,25 @@ export const CommunityProvider = ({ children }) => {
 	const handleLeaveCommunity = async (communityId) => {
 		try {
 			await leaveCommunity(communityId)
-			setUpdateTrigger((prev) => !prev)
+			
+			setUserCommunities((prevCommunities) =>
+				prevCommunities.filter((community) => community._id !== communityId)
+			)
+			setNonUserCommunities((prevCommunities) => [
+				...prevCommunities,
+				...userCommunities.filter((community) => community._id === communityId),
+			])
+
+			fetchData("posts")
 		} catch (error) {
 			console.error(error)
 		}
 	}
 
-	
-
 	return (
 		<CommunityContext.Provider
 			value={{
+				fetchData,
 				userCommunities,
 				nonUserCommunities,
 				posts,
@@ -84,9 +100,9 @@ export const CommunityProvider = ({ children }) => {
 				error,
 				handleJoinCommunity,
 				handleLeaveCommunity,
-				setUpdateTrigger,				
+				// setUpdateTrigger,
 				selectPost,
-				selectedPost				
+				selectedPost,
 			}}
 		>
 			{children}

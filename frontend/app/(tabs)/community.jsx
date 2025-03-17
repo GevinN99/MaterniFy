@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Pressable } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import CommunityHeader from "../../components/CommunityHeader"
 import Post from "../../components/Post"
 import ErrorMessage from "../../components/ErrorMessage"
@@ -10,9 +10,14 @@ import LoadingSpinner from "../../components/LoadingSpinner"
 import { useRouter } from "expo-router"
 
 const Community = () => {
-	const { posts, loading, error, selectPost } = useCommunity()
+	const { fetchData, posts, loading, error, selectPost } = useCommunity()
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const router = useRouter()
+
+	useEffect(() => {
+		// Ftech posts and communties
+		fetchData() 
+	}, [])
 
 	const handleNavigation = (postId, post) => { 	
 		selectPost(post)
@@ -22,7 +27,7 @@ const Community = () => {
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="px-4 pb-28">
+			<ScrollView className="px-4">
 				<CommunityHeader />
 				<View className="flex flex-row justify-between">
 					<Text className="text-lg font-bold my-2">Your feed</Text>

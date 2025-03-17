@@ -1,15 +1,16 @@
 import { View, Text, StyleSheet } from "react-native"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Image } from "expo-image"
 import { likeUnlikePost } from "../api/communityApi"
 import { useCommunity } from "../context/communityContext"
 import { useRouter } from "expo-router"
 import { timeAgo } from "../utils/timeAgo"
 import PostActionSection from "./PostActionSection"
+import getUserId from "../utils/getUserId"
 
 const Post = ({ post, community }) => {
 	const router = useRouter()
-	const { selectPost } = useCommunity()	
+	const { selectPost } = useCommunity()
 	const {
 		_id: postId,
 		likes,
@@ -18,20 +19,27 @@ const Post = ({ post, community }) => {
 		createdAt,
 		imageUrl,
 		content,
-		replies
-	} = post
-	const { setUpdateTrigger } = useCommunity()
+		replies,
+	} = post	
 	const [showMenu, setShowMenu] = useState(false)
 	const [likeCount, setLikeCount] = useState(likes.length)
-	const usertest = "67bc9ceff607c265056765af"
-	const [liked, setLiked] = useState(likes.includes(usertest))
+	const [user, setUser] = useState("")	
+	const [liked, setLiked] = useState(likes.includes(user))
+
+	useEffect(() => {
+		const fetchUserId = async () => {
+			const id = await getUserId() 
+			setUser(id)		
+			setLiked(likes.includes(id))
+		}
+		fetchUserId()
+	}, [])
 
 	const handleLikeUnlike = async () => {
 		try {
 			const { likes } = await likeUnlikePost(postId)
 			setLikeCount(likes.length)
-			setLiked(likes.includes(usertest))
-			setUpdateTrigger((prev) => !prev)
+			setLiked(likes.includes(user))			
 		} catch (error) {
 			console.error(error)
 		}
@@ -57,7 +65,7 @@ const Post = ({ post, community }) => {
 					source={{ uri: userId.profileImage }}
 					style={styles.profileImage}
 				/>
-				<View className="ml-4 flex gap-1">
+				<View className="ml-4 flex">
 					<View className="flex flex-row gap-1">
 						<Text className="font-bold">{userId.fullName}</Text>
 						<Text>•</Text>
@@ -66,10 +74,9 @@ const Post = ({ post, community }) => {
 
 					<Text className="text-gray-500">
 						@
-						{(communityId.name ||
-							community.name)
-								.replace(/\s+/g, "")
-								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+						{(communityId.name || community.name)
+							.replace(/\s+/g, "")
+							.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 					</Text>
 				</View>
 			</View>

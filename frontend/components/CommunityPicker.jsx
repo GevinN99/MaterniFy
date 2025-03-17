@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native"
 import { Image } from "expo-image"
-import { ChevronDown, ChevronUp } from "lucide-react-native"
 
 const CommunityPicker = ({ items, selectedValue, onValueChange }) => {
 	const [dropdownVisible, setDropdownVisible] = useState(false)
