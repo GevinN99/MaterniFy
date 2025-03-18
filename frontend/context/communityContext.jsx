@@ -1,42 +1,47 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 import {
 	getAllCommunities,
 	joinCommunity,
 	leaveCommunity,
 	getPostsFromAllUsersCommunities,
 } from "../api/communityApi"
-import getUserId from "../utils/getUserId"
+import { AuthContext } from "./AuthContext"
 
 const CommunityContext = createContext()
 
 export const CommunityProvider = ({ children }) => {
+	const { userId } = useContext(AuthContext)
 	const [userCommunities, setUserCommunities] = useState([])
 	const [nonUserCommunities, setNonUserCommunities] = useState([])
 	const [posts, setPosts] = useState([])
 	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(null)	
+	const [error, setError] = useState(null)
 	const [selectedPost, setSelectedPost] = useState(null)
 
 	useEffect(() => {
-		console.log("running the function")
-		fetchData()
-	}, [])
+		console.log("userId", userId)
+		if (userId) {
+			fetchData(userId)
+		}
+	}, [userId])
 
-	const fetchData = async (fetchType = "both") => {
+	const fetchData = async (userId ,fetchType = "both") => {
 		setLoading(true)
-		try {			
-			const userId = await getUserId()				
-
+		console.log("fetchType data", fetchType)
+		
+		try {
 			if (fetchType === "communities" || fetchType === "both") {
+				console.log("Fetching communities: ")
 				const { userCommunities, nonUserCommunities } =
 					await getAllCommunities(userId)
 				setUserCommunities(userCommunities || [])
-				setNonUserCommunities(nonUserCommunities || [])				
+				setNonUserCommunities(nonUserCommunities || [])
 			}
 
 			if (fetchType === "posts" || fetchType === "both") {
+				console.log("Fetching posts: ")
 				const postsData = await getPostsFromAllUsersCommunities(userId)
-				setPosts(postsData || [])				
+				setPosts(postsData || [])
 			}
 		} catch (error) {
 			setError(error)
@@ -54,7 +59,7 @@ export const CommunityProvider = ({ children }) => {
 	const handleJoinCommunity = async (communityId) => {
 		try {
 			await joinCommunity(communityId)
-			
+
 			setUserCommunities((prevCommunities) => [
 				...prevCommunities,
 				...nonUserCommunities.filter(
@@ -74,7 +79,7 @@ export const CommunityProvider = ({ children }) => {
 	const handleLeaveCommunity = async (communityId) => {
 		try {
 			await leaveCommunity(communityId)
-			
+
 			setUserCommunities((prevCommunities) =>
 				prevCommunities.filter((community) => community._id !== communityId)
 			)
