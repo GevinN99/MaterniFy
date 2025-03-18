@@ -2,6 +2,8 @@ import { View, Text, ScrollView, TouchableOpacity, Pressable } from "react-nativ
 import { SafeAreaView } from "react-native-safe-area-context"
 import React, { useState, useEffect } from "react"
 import CommunityHeader from "../../components/CommunityHeader"
+//import Post from "../../components/Post"
+import { getPostsFromAllUsersCommunities } from "../../api/communityApi"
 import Post from "../../components/Post"
 import ErrorMessage from "../../components/ErrorMessage"
 import CreatePost from "../../components/CreatePost"

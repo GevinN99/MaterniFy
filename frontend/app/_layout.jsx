@@ -1,10 +1,10 @@
-import "../global.css"
-import { Stack } from "expo-router"
-import { AuthProvider } from "../context/AuthContext"
-import { CommunityProvider } from "../context/communityContext"
-import Header from "../components/Header"
+import "../global.css";
+import {Stack} from "expo-router";
+import {AuthProvider} from "../context/AuthContext";
+import {CommunityProvider} from "../context/communityContext";
+import Header from "../components/Header";
 
-function RootLayout() {	
+function RootLayout() {
 	return (
 		<AuthProvider>
 			<CommunityProvider>
@@ -92,11 +92,29 @@ function RootLayout() {
 							header: () => <Header title="Reply" />,
 						}}
 					/>
+
+                    <Stack.Screen name="appointments/UserAppointments"
+                                  options={{header: () => <Header backLink="/" title="My Appointments"/>}}/>
+                    <Stack.Screen name="appointments/DoctorAppointments"
+                                  options={{header: () => <Header backLink="/" title="Doctor Appointments"/>}}/>
+
+                    <Stack.Screen
+                        name="HealthPlanScreen"
+                        options={{
+                            headerShown: false,
+                            // header: () => (
+                            // 	<Header
+                            // 		backLink="/"
+                            // 		title="Health Plan Screen"
+                            // 	/>
+                            // ),
+                        }}
+                    />
 				</Stack>
-				
+
 			</CommunityProvider>
 		</AuthProvider>
-	)
+    );
 }
 
-export default RootLayout
+export default RootLayout;

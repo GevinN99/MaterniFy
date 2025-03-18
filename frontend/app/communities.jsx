@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
 import CreateCommunity from "../components/CreateCommunity"
-import { useCommunity } from "../context/communityContext"
+import {useCommunity} from "../context/communityContext"
 import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import Feather from "@expo/vector-icons/Feather"
@@ -86,7 +86,7 @@ const Communities = () => {
 					</View>
 
 					<View className="flex gap-4 p-4">
-						{searchResults.length === 0 && searchQuery.trim() !== "" ? (							
+						{searchResults.length === 0 && searchQuery.trim() !== "" ? (
 							<View className="flex flex-row gap-4 items-center justify-center py-6">
 								<Feather
 									name="alert-circle"

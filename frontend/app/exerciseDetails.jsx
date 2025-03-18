@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Speech from "expo-speech";
 import { useRoute } from "@react-navigation/native";
+import { Play, Square } from "lucide-react-native";
 
 const exerciseDetails = () => {
     const route = useRoute();
@@ -66,8 +67,10 @@ const exerciseDetails = () => {
             {exercise.title}
           </Text>
     
-          {/* Description */}
-          <Text className="text-gray-600 mb-4">{exercise.description}</Text>
+         {/* Description Box */}
+         <View className="bg-maternifyLightBlue p-4 rounded-2xl shadow-md">
+          <Text className="text-gray-700">{exercise.description}</Text>
+         </View>
     
           {/* Instructions Header */}
           <Text className="text-lg font-semibold text-maternifyBlue mb-2">
@@ -85,29 +88,31 @@ const exerciseDetails = () => {
           </View>
     
           {/* Play / Stop Buttons */}
-          <View className="flex-row justify-center space-x-4">
-            {!isSpeaking ? (
-              <TouchableOpacity
-                onPress={handlePlayAudio}
-                className="bg-maternifyBlue p-3 rounded-full w-40 shadow-md"
-              >
-                <Text className="text-white text-center font-semibold bg-maternifyBlue">
-                  Play Audio
-                </Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={handleStopAudio}
-                className="bg-red-500 p-3 rounded-full w-40 shadow-md"
-              >
-                <Text className="text-white text-center font-semibold">
-                  Stop Audio
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </SafeAreaView>
-      );
-    };
+          <View className="flex-row justify-center space-x-4 mt-6">
+        {!isSpeaking ? (
+          <TouchableOpacity
+            onPress={handlePlayAudio}
+            className="bg-maternifyBlue p-4 rounded-full w-40 flex-row justify-center items-center shadow-md"
+          >
+            <Play color="white" size={20} />
+            <Text className="text-white text-center font-semibold ml-2">
+              Play Audio
+            </Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={handleStopAudio}
+            className="bg-red-500 p-4 rounded-full w-40 flex-row justify-center items-center shadow-md"
+          >
+            <Square color="white" size={20} />
+            <Text className="text-white text-center font-semibold ml-2">
+              Stop Audio
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </SafeAreaView>
+  );
+};
 
 export default exerciseDetails;
