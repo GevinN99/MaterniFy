@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import { createPost } from "../api/communityApi"
-import uploadImage from "../utils/uploadImage"
+import { uploadImageToFirebase } from "../utils/firebaseImage"
 import CommunityPicker from "./CommunityPicker"
 import Feather from "@expo/vector-icons/Feather"
 import { useCommunity } from "../context/communityContext"
@@ -24,7 +24,7 @@ const CreatePost = ({ visible, onClose }) => {
 	const [loading, setLoading] = useState(false)
 	const [postDetails, setPostDetails] = useState({
 		content: "",
-		communityId: "",		
+		communityId: "",
 	})
 	const [errors, setErrors] = useState({
 		content: "",
@@ -44,10 +44,9 @@ const CreatePost = ({ visible, onClose }) => {
 			setImage(result.assets[0].uri)
 			console.log(result)
 		}
-	}	
+	}
 
-	const handleSubmit = async () => {	
-		console.log(postDetails.content)
+	const handleSubmit = async () => {
 		setErrors({ content: "", community: "", server: "" })
 
 		let hasErrors = false
@@ -70,7 +69,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 		if (hasErrors) {
 			return
-		}	
+		}
 
 		setLoading(true)
 
@@ -78,13 +77,13 @@ const CreatePost = ({ visible, onClose }) => {
 			let imageUrl = ""
 
 			if (image) {
-				imageUrl = await uploadImage(image)
+				imageUrl = await uploadImageToFirebase(image, "community/posts")
 			}
 
 			const response = await createPost({ ...postDetails, imageUrl })
 			setLoading(false)
-			fetchData("posts")
-			handleClose()			
+			fetchData("posts")			
+			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
 			console.log(error)
@@ -151,9 +150,9 @@ const CreatePost = ({ visible, onClose }) => {
 											setErrors((prevErrors) => ({
 												...prevErrors,
 												content: "",
+												server: "",
 											}))
-										}
-										}
+										}}
 										style={{
 											height: Math.max(inputHeight, 40),
 											maxHeight: 200,
@@ -217,9 +216,9 @@ const CreatePost = ({ visible, onClose }) => {
 										setErrors((prevErrors) => ({
 											...prevErrors,
 											community: "",
+											server: "",
 										}))
-									}
-									}
+									}}
 								/>
 							</View>
 							{errors.server && (

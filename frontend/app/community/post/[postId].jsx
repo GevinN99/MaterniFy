@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useContext } from "react"
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"
 import { likeUnlikePost, getPostById } from "../../../api/communityApi"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -9,30 +9,20 @@ import { useCommunity } from "../../../context/communityContext"
 import { Image } from "expo-image"
 import { formatTime, formatDate } from "../../../utils/timeAgo"
 import PostActionSection from "../../../components/PostActionSection"
-import getUserId from "../../../utils/getUserId"
+import { AuthContext } from "../../../context/AuthContext"
 import LoadingSpinner from "../../../components/LoadingSpinner"
 
 const post = ({ community }) => {
+	const { userId: user } = useContext(AuthContext)
 	const { postId } = useLocalSearchParams()
 	const { fetchData } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [replies, setReplies] = useState([])
 	const [post, setPost] = useState(null)
-	const [likeCount, setLikeCount] = useState(0)
-	const [user, setUser] = useState("")
+	const [likeCount, setLikeCount] = useState(0)	
 	const [liked, setLiked] = useState(false)
 	const router = useRouter()
-	const { selectPost } = useCommunity()
-
-	const fetchUserId = async () => {
-		const id = await getUserId()
-		setUser(id)
-	}
-
-	// Fetch user ID on component mount
-	useEffect(() => {
-		fetchUserId()
-	}, [])
+	const { selectPost } = useCommunity()	
 
 	useFocusEffect(
 		useCallback(() => {
