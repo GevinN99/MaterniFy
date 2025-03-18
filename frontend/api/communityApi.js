@@ -1,8 +1,6 @@
 import axiosInstance from "./axiosInstance"
-import getUserId from "../utils/getUserId"
 
 // Fetch posts from all the communities the user have joined
-
 export const getPostsFromAllUsersCommunities = async (userId) => {			
 	const response = await axiosInstance.get(
 		`/community-posts/${userId}`
@@ -36,6 +34,12 @@ export const deleteCommunityById = async (communityId) => {
 
 export const createCommunity = async (data) => {
 	const response = await axiosInstance.post(`/communities/create`, data)
+	// console.log(response)
+	return response.data
+}
+
+export const updateCommunity = async (communityId, data) => {
+	const response = await axiosInstance.put(`/communities/update/${communityId}`, data)
 	// console.log(response)
 	return response.data
 }

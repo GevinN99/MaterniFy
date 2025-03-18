@@ -55,7 +55,7 @@ function RootLayout() {
 						options={{
 							header: () => (
 								<Header
-									backLink="/communities"
+									// backLink="/communities"
 									title="Community Details"
 								/>
 							),

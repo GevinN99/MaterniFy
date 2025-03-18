@@ -36,7 +36,7 @@ export default function Login() {
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);                
-                setUserId(response.userId);
+                setUserId(response.userId)                
                 router.replace("/"); // Redirect to Home Page after successful login
             } else {
                 Alert.alert("Login Failed", response.message || "Invalid Credentials");

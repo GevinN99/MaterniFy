@@ -30,8 +30,7 @@ const PostModel = require("../../models/community-models/postModel")
 // }
 
 // Get both user communities and non-user communities
-const getAllCommunities = async (req, res) => {
-	console.log('Fetching all communities')
+const getAllCommunities = async (req, res) => {	
 	try {
 		const { userId } = req.params
 		if (!userId) return res.status(400).json({ error: "User ID is required" })
@@ -60,7 +59,7 @@ const createCommunity = async (req, res) => {
 
 		if (!description) {
 			return res.status(400).json({ error: "Community description required" })
-		}		
+		}				
 
 		name = name.trim()
 		description = description.trim()
@@ -84,6 +83,57 @@ const createCommunity = async (req, res) => {
 		res.status(500).json({ error: "Failed to create community" })
 	}
 }
+
+const updateCommunity = async (req, res) => {
+	try {
+		const { communityId } = req.params
+		let { name, description, imageUrl } = req.body
+		const userId = req.user.id
+
+		// Find the community by ID
+		const community = await CommunityModel.findById(communityId)
+
+		if (!community) {
+			return res.status(404).json({ error: "Community not found" })
+		}
+
+		// Only the admin can update the community
+		if (community.admin.toString() !== userId) {
+			return res
+				.status(403)
+				.json({ error: "You are not authorized to update this community" })
+		}
+
+		// Validate the required fields
+		if (name) {
+			name = name.trim()
+			community.name = name
+		}
+
+		if (description) {
+			description = description.trim()
+			community.description = description
+		}
+
+		// Update the image URL if a new image is provided
+		if (imageUrl) {
+			community.imageUrl = imageUrl
+		}
+
+		// Save the updated community
+		await community.save()
+
+		// Send the response
+		res.status(200).json({
+			message: "Community updated successfully",
+			community,
+		})
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Failed to update community" })
+	}
+}
+
 
 // Get community by Id
 const getCommunityById = async (req, res) => {
@@ -205,6 +255,7 @@ const leaveCommunity = async (req, res) => {
 module.exports = {
 	getAllCommunities,
 	createCommunity,
+	updateCommunity,
 	getCommunityById,
 	deleteCommunity,
 	joinCommunity,

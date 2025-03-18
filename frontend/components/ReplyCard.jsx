@@ -1,29 +1,20 @@
 import { View, Text, StyleSheet, Pressable } from "react-native"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { Image } from "expo-image"
 import { likeUnlikeReply } from "../api/communityApi"
 import { timeAgo } from "../utils/timeAgo"
 import PostActionSection from "./PostActionSection"
 import { useRouter } from "expo-router"
-import getUserId from "../utils/getUserId"
+import { AuthContext } from "../context/AuthContext"
 
 const ReplyCard = ({ reply }) => {
+	const { userId:user } = useContext(AuthContext)
 	const router = useRouter()
 	const { content, userId, postId, createdAt, likes, _id: replyId, replies } = reply
-	const [likeCount, setLikeCount] = useState(likes.length)
-	const [user, setUser] = useState("")	
+	const [likeCount, setLikeCount] = useState(likes.length)	
 	const [liked, setLiked] = useState(likes.includes(user))
 	const [showMenu, setShowMenu] = useState(false)
 	const [showNestedReplies, setShowNestedReplies] = useState(false)
-	
-	useEffect(() => {
-		const fetchUserId = async () => {
-			const id = await getUserId()
-			setUser(id)
-			setLiked(likes.includes(id))
-		}
-		fetchUserId()
-	}, [])
 
 	const handleLikeUnlike = async () => {
 		try {
