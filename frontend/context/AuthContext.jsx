@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
             const storedUserId = await AsyncStorage.getItem("userId");
             if (token) {
                 setUser(token);
-                etUserId(storedUserId);
+                setUserId(storedUserId);
                 router.replace("/"); // Redirect to home page if user is logged in
             } else {
                 router.replace("/auth/Login"); // Redirect to login if no token

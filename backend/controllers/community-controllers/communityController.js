@@ -31,6 +31,7 @@ const PostModel = require("../../models/community-models/postModel")
 
 // Get both user communities and non-user communities
 const getAllCommunities = async (req, res) => {
+	console.log('Fetching all communities')
 	try {
 		const { userId } = req.params
 		if (!userId) return res.status(400).json({ error: "User ID is required" })

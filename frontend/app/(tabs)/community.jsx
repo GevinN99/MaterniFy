@@ -1,6 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity, Pressable } from "react-native"
+import {
+	View,
+	Text,
+	ScrollView,
+	TouchableOpacity,
+	Pressable,
+} from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import CommunityHeader from "../../components/CommunityHeader"
 //import Post from "../../components/Post"
 import { getPostsFromAllUsersCommunities } from "../../api/communityApi"
@@ -11,21 +17,15 @@ import { useCommunity } from "../../context/communityContext"
 import LoadingSpinner from "../../components/LoadingSpinner"
 import { useRouter } from "expo-router"
 
-const Community = () => {
+const Community = () => {	
 	const { fetchData, posts, loading, error, selectPost } = useCommunity()
 	const [isModalVisible, setIsModalVisible] = useState(false)
-	const router = useRouter()
+	const router = useRouter()	
 
-	useEffect(() => {
-		// Ftech posts and communties
-		fetchData() 
-	}, [])
-
-	const handleNavigation = (postId, post) => { 	
+	const handleNavigation = (postId, post) => {
 		selectPost(post)
 		router.push(`/community/post/${postId}`)
 	}
-
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
