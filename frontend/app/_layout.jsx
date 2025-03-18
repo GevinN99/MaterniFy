@@ -98,7 +98,7 @@ function RootLayout() {
 						}}
 					/>
                     <Stack.Screen
-                        name="HealthPlanScreen"
+                        name="HealthPlanScreen/post/reply/[postId]"
                         options={{
                             headerShown: false,
                             // header: () => (

@@ -101,7 +101,7 @@ const Landing = () => {
 
           <View style={styles.secContainer}>
             <View style={styles.row}>
-              <TouchableOpacity onPress={() => router.push("/getstart")}>
+              <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
                 <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
                 <Text style={styles.topic}>Health Plan</Text>
               </TouchableOpacity>
