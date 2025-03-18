@@ -1,5 +1,5 @@
-import axios from "axios"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8070/api"
 
@@ -20,4 +20,4 @@ axiosInstance.interceptors.request.use(
 	(error) => Promise.reject(error)
 )
 
-export default axiosInstance
+export default axiosInstance;
