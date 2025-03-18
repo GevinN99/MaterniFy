@@ -24,7 +24,7 @@ const CommunityHeader = () => {
 			</Pressable>
 			<Pressable onPress={() => router.push("communities")}>
 				<View>
-					<Text className="text-black font-bold bg-[#6DE6FF] px-3 py-1 rounded-md border-2 border-black">
+					<Text className="text-blue-500 font-bold bg-blue-200/50 px-3 py-1 rounded-md border-2 border-blue-500">
 						Communities
 					</Text>
 				</View>
