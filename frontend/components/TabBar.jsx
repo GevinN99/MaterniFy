@@ -35,9 +35,12 @@ const TabBar = ({ state, descriptors, navigation }) => {
 
 				const color = isFocused ? "#3b82f6" : "#6b7280";
 
-				const icon = options.tabBarIcon({
-					color,
-				});
+				// Safeguard: Check if tabBarIcon exists and is a function
+				const icon = typeof options.tabBarIcon === "function" ? (
+					options.tabBarIcon({ color })
+				) : (
+					<Feather name="alert-circle" size={24} color={color} /> // Fallback icon
+				);
 
 				return (
 					<TouchableOpacity

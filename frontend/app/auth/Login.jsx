@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -11,10 +11,9 @@ import { useRouter } from "expo-router";
 import { loginUser } from "../../api/authApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { AuthContext } from "../../context/AuthContext";
+import Feather from "@expo/vector-icons/Feather"; // For the doctor icon
 
 export default function Login() {
-    const { setUserId } = useContext(AuthContext);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -22,7 +21,6 @@ export default function Login() {
         password: "",
     });
 
-    // Handle Login Submission
     const handleLogin = async () => {
         if (!formData.email || !formData.password) {
             Alert.alert("Error", "Please fill in all fields!");
@@ -35,8 +33,8 @@ export default function Login() {
             const response = await loginUser(formData);
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
-                await AsyncStorage.setItem("userId", response.userId);                
-                setUserId(response.userId)                
+                await AsyncStorage.setItem("userId", response.userId);
+                await AsyncStorage.setItem("role", response.role);
                 router.replace("/"); // Redirect to Home Page after successful login
             } else {
                 Alert.alert("Login Failed", response.message || "Invalid Credentials");
@@ -76,15 +74,63 @@ export default function Login() {
             <TouchableOpacity onPress={() => router.push("/auth/Signup")}>
                 <Text style={styles.link}>Don't have an account? Sign Up</Text>
             </TouchableOpacity>
+
+            {/* Doctor Icon and Text at Bottom-Right */}
+            <TouchableOpacity
+                style={styles.doctorIcon}
+                onPress={() => router.push("/auth/DoctorLogin")}
+            >
+                <Feather name="user" size={30} color="#007AFF" />
+                <Text style={styles.doctorText}>Doctor Login</Text>
+            </TouchableOpacity>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, alignItems: "center", paddingVertical: 30, backgroundColor: "#F5F5F5" },
-    title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
-    input: { width: "90%", padding: 12, borderWidth: 1, borderColor: "#ccc", marginBottom: 10, borderRadius: 8 },
-    button: { backgroundColor: "#007AFF", padding: 15, borderRadius: 10, width: "90%", alignItems: "center" },
-    buttonText: { color: "#fff", fontWeight: "bold" },
-    link: { marginTop: 10, color: "#007AFF" },
+    container: {
+        flex: 1,
+        alignItems: "center",
+        paddingVertical: 30,
+        backgroundColor: "#F5F5F5",
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 20,
+    },
+    input: {
+        width: "90%",
+        padding: 12,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        marginBottom: 10,
+        borderRadius: 8,
+    },
+    button: {
+        backgroundColor: "#007AFF",
+        padding: 15,
+        borderRadius: 10,
+        width: "90%",
+        alignItems: "center",
+    },
+    buttonText: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    link: {
+        marginTop: 10,
+        color: "#007AFF",
+    },
+    doctorIcon: {
+        position: "absolute", // Use absolute positioning
+        bottom: 20,          // Distance from bottom
+        right: 20,           // Distance from right
+        alignItems: "center",
+    },
+    doctorText: {
+        color: "#007AFF",
+        fontSize: 16,
+        marginTop: 5,
+    },
 });
