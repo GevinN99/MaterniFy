@@ -7,6 +7,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [role, setRole] = useState(null);
+    const [userId, setUserId] = useState(null)
     const router = useRouter();
 
     useEffect(() => {
@@ -14,6 +15,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const token = await AsyncStorage.getItem("token");
                 const storedRole = await AsyncStorage.getItem("role");
+                const storedUserId = await AsyncStorage.getItem("userId")
                 console.log("AuthContext - Initial Load - Token:", token);
                 console.log("AuthContext - Initial Load - Role:", storedRole);
 

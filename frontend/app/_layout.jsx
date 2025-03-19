@@ -1,7 +1,7 @@
 import "../global.css";
-import {Stack} from "expo-router";
-import {AuthProvider} from "../context/AuthContext";
-import {CommunityProvider} from "../context/communityContext";
+import { Stack } from "expo-router";
+import { AuthProvider } from "../context/AuthContext";
+import { CommunityProvider } from "../context/communityContext";
 import Header from "../components/Header";
 
 function RootLayout() {
