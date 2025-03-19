@@ -1,15 +1,15 @@
 const express = require('express');
+const { registerDoctor, loginDoctor, getDoctorProfile, updateDoctorProfile, getAvailableDoctors } = require('../controllers/doctorController');
+const { authenticate } = require('../middlewares/auth');
 const router = express.Router();
-const doctorController = require('../controllers/doctorController');
-const auth = require('../middlewares/auth');
 
-// Public Routes
-router.post('/register', doctorController.registerDoctor);
-router.post('/login', doctorController.loginDoctor);
-router.get('/available', doctorController.getAvailableDoctors);
+// Public routes
+router.post('/register', registerDoctor);
+router.post('/login', loginDoctor);
 
-// Protected Routes
-router.get('/profile', auth.authenticate, doctorController.getDoctorProfile);
-router.put('/profile', auth.authenticate, doctorController.updateDoctorProfile);
+// Protected routes (require authentication)
+router.get('/profile', authenticate, getDoctorProfile);
+router.put('/profile', authenticate, updateDoctorProfile);
+router.get('/available', getAvailableDoctors);
 
 module.exports = router;

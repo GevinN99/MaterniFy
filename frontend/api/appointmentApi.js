@@ -1,6 +1,14 @@
-// api/appointmentApi.js
-
 import axiosInstance from "./axiosInstance";
+
+export const createAppointment = async (appointmentData) => {
+    try {
+        const response = await axiosInstance.post("/appointments", appointmentData);
+        return response.data;
+    } catch (error) {
+        console.error("Error creating appointment:", error.response?.data || error.message);
+        throw new Error(error.response?.data?.message || "Failed to create appointment");
+    }
+};
 
 export const getAvailableAppointments = async () => {
     try {

@@ -24,3 +24,7 @@ const userSchema = new mongoose.Schema({
 
 const UserModel = mongoose.model("User", userSchema)
 module.exports = UserModel
+
+
+
+//HomeLocation, PregnencyDate, PartnerDtails, Mothers age,
