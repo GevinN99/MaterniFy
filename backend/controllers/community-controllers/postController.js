@@ -1,8 +1,8 @@
-import PostModel from '../../models/community/postModel.js'
-import CommunityModel from '../../models/community/communityModel.js'
+const PostModel = require("../../models/community-models/postModel")
+const CommunityModel = require("../../models/community-models/communityModel")
 
 // Create a new post
-export const createPost = async (req, res) => {
+const createPost = async (req, res) => {
 	try {
 		console.log("creatign post")
 		// Get the content and communityId from the request body
@@ -38,15 +38,33 @@ export const createPost = async (req, res) => {
 		res
 			.status(201)
 			.json({ message: "Post created successfully", post: newPost })
-	} catch(error) {
+	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: 'Failed to create post' })
+		res.status(500).json({ error: "Failed to create post" })
 	}
 }
 
+// Get post by ID
+const getPostById = async (req, res) => {
+	try {
+		const { postId } = req.params
+		const post = await PostModel.findById(postId)
+			.populate("userId", "fullName profileImage")
+			.populate("communityId", "name")
+
+		if (!post) {
+			return res.status(404).json({ message: "Post not found" })
+		}
+
+		return res.status(200).json(post)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal server error" })
+	}
+}
 
 // Get all posts in a community
-export const getPostsByCommunity = async (req, res) => {
+const getPostsByCommunity = async (req, res) => {
 	try {
 		const { communityId } = req.params
 
@@ -54,24 +72,24 @@ export const getPostsByCommunity = async (req, res) => {
 		const community = await CommunityModel.findById(communityId)
 
 		if (!community) {
-			return res.status(404).json({ message: 'Community not found' })
+			return res.status(404).json({ message: "Community not found" })
 		}
 
 		const posts = await PostModel.find({ communityId: communityId }).sort({
 			createdAt: -1,
 		})
 
-		return res.status(200).json(posts)		
+		return res.status(200).json(posts)
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: 'Internal server error' })
+		res.status(500).json({ error: "Internal server error" })
 	}
 }
 
 // Get all posts belonging to all communities that the user has joined
-export const getPostsByAllCommunities = async (req, res) => {
+const getPostsByAllCommunities = async (req, res) => {
 	try {
-		const { userId } = req.params		
+		const { userId } = req.params
 
 		// Find the communities that the user is a member of
 		const userCommunities = await CommunityModel.find({
@@ -93,7 +111,7 @@ export const getPostsByAllCommunities = async (req, res) => {
 			.populate("userId", "fullName profileImage") // Populate user details
 			.populate("communityId", "name") // Populate community name
 			.sort({ createdAt: -1 })
-		
+
 		console.log(posts)
 		return res.status(200).json(posts)
 	} catch (error) {
@@ -103,25 +121,25 @@ export const getPostsByAllCommunities = async (req, res) => {
 }
 
 // // Delete a post
-export const deletePost = async (req, res) => {
+const deletePost = async (req, res) => {
 	try {
 		const { postId } = req.params
 
 		const post = await PostModel.findByIdAndDelete(postId)
 
 		if (!post) {
-			return res.status(404).json({ error: 'Post not found' })
+			return res.status(404).json({ error: "Post not found" })
 		}
 
-		res.status(200).json({ message: 'Post deleted successfully' })
+		res.status(200).json({ message: "Post deleted successfully" })
 	} catch (error) {
 		console.error(error)
-		res.status(500).json({ error: 'Internal server error' })
+		res.status(500).json({ error: "Internal server error" })
 	}
 }
 
 // Like or unlike a post
-export const likeUnlikePost = async (req, res) => {
+const likeUnlikePost = async (req, res) => {
 	try {
 		const { postId } = req.params
 		const userId = req.user.id
@@ -135,7 +153,9 @@ export const likeUnlikePost = async (req, res) => {
 		let message = ""
 		if (post.likes.includes(userId)) {
 			// Unlike the post
-			post.likes = post.likes.filter((id) => id.toString() !== userId.toString())
+			post.likes = post.likes.filter(
+				(id) => id.toString() !== userId.toString()
+			)
 			message = "Post unliked"
 		} else {
 			// Like the post
@@ -144,9 +164,18 @@ export const likeUnlikePost = async (req, res) => {
 		}
 
 		await post.save()
-		return res.status(200).json (post)
+		return res.status(200).json(post)
 	} catch (error) {
 		console.error("Error liking/unliking post:", error)
 		return res.status(500).json({ message: "Internal server error" })
 	}
+}
+
+module.exports = {
+	createPost,
+	getPostById,
+	getPostsByCommunity,
+	getPostsByAllCommunities,
+	deletePost,
+	likeUnlikePost,
 }

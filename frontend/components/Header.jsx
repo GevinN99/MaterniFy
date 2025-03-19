@@ -1,23 +1,33 @@
-import { View, Text, Animated, StyleSheet } from "react-native"
+import { View, Text, Pressable } from "react-native"
 import React from "react"
-import { Link } from "expo-router"
+// import { Link } from "expo-router"
 import { ArrowLeft, ChevronLeft } from "lucide-react-native"
 import Feather from "@expo/vector-icons/Feather"
+import { useRouter } from "expo-router"
 
 const Header = ({ backLink, title }) => {
+	const router = useRouter()
+
+	const handleBackPress = () => {
+		if (backLink) {
+			router.push(backLink) 
+		} else {
+			router.back() 
+		}
+	}
+
 	return (
 		<View className="px-4 pt-4 pb-6 flex flex-row items-center bg-[#E7EDEF]">
-			<Link
-				href={backLink}
+			<Pressable								
+				onPress={handleBackPress}
 				className="mr-2"
-			>
-				{/* <ChevronLeft strokeWidth={3}/> */}
+			>				
 				<Feather
 					name="chevron-left"
 					size={28}
 					color="black"
 				/>
-			</Link>
+			</Pressable>
 			<Text className="text-2xl font-bold">{title}</Text>
 		</View>
 	)

@@ -1,7 +1,7 @@
-import CommunityModel from "../../models/community/communityModel.js"
+const CommunityModel = require("../../models/community-models/communityModel")
 
 // Get all communities
-// export const getAllCommunities = async (req, res) => {
+// const getAllCommunities = async (req, res) => {
 // 	try {
 //         // Find all communities
 // 		const communities = await CommunityModel.find()
@@ -13,7 +13,7 @@ import CommunityModel from "../../models/community/communityModel.js"
 // }
 
 // Get user communities
-// export const getUserCommunities = async (req, res) => {
+// const getUserCommunities = async (req, res) => {
 // 	try {
 // 		const { userId } = req.params
 // 		if (!userId) return res.status(400).json({ error: "User ID is required" })
@@ -29,7 +29,7 @@ import CommunityModel from "../../models/community/communityModel.js"
 // }
 
 // Get both user communities and non-user communities
-export const getAllCommunities = async (req, res) => {
+const getAllCommunities = async (req, res) => {	
 	try {
 		const { userId } = req.params
 		if (!userId) return res.status(400).json({ error: "User ID is required" })
@@ -47,9 +47,9 @@ export const getAllCommunities = async (req, res) => {
 }
 
 // Create a new community
-export const createCommunity = async (req, res) => {
+const createCommunity = async (req, res) => {
 	try {
-		const { name, description, imageUrl } = req.body
+		let { name, description, imageUrl } = req.body
 		const admin = req.user.id
 
 		if (!name) {
@@ -60,30 +60,82 @@ export const createCommunity = async (req, res) => {
 			return res.status(400).json({ error: "Community description required" })
 		}				
 
+		name = name.trim()
+		description = description.trim()
+
 		const newCommunity = new CommunityModel({
 			name,
 			description,
-			imageUrl,			
+			imageUrl,
 			admin,
 			members: [admin],
 		})
 
 		await newCommunity.save()
 
-		res
-			.status(201)
-			.json({
-				message: "Community created successfully",
-				community: newCommunity,
-			})
+		res.status(201).json({
+			message: "Community created successfully",
+			community: newCommunity,
+		})
 	} catch (error) {
 		console.error(error)
 		res.status(500).json({ error: "Failed to create community" })
 	}
 }
 
+const updateCommunity = async (req, res) => {
+	try {
+		const { communityId } = req.params
+		let { name, description, imageUrl } = req.body
+		const userId = req.user.id
+
+		// Find the community by ID
+		const community = await CommunityModel.findById(communityId)
+
+		if (!community) {
+			return res.status(404).json({ error: "Community not found" })
+		}
+
+		// Only the admin can update the community
+		if (community.admin.toString() !== userId) {
+			return res
+				.status(403)
+				.json({ error: "You are not authorized to update this community" })
+		}
+
+		// Validate the required fields
+		if (name) {
+			name = name.trim()
+			community.name = name
+		}
+
+		if (description) {
+			description = description.trim()
+			community.description = description
+		}
+
+		// Update the image URL if a new image is provided
+		if (imageUrl) {
+			community.imageUrl = imageUrl
+		}
+
+		// Save the updated community
+		await community.save()
+
+		// Send the response
+		res.status(200).json({
+			message: "Community updated successfully",
+			community,
+		})
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Failed to update community" })
+	}
+}
+
+
 // Get community by Id
-export const getCommunityById = async (req, res) => {
+const getCommunityById = async (req, res) => {
 	try {
 		const { communityId } = req.params
 
@@ -97,7 +149,6 @@ export const getCommunityById = async (req, res) => {
 				},
 			})
 
-
 		if (!community) {
 			return res.status(404).json({ error: "Community not found" })
 		}
@@ -110,7 +161,7 @@ export const getCommunityById = async (req, res) => {
 }
 
 // Delete a community
-export const deleteCommunity = async (req, res) => {
+const deleteCommunity = async (req, res) => {
 	try {
 		const { communityId } = req.params
 
@@ -129,11 +180,11 @@ export const deleteCommunity = async (req, res) => {
 }
 
 // Join community
-export const joinCommunity = async (req, res) => {
+const joinCommunity = async (req, res) => {
 	try {
-		const {communityId } = req.params
+		const { communityId } = req.params
 		const userId = req.user.id
-		
+
 		const community = await CommunityModel.findById(communityId)
 		if (!community) {
 			return res.status(404).json({ message: "Community not found" })
@@ -151,10 +202,10 @@ export const joinCommunity = async (req, res) => {
 	}
 }
 
-export const leaveCommunity = async (req, res) => {
+const leaveCommunity = async (req, res) => {
 	try {
 		const { communityId } = req.params
-		const userId  = req.user.id
+		const userId = req.user.id
 		const community = await CommunityModel.findById(communityId)
 		if (!community) {
 			return res.status(404).json({ message: "Community not found" })
@@ -164,10 +215,22 @@ export const leaveCommunity = async (req, res) => {
 				.status(400)
 				.json({ message: "User is not a member of the community" })
 		}
-		community.members = community.members.filter((member) => member.toString() !== userId.toString())
+		community.members = community.members.filter(
+			(member) => member.toString() !== userId.toString()
+		)
 		await community.save()
 		res.status(200).json({ message: "Left community successfully" })
 	} catch (error) {
 		res.status(500).json({ message: "Server error", error })
 	}
+}
+
+module.exports = {
+	getAllCommunities,
+	createCommunity,
+	updateCommunity,
+	getCommunityById,
+	deleteCommunity,
+	joinCommunity,
+	leaveCommunity,
 }
