@@ -49,7 +49,7 @@ const getAllCommunities = async (req, res) => {
 // Create a new community
 const createCommunity = async (req, res) => {
 	try {
-		const { name, description, imageUrl } = req.body
+		let { name, description, imageUrl } = req.body
 		const admin = req.user.id
 
 		if (!name) {
