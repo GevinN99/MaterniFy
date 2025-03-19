@@ -1,54 +1,81 @@
 import "../global.css"
 import { Stack } from "expo-router"
 import { CommunityProvider } from "../context/communityContext"
-import Header from "../components/Header" 
+import { AuthProvider } from "../context/AuthContext"
+import Header from "../components/Header"
 
 function RootLayout() {
 	return (
-		<CommunityProvider>
-			<Stack>
-				<Stack.Screen
-					name="(tabs)"
-					options={{ headerShown: false }}
-				/>
+		<AuthProvider>
+			<CommunityProvider>
+				<Stack>
+					<Stack.Screen
+						name="(tabs)"
+						options={{ headerShown: false }}
+					/>
 
-				<Stack.Screen
-					name="communities"
-					options={{
-						header: () => (
-							<Header
-								backLink="/community"
-								title="Communities"
-							/>
-						),
-					}}
-				/>
+					<Stack.Screen
+						name="communities"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Communities"
+								/>
+							),
+						}}
+					/>
 
-				<Stack.Screen
-					name="community/[id]"
-					options={{
-						header: ({ route }) => (
-							<Header
-								backLink="/communities"
-								title="Community Details"
-							/>
-						),
-					}}
-				/>
+					<Stack.Screen
+						name="community/[communityId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/communities"
+									title="Community Details"
+								/>
+							),
+						}}
+					/>
 
-				<Stack.Screen
-					name="communityUserProfile/[userId]"
-					options={{
-						header: () => (
-							<Header
-								backLink="/community"
-								title="Community User Profile"
-							/>
-						),
-					}}
-				/>
-			</Stack>
-		</CommunityProvider>
+					<Stack.Screen
+						name="communityUser/[userId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Community User Profile"
+								/>
+							),
+						}}
+					/>
+
+					<Stack.Screen
+						name="community/post/[postId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Post"
+								/>
+							),
+						}}
+					/>
+
+					<Stack.Screen
+						name="community/post/reply/[postId]"
+						options={{
+							header: () => (
+								<Header
+									backLink="/community"
+									title="Reply"
+								/>
+							),
+						}}
+					/>
+				</Stack>
+			</CommunityProvider>
+		</AuthProvider>
 	)
 }
 

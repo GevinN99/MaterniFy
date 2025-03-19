@@ -8,6 +8,7 @@ const CommunityDetails = ({
 	handleJoin,
 	handleLeave,
 }) => {
+	const {imageUrl, name, description, admin, members } = community
 	const [isMember, setIsMember] = useState(initialIsMember)
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
@@ -25,25 +26,25 @@ const CommunityDetails = ({
 	return (
 		<View className="p-4 bg-white rounded-lg flex items-center">
 			<Image
-				source={community.imageUrl}
+				source={{ uri: imageUrl }}
 				style={styles.communityImage}
 				contentFit="cover"
 				placeholder={{ blurhash }}
-				transition={1000}
+				transition={300}
 			/>
-			<Text className="font-bold text-xl mt-2">{community.name}</Text>
-			<Text>{community.description}</Text>
+			<Text className="font-bold text-xl mt-2">{name}</Text>
+			<Text>{description}</Text>
 			<View className="flex flex-row items-center gap-2 my-4">
 				<Image
-					source={community.admin.profileImage}
+					source={admin.profileImage}
 					style={styles.adminImage}
 					contentFit="cover"
 					placeholder={{ blurhash }}
 					transition={1000}
 				/>
-				<Text>{community.admin.fullName}</Text>
+				<Text>{admin.fullName}</Text>
 			</View>
-			<Text>{community.members.length} Members</Text>
+			<Text>{members.length} {members.length === 1 ? "member" : "members"}</Text>
 			{isMember ? (
 				<TouchableOpacity onPress={() => handleLeaveCommunity()}>
 					<View className="bg-red-400 p-2 rounded-md mt-4">

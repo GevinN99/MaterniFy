@@ -1,0 +1,145 @@
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
+import React, { useEffect, useState } from "react"
+import { useLocalSearchParams } from "expo-router"
+import { likeUnlikePost, ge } from "../../../api/communityApi"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { getRepliesForPost } from "../../../api/communityApi"
+import ReplyCard from "../../../components/ReplyCard"
+import { useCommunity } from "../../../context/communityContext"
+import { Image } from "expo-image"
+import { useRouter } from "expo-router"
+import { formatTime, formatDate } from "../../../utils/timeAgo"
+import PostActionSection from "../../../components/PostActionSection"
+
+const postId = ({ community }) => {
+	const { postId } = useLocalSearchParams()
+	const { selectedPost, setUpdateTrigger } = useCommunity()
+	if (!selectedPost) {
+		return null
+	}
+	console.log(selectedPost)
+	const [showMenu, setShowMenu] = useState(false)
+	const [replies, setReplies] = useState([])
+
+	const { likes, userId, communityId, createdAt, imageUrl, content } =
+		selectedPost
+	const [likeCount, setLikeCount] = useState(likes.length)
+	const usertest = "67bc9ceff607c265056765af"
+	const [liked, setLiked] = useState(likes.includes(usertest))
+	const router = useRouter()
+	const { selectPost } = useCommunity()
+
+	useEffect(() => {
+		const fetchReplies = async () => {
+			try {
+				const response = await getRepliesForPost(postId)
+				setReplies(response)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+
+		fetchReplies()
+	}, [])
+
+	const handleLikeUnlike = async () => {
+		try {
+			const { likes } = await likeUnlikePost(postId)
+			setLikeCount(likes.length)
+			setLiked(likes.includes(usertest))
+			setUpdateTrigger((prev) => !prev)
+		} catch (error) {
+			console.error(error)
+		}
+	}
+
+	const toggleMenu = () => {
+		setShowMenu(!showMenu)
+	}
+
+	const handleDelete = () => {
+		// Delete post
+	}
+
+	const handleReply = () => {
+		selectPost(selectedPost)
+		router.push(`/community/post/reply/${postId}`)
+	}
+
+	return (
+		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
+			<ScrollView className="px-4 pb-28">
+				<View className="flex flex-row items-center">
+					<Image
+						source={{ uri: userId.profileImage }}
+						style={styles.profileImage}
+					/>
+					<View className="ml-4 flex gap-1">
+						{/* <View className="flex flex-row gap-1"> */}
+						<Text className="font-bold">{userId.fullName}</Text>
+						{/* </View> */}
+						<Text className="text-gray-500">
+							@
+							{communityId.name ||
+								community.name
+									.replace(/\s+/g, "")
+									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+						</Text>
+					</View>
+				</View>
+				<Text className="mt-4">{content}</Text>
+				{imageUrl && (
+					<View className="flex mt-4 items-center w-full overflow-hidden rounded-2xl">
+						<Image
+							source={{ uri: imageUrl }}
+							style={[styles.postImage]}
+							contentFit="cover"
+							transition={300}
+						/>
+					</View>
+				)}
+				<View className="flex flex-row mt-4 gap-1 border-b border-gray-400 pb-4">
+					<Text className="font-extralight">{formatTime(createdAt)}</Text>
+					<Text>•</Text>
+					<Text className="font-extralight">{formatDate(createdAt)}</Text>
+				</View>
+
+				<PostActionSection
+					liked={liked}
+					likeCount={likeCount}
+					onLike={handleLikeUnlike}
+					onReply={handleReply}
+					onToggleMenu={toggleMenu}
+					onDelete={handleDelete}
+					showMenu={showMenu}
+				/>
+
+				<View>
+					{replies.map((reply, index) => {
+						return (
+							<ReplyCard
+								key={index}
+								reply={reply}
+							/>
+						)
+					})}
+				</View>
+			</ScrollView>
+		</SafeAreaView>
+	)
+}
+
+const styles = StyleSheet.create({
+	profileImage: {
+		width: 40,
+		height: 40,
+		borderRadius: 50,
+	},
+	postImage: {
+		width: "100%",
+		height: undefined,
+		aspectRatio: 1,
+	},
+})
+
+export default postId

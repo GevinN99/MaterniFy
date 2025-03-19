@@ -2,6 +2,8 @@ import { Tabs } from "expo-router"
 import React from "react"
 import TabBar from "../../components/TabBar"
 import { House, Bot, UsersRound } from "lucide-react-native"
+import Octicons from "@expo/vector-icons/Octicons"
+import Feather from "@expo/vector-icons/Feather"
 
 export default function TabsLayout() {
 	return (
@@ -12,10 +14,15 @@ export default function TabsLayout() {
 					headerTitle: "Home",
 					headerShown: false,
 					tabBarLabel: "Home",
-					tabBarIcon: ({ focused }) => (
-						<House
-							className={`text-${focused ? "blue-500" : "gray-500"}`}
-							size={26}
+					tabBarIcon: ({ color }) => (
+						// <House
+						// 	className={`text-${focused ? "blue-500" : "gray-500"}`}
+						// 	size={26}
+						// />
+						<Feather
+							name="home"
+							size={24}							
+							color={color}
 						/>
 					),
 				}}
@@ -26,10 +33,15 @@ export default function TabsLayout() {
 					headerTitle: "Chatbot",
 					headerShown: false,
 					tabBarLabel: "Chatbot",
-					tabBarIcon: ({ focused, color }) => (
-						<Bot
-							className={`text-${focused ? "blue-500" : "gray-500"}`}
-							size={26}
+					tabBarIcon: ({ color }) => (
+						// <Bot
+						// 	className={`text-${focused ? "blue-500" : "gray-500"}`}
+						// 	size={26}
+						// />
+						<Octicons
+							name="dependabot"
+							size={24}							
+							color={color}
 						/>
 					),
 				}}
@@ -40,10 +52,15 @@ export default function TabsLayout() {
 					headerTitle: "Community",
 					headerShown: false,
 					tabBarLabel: "Community",
-					tabBarIcon: ({ focused, color }) => (	
-						<UsersRound
-							className={`text-${focused ? "blue-500" : "gray-500"}`}
-							size={26}
+					tabBarIcon: ({ color }) => (
+						// <UsersRound
+						// 	className={`text-${focused ? "blue-500" : "gray-500"}`}
+						// 	size={26}
+						// />
+						<Feather
+							name="users"
+							size={24}							
+							color={color}
 						/>
 					),
 				}}
