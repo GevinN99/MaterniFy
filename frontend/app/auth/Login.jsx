@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
     View,
     Text,
@@ -11,8 +11,10 @@ import { useRouter } from "expo-router";
 import { loginUser } from "../../api/authApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
+    const { setUserId } = useContext(AuthContext);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -33,7 +35,8 @@ export default function Login() {
             const response = await loginUser(formData);
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
-                await AsyncStorage.setItem("userId", response.userId);
+                await AsyncStorage.setItem("userId", response.userId);                
+                setUserId(response.userId)                
                 router.replace("/"); // Redirect to Home Page after successful login
             } else {
                 Alert.alert("Login Failed", response.message || "Invalid Credentials");
