@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
-  ActivityIndicator
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,41 +15,16 @@ import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
-import axiosInstance from "../../api/axiosInstance";
 
 const Landing = () => {
   const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
-  const [scores, setScores] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [scores, setScores] = useState([5, 10, 15]); // Dummy scores for testing
+
   const router = useRouter();
-  
-  useEffect(() => {
-    const fetchScores = async () => {
-      try {
-        // const token = await AsyncStorage.getItem("authToken");
-        // console.log("Retrieved token: ", token);
-        // if (!token) throw new Error("Authentication token missing");
 
-        const response = await axiosInstance.get("/quizzes/get-response" 
-          // headers: { Authorization: `Bearer ${token}` },
-        );
-
-        console.log("API response:", response.data);
-
-        setScores(response.data);
-      } catch (err) {
-        console.log("Error fetching scores:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchScores();
-  }, []);
+  const screenWidth = Dimensions.get("window").width;
 
   const handleSelectEmotion = (emotion) => {
     setSelectedEmotion(emotion);
@@ -98,21 +72,6 @@ const Landing = () => {
         </View>
     );
   };
-  
-
-  if (loading) return <ActivityIndicator size="large" color="#007AFF" />;
-  if (error)
-    return (
-        <View style={{ padding: 20 }}>
-          <Text style={{ color: "red", textAlign: "center" }}>Error: {error}</Text>
-        </View>
-    );
-
-    const screenWidth = Dimensions.get("window").width;
-    const chartData = {
-      labels: scores.map(item => new Date(item.createdAt).toLocaleDateString()),
-      datasets: [{ data: scores.map(item => item.totalScore) }],
-    };
 
   return (
       <SafeAreaView style={styles.safeContainer}>
@@ -142,18 +101,18 @@ const Landing = () => {
 
           <View style={styles.secContainer}>
             <View style={styles.row}>
-              <TouchableOpacity onPress={() => router.push("/getstart")}>
+              <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
                 <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
                 <Text style={styles.topic}>Health Plan</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push("/epdsstart")}>
+              <TouchableOpacity onPress={() => router.push("/getstart")}>
                 <Image source={require("../../assets/images/mental-health (1).png")} style={styles.sectors} />
                 <Text style={styles.topic}>Mental Health</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.row}>
-              <TouchableOpacity onPress={() => router.push("/appointments/UserAppointments")}>
-              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
+              <TouchableOpacity onPress={() => router.push("/getstart")}>
+                <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
                 <Text style={styles.topic}>Appointments</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/getstart")}>
@@ -205,37 +164,51 @@ const Landing = () => {
           </LinearGradient>
 
           <View style={{ alignItems: "center", padding: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
-            Mental Health Summary
-          </Text>
-          
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
+              Mental Health Summary
+            </Text>
 
-          <View>
-            <LineChart
-              data={chartData}
-              width={screenWidth - 32}
-              height={220}
-              yAxisInterval={1}
-              chartConfig={{
-                backgroundColor: "#e2e2e2",
-                backgroundGradientFrom: "#e2e2e2",
-                backgroundGradientTo: "#e2e2e2",
-                decimalPlaces: 0,
-                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                style: { borderRadius: 16 },
-                propsForDots: { r: "6", strokeWidth: "2", stroke: "#ffa726" },
-              }}
-              bezier
-              style={{ marginVertical: 8, borderRadius: 16 }}
-            />
+            <View style={{ marginTop: 5, marginBottom:20 }}>
+              <LineChart
+                  data={{
+                    labels: ["Last month", "Jan 26 - Feb 1", "Today"],
+                    datasets: [{ data: scores }],
+                  }}
+                  width={screenWidth * 0.9}
+                  height={250}
+                  yAxisLabel=""
+                  chartConfig={{
+                    backgroundColor: "#E3F2FD",
+                    backgroundGradientFrom: "#E3F2FD",
+                    backgroundGradientTo: "#BBDEFB",
+                    decimalPlaces: 0,
+                    color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    style: { borderRadius: 16 },
+                    propsForDots: { r: "5", strokeWidth: "2", stroke: "#2196F3" },
+                  }}
+                  bezier
+                  style={{ borderRadius: 16 }}
+              />
+              <Text style={{ fontSize: 18, textAlign:"center" }}>
+                ⚠ {getRiskMessage(scores[scores.length - 1])}
+              </Text>
             </View>
           </View>
+
+          {/* -Karunya- */}
+          <View className="flex-1 items-center justify-center bg-gray-100 px-6">
+            <Text className="text-2xl font-bold text-gray-800 mb-6">Welcome to Maternify!</Text>
+            <TouchableOpacity className="w-full bg-blue-300 p-6 rounded-xl shadow-md items-center" onPress={() => router.push("epds")}>
+              <Text className="text-xl font-bold text-white">EPDS Assessment</Text>
+              <Text className="text-sm text-white">Take the Edinburgh Postnatal Depression Scale</Text>
+            </TouchableOpacity>
+          </View>
+
         </ScrollView>
       </SafeAreaView>
   );
 };
-
 
 const getRiskMessage = (score) => {
   if (score < 10) return "Low Risk: Keep maintaining a healthy lifestyle!";

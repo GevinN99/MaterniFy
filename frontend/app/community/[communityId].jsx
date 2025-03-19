@@ -17,13 +17,12 @@ const Community = () => {
 			try {
 				if (communityId) {
 					const fetchedCommunity = await getCommunityById(communityId)
-					setCommunity(fetchedCommunity || {})					
+					setCommunity(fetchedCommunity || {})
 				}
 			} catch (error) {
 				console.log(error)
 			}
 		}
-		
 
 		fetchCommunityDetails()
 	}, [communityId])

@@ -15,7 +15,7 @@ import LoadingSpinner from "../../../components/LoadingSpinner"
 const post = ({ community }) => {
 	const { userId: user } = useContext(AuthContext)
 	const { postId } = useLocalSearchParams()
-	const { fetchData } = useCommunity()
+	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [replies, setReplies] = useState([])
 	const [post, setPost] = useState(null)
@@ -32,7 +32,7 @@ const post = ({ community }) => {
 					console.log(response)
 					setPost(response)
 					setLikeCount(response.likes.length)
-					setLiked(response.likes.includes(user))
+					setLiked(response.likes.includes(usertest))
 				} catch (error) {
 					console.log(error)
 				}
@@ -50,7 +50,7 @@ const post = ({ community }) => {
 
 			fetchPost()
 			fetchReplies()
-		}, [postId, user])
+		}, [])
 	)
 
 	if (!post) {
@@ -76,8 +76,8 @@ const post = ({ community }) => {
 		try {
 			const { likes } = await likeUnlikePost(postId)
 			setLikeCount(likes.length)
-			setLiked(likes.includes(user))
-			fetchData("posts")
+			setLiked(likes.includes(usertest))
+			setUpdateTrigger((prev) => !prev)
 		} catch (error) {
 			console.error(error)
 		}
@@ -110,9 +110,10 @@ const post = ({ community }) => {
 						{/* </View> */}
 						<Text className="text-gray-500">
 							@
-							{(communityId.name || community.name)
-								.replace(/\s+/g, "")
-								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+							{(communityId.name ||
+								community.name)
+									.replace(/\s+/g, "")
+									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>
 					</View>
 				</View>

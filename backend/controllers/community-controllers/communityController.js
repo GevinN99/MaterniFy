@@ -1,5 +1,4 @@
 const CommunityModel = require("../../models/community-models/communityModel")
-const PostModel = require("../../models/community-models/postModel")
 
 // Get all communities
 // const getAllCommunities = async (req, res) => {
@@ -50,7 +49,7 @@ const getAllCommunities = async (req, res) => {
 // Create a new community
 const createCommunity = async (req, res) => {
 	try {
-		let { name, description, imageUrl } = req.body
+		const { name, description, imageUrl } = req.body
 		const admin = req.user.id
 
 		if (!name) {
@@ -141,10 +140,9 @@ const getCommunityById = async (req, res) => {
 		const { communityId } = req.params
 
 		const community = await CommunityModel.findById(communityId)
-			.populate("admin", "_id fullName profileImage")
+			.populate("admin", "fullName profileImage")
 			.populate({
 				path: "posts", // Populates the posts array
-				options: {sort: {createdAt: -1}},
 				populate: {
 					path: "userId", // Further populates the user inside each post
 					select: "fullName profileImage email", // Fetches only these fields from the user
@@ -163,48 +161,23 @@ const getCommunityById = async (req, res) => {
 }
 
 // Delete a community
-// const deleteCommunity = async (req, res) => {
-// 	try {
-// 		const { communityId } = req.params
-
-// 		// Find the community by id and delete it
-// 		const community = await CommunityModel.findByIdAndDelete(communityId)
-
-// 		if (!community) {
-// 			return res.status(404).json({ error: "Community not found" })
-// 		}
-
-// 		res.status(200).json({ message: "Community deleted successfully" })
-// 	} catch (error) {
-// 		console.error(error)
-// 		res.status(500).json({ error: "Internal server error" })
-// 	}
-// }
-
-// Delete a community
 const deleteCommunity = async (req, res) => {
-    try {
-        const { communityId } = req.params;
+	try {
+		const { communityId } = req.params
 
-        // Find the community by id
-        const community = await CommunityModel.findById(communityId);
+		// Find the community by id and delete it
+		const community = await CommunityModel.findByIdAndDelete(communityId)
 
-        if (!community) {
-            return res.status(404).json({ error: "Community not found" });
-        }
+		if (!community) {
+			return res.status(404).json({ error: "Community not found" })
+		}
 
-        // Delete all posts in the community
-        await PostModel.deleteMany({ communityId });      
-
-        // Delete the community
-        await CommunityModel.findByIdAndDelete(communityId);
-
-        res.status(200).json({ message: "Community and related data deleted successfully" });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-};
+		res.status(200).json({ message: "Community deleted successfully" })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal server error" })
+	}
+}
 
 // Join community
 const joinCommunity = async (req, res) => {

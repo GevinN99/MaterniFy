@@ -1,6 +1,5 @@
 const express = require('express')
 const userModel = require("../../models/userModel.js")
-const auth = require("../../middlewares/auth")
 const communityController = require('../../controllers/community-controllers/communityController')
 const router = express.Router()
 

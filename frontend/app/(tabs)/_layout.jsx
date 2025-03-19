@@ -1,14 +1,13 @@
 import { Tabs } from "expo-router"
 import React from "react"
 import TabBar from "../../components/TabBar"
+import { House, Bot, UsersRound } from "lucide-react-native"
 import Octicons from "@expo/vector-icons/Octicons"
 import Feather from "@expo/vector-icons/Feather"
 
 export default function TabsLayout() {
 	return (
-		<Tabs			
-			tabBar={(props) => <TabBar {...props} />}
-		>
+		<Tabs tabBar={(props) => <TabBar {...props} />}>
 			<Tabs.Screen
 				name="index"
 				options={{
@@ -22,7 +21,7 @@ export default function TabsLayout() {
 						// />
 						<Feather
 							name="home"
-							size={24}
+							size={24}							
 							color={color}
 						/>
 					),
@@ -41,7 +40,7 @@ export default function TabsLayout() {
 						// />
 						<Octicons
 							name="dependabot"
-							size={24}
+							size={24}							
 							color={color}
 						/>
 					),
@@ -60,7 +59,7 @@ export default function TabsLayout() {
 						// />
 						<Feather
 							name="users"
-							size={24}
+							size={24}							
 							color={color}
 						/>
 					),

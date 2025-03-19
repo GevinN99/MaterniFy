@@ -29,7 +29,7 @@ const Community = () => {
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="px-4">
+			<ScrollView className="px-4 pb-28">
 				<CommunityHeader />
 				<View className="flex flex-row justify-between">
 					<Text className="text-xl font-bold my-2">Your feed</Text>

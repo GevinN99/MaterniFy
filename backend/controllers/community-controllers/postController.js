@@ -6,7 +6,7 @@ const createPost = async (req, res) => {
 	try {
 		console.log("creatign post")
 		// Get the content and communityId from the request body
-		let { content, communityId, imageUrl } = req.body
+		const { content, communityId, imageUrl } = req.body
 		// Get the userId from the request object
 		const userId = req.user.id
 
@@ -19,9 +19,6 @@ const createPost = async (req, res) => {
 		if (!communityId) {
 			return res.status(400).json({ error: "Community ID required" })
 		}
-
-		// Trim the content
-		content = content.trim()
 
 		const newPost = new PostModel({
 			content,
