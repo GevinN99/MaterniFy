@@ -1,6 +1,6 @@
-import { View, ScrollView } from "react-native"
+import { View, Text, ScrollView } from "react-native"
 import React, { useEffect, useState } from "react"
-import { useLocalSearchParams } from "expo-router"
+import { router, useLocalSearchParams } from "expo-router"
 import CommunityDetails from "../../components/CommunityDetails"
 import { getCommunityById } from "../../api/communityApi"
 import Post from "../../components/Post"
@@ -33,7 +33,8 @@ const Community = () => {
 				{community && (
 					<View>
 						<CommunityDetails
-							community={community}							
+							community={community}
+							// isMember={isMember}
 							handleJoin={handleJoinCommunity}
 							handleLeave={handleLeaveCommunity}
 						/>

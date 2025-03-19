@@ -11,7 +11,7 @@ import {
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { registerUser } from "../../api/authApi";
-import { uploadImageToFirebase } from "../../utils/firebaseImage";
+import uploadImage from "../../utils/uploadImage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../../components/LoadingSpinner";
 

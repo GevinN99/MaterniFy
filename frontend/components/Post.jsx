@@ -1,17 +1,15 @@
 import { View, Text, StyleSheet } from "react-native"
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState } from "react"
 import { Image } from "expo-image"
 import { likeUnlikePost } from "../api/communityApi"
 import { useCommunity } from "../context/communityContext"
 import { useRouter } from "expo-router"
 import { timeAgo } from "../utils/timeAgo"
 import PostActionSection from "./PostActionSection"
-import { AuthContext } from "../context/AuthContext"
 
 const Post = ({ post, community }) => {
-	const { userId: user } = useContext(AuthContext)
 	const router = useRouter()
-	const { selectPost } = useCommunity()
+	const { selectPost } = useCommunity()	
 	const {
 		_id: postId,
 		likes,
@@ -20,17 +18,20 @@ const Post = ({ post, community }) => {
 		createdAt,
 		imageUrl,
 		content,
-		replies,
-	} = post	
+		replies
+	} = post
+	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
-	const [likeCount, setLikeCount] = useState(likes.length)	
-	const [liked, setLiked] = useState(likes.includes(user))	
+	const [likeCount, setLikeCount] = useState(likes.length)
+	const usertest = "67bc9ceff607c265056765af"
+	const [liked, setLiked] = useState(likes.includes(usertest))
 
 	const handleLikeUnlike = async () => {
 		try {
 			const { likes } = await likeUnlikePost(postId)
 			setLikeCount(likes.length)
-			setLiked(likes.includes(user))			
+			setLiked(likes.includes(usertest))
+			setUpdateTrigger((prev) => !prev)
 		} catch (error) {
 			console.error(error)
 		}
@@ -56,22 +57,23 @@ const Post = ({ post, community }) => {
 					source={{ uri: userId.profileImage }}
 					style={styles.profileImage}
 				/>
-				<View className="ml-4 flex">
-					<View className="flex flex-row items-center ">
-						<Text className="font-bold text-xl mr-2">{userId.fullName}</Text>
-						<Text className="mt-1">•</Text>
-						<Text className="font-extralight ml-1 mt-1">{timeAgo(createdAt)}</Text>
+				<View className="ml-4 flex gap-1">
+					<View className="flex flex-row gap-1">
+						<Text className="font-bold">{userId.fullName}</Text>
+						<Text>•</Text>
+						<Text className="font-extralight">{timeAgo(createdAt)}</Text>
 					</View>
 
-					<Text className="text-gray-500 text-lg">
+					<Text className="text-gray-500">
 						@
-						{(communityId.name || community.name)
-							.replace(/\s+/g, "")
-							.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+						{(communityId.name ||
+							community.name)
+								.replace(/\s+/g, "")
+								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 					</Text>
 				</View>
 			</View>
-			<Text className="mt-4 text-lg">{content}</Text>
+			<Text className="mt-4">{content}</Text>
 			{imageUrl && (
 				<View className="flex my-4 items-center w-full overflow-hidden rounded-2xl">
 					<Image
@@ -98,8 +100,8 @@ const Post = ({ post, community }) => {
 
 const styles = StyleSheet.create({
 	profileImage: {
-		width: 50,
-		height: 50,
+		width: 40,
+		height: 40,
 		borderRadius: 50,
 	},
 	postImage: {

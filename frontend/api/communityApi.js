@@ -1,94 +1,84 @@
-import axiosInstance from "./axiosInstance"
+import axios from "axios"
+
+// const API_URL = "http://localhost:8070/api"
+const API_URL = "http://192.168.43.214:8070/api"
+// const API_URL = "http://10.31.30.84:8070/api"
 
 // Fetch posts from all the communities the user have joined
-export const getPostsFromAllUsersCommunities = async (userId) => {
-	const response = await axiosInstance.get(`/community-posts/${userId}`)
+export const getPostsFromAllUsersCommunities = async () => {
+	const response = await axios.get(
+		`${API_URL}/community-posts/67bc9ceff607c265056765af`
+	)
+	// console.log("Posts:", response.data)
 	return response.data
 }
 
-export const getAllCommunities = async (userId) => {
-	const response = await axiosInstance.get(`/communities/${userId}`)
+export const getAllCommunities = async () => {	
+	const response = await axios.get(
+		`${API_URL}/communities/67bc9ceff607c265056765af`
+	)
 	// console.log("Communities:", response.data)
 	return response.data
 }
 
 export const getCommunityById = async (communityId) => {
-	const response = await axiosInstance.get(
-		`/communities/community/${communityId}`
+	const response = await axios.get(
+		`${API_URL}/communities/community/${communityId}`
 	)
-	// console.log("Community:", response.data)
-	return response.data
-}
-
-export const deleteCommunityById = async (communityId) => {
-	const response = await axiosInstance.delete(
-		`/communities/delete/${communityId}`
-	)
-	// console.log("Community:", response.data)
+	// console.log("Community:", response.data)r
 	return response.data
 }
 
 export const createCommunity = async (data) => {
-	const response = await axiosInstance.post(`/communities/create`, data)
-	// console.log(response)
-	return response.data
-}
-
-export const updateCommunity = async (communityId, data) => {
-	const response = await axiosInstance.put(
-		`/communities/update/${communityId}`,
-		data
-	)
+	const response = await axios.post(`${API_URL}/communities/create`, data)
 	// console.log(response)
 	return response.data
 }
 
 export const createPost = async (data) => {
-	const response = await axiosInstance.post(`/community-posts/create`, data)
+	const response = await axios.post(`${API_URL}/community-posts/create`, data)
 	// console.log(response)
 	return response.data
 }
 
 export const getPostById = async (postId) => {
-	const response = await axiosInstance.get(`/community-posts/post/${postId}`)
+	const response = await axios.get(`${API_URL}/community-posts/post/${postId}`)
 	// console.log(response)
 	return response.data
 }
 
-export const joinCommunity = async (communityId) => {
-	const response = await axiosInstance.post(`/communities/join/${communityId}`)
+export const joinCommunity = async (communityId) => {	
+	const response = await axios.post(`${API_URL}/communities/join/${communityId}`)
 	// console.log(response)
 	return response.data
 }
 
-export const leaveCommunity = async (communityId) => {
-	const response = await axiosInstance.post(`/communities/leave/${communityId}`)
+export const leaveCommunity = async (communityId) => {	
+	const response = await axios.post(`${API_URL}/communities/leave/${communityId}`)
 	// console.log(response)
 	return response.data
 }
 
-export const likeUnlikePost = async (postId) => {
-	const response = await axiosInstance.post(
-		`/community-posts/like-unlike/${postId}`
-	)
+export const likeUnlikePost = async (postId) => {	
+	const response = await axios.post(`${API_URL}/community-posts/like-unlike/${postId}`)
 	// console.log(response)
 	return response.data
 }
 
-export const createReply = async (data) => {
-	const response = await axiosInstance.post(`/community-replies/create/`, data)
+export const createReply = async (data) => {	
+	const response = await axios.post(`${API_URL}/community-replies/create/`, data)
 	// console.log(response)
 	return response.data
 }
 export const getRepliesForPost = async (postId) => {
-	const response = await axiosInstance.get(`/community-replies/post/${postId}`)
+	const response = await axios.get(`${API_URL}/community-replies/post/${postId}`)
 	// console.log(response)
 	return response.data
 }
 
 export const likeUnlikeReply = async (replyId) => {
-	const response = await axiosInstance.post(
-		`/community-replies/like-unlike/${replyId}`
+	const response = await axios.post(
+		`${API_URL}/community-replies/like-unlike/${replyId}`
 	)
 	// console.log(response)
 	return response.data

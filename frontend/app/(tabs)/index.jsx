@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
-  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,59 +15,24 @@ import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
-import BabyGrowthTracker from "../../components/GrowthTracker";
-
 
 const Landing = () => {
+  const [selectedEmotion, setSelectedEmotion] = useState(null);
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
-  const [scores, setScores] = useState([5, 10, 15]); 
-  const [conceptionDate, setConceptionDate] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
-
-  const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    const fetchUserName = async () => {
-      const storedName = await AsyncStorage.getItem("userName");
-      if (storedName) {
-        setUserName(storedName);
-      }
-    };
-    fetchUserName();
-  }, []);
+  const [scores, setScores] = useState([5, 10, 15]); // Dummy scores for testing
 
   const router = useRouter();
 
   const screenWidth = Dimensions.get("window").width;
 
-  useEffect(() => {
-    const fetchConceptionDate = async () => {
-      try {
-        const storedDate = await AsyncStorage.getItem("conceptionDate");
-        if (storedDate) {
-          setConceptionDate(storedDate);
-        }
-      } catch (error) {
-        console.error("Error fetching conception date:", error);
-      }
-    };
-    fetchConceptionDate();
-  }, [conceptionDate]); 
-  
-    useEffect(() => {
-      const fetchProfilePic = async () => {
-        const storedPic = await AsyncStorage.getItem("profilePic");
-        if (storedPic) {
-          setProfilePic(storedPic);
-        }
-      };
-      fetchProfilePic();
-    }, []);
+  const handleSelectEmotion = (emotion) => {
+    setSelectedEmotion(emotion);
+    console.log(`Selected Emotion: ${emotion}`);
+  };
 
   const getWeekDates = () => {
-    const startOfWeek = currentWeek.startOf("isoweek");
+    const startOfWeek = currentWeek.startOf("week");
     return [...Array(7)].map((_, i) => startOfWeek.clone().add(i, "days"));
   };
 
@@ -108,58 +72,37 @@ const Landing = () => {
         </View>
     );
   };
+  
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <ScrollView contentContainerStyle={styles.container}>
-      {profilePic ? (
-      <Image source={{ uri: profilePic }} style={styles.profileImage} />
-        ) : (
-          <Image source={require("../../assets/images/landing.png")} style={styles.profileImage} />
-        )} 
-        <Text style={styles.title}>Welcome, {userName ? userName : "Mom"}!</Text>
+      <SafeAreaView style={styles.safeContainer}>
+        <ScrollView contentContainerStyle={styles.container}>
+          <Image source={require("../../assets/images/landing.png")} style={styles.image} />
+          <Text style={styles.title}>Welcome, Sarah!</Text>
+          <Text style={styles.subtitle}>How are you feeling today?</Text>
 
-
-        <View style={styles.growthTrackerCard}>
-          {conceptionDate ? (
-            <BabyGrowthTracker conceptionDate={conceptionDate} />
-          ) : (
-            <View style={styles.noConceptionContainer}>
-              <ActivityIndicator size="large" color="#0000ff" />
-              <Text style={styles.noConceptionText}>
-                Please set your conception date to track Baby's Growth..
-              </Text>
-              
-            </View>
-          )}
-        </View>
-
-
-        <View style={styles.secContainer}>
-          <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
-              <Text style={styles.topic}>Health Plan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/mental-health (1).png")} style={styles.sectors} />
-              <Text style={styles.topic}>Mental Health</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
-              <Text style={styles.topic}>Appointments</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/first-aid-kit.png")} style={styles.sectors} />
-              <Text style={styles.topic}>Emergency</Text>
-            </TouchableOpacity>
+          <View style={styles.emojiContainer}>
+            {[{ name: require("../../assets/images/sunglasses.png"), label: "Happy"  },
+              { name: require("../../assets/images/smile.png"), label: "Calm"},
+              { name: require("../../assets/images/thinking.png"), label: "Confused"},
+              { name: require("../../assets/images/sad.png"), label: "Sad" },
+              { name: require("../../assets/images/angry.png"), label: "Angry" },
+            ].map(({ name, label, color }) => (
+                <TouchableOpacity key={label} onPress={() => handleSelectEmotion(label)}>
+                  <Image
+                      source={name}
+                      style={[
+                        styles.emojiImage,
+                        { opacity: selectedEmotion === label ? 1 : 0.5 }, // Highlight selected emoji
+                      ]}
+                  />
+                </TouchableOpacity>
+            ))}
           </View>
 
           <View style={styles.secContainer}>
             <View style={styles.row}>
-              <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
+              <TouchableOpacity onPress={() => router.push("/getstart")}>
                 <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
                 <Text style={styles.topic}>Health Plan</Text>
               </TouchableOpacity>
@@ -169,8 +112,8 @@ const Landing = () => {
               </TouchableOpacity>
             </View>
             <View style={styles.row}>
-              <TouchableOpacity onPress={() => router.push("/getstart")}>
-                <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
+              <TouchableOpacity onPress={() => router.push("/appointments/UserAppointments")}>
+              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
                 <Text style={styles.topic}>Appointments</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push("/getstart")}>
@@ -203,32 +146,6 @@ const Landing = () => {
                 <><Text style={styles.dateText}>Doctor Checkup </Text><Text>{selectedDate}</Text></>
             )}
           </View>
-          {selectedDate && (
-            <View style={{ alignItems: "center", marginTop: 10 }}>
-              <Text style={styles.dateText}>Doctor Checkup</Text>
-              <Text>{selectedDate}</Text>
-            </View>
-)}
-
-        </View>
-        <LinearGradient 
-          colors={['#E2E0E0', '#64A8F1']} 
-          style={styles.healthplan}>
-          <Text style={styles.healthtitle}>
-            Today's Health plan
-          </Text>
-          <Text style={styles.texthealth}>
-          "You need 8 glasses of water today 💧"
-          </Text>
-          <Text style={styles.texthealth}>
-          "Remember to take your iron supplements"
-          </Text>
-          <Text style={styles.texthealth}>
-          "Mild back pain detected? Try 5 mins of stretching."
-          </Text>
-          <CircularProgress percentage={100} />
-          
-      </LinearGradient>
           <LinearGradient
               colors={['#E2E0E0', '#64A8F1']}
               style={styles.healthplan}>
@@ -295,10 +212,11 @@ const Landing = () => {
 };
 
 const getRiskMessage = (score) => {
-  if (score <= 10) return "Low Risk: Keep maintaining a healthy lifestyle!";
-  if (score <= 20) return "Moderate Risk: Try relaxation exercises & connect with support groups.";
+  if (score < 10) return "Low Risk: Keep maintaining a healthy lifestyle!";
+  if (score < 20) return "Moderate Risk: Try relaxation exercises & connect with support groups.";
   return "High Risk: Seek professional help immediately!";
 };
+
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
@@ -308,16 +226,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 30,
   },
-  profileImage: {
+  image: {
     width: 100,
     height: 100,
     marginBottom: 20,
   },
   title: {
     textAlign: "center",
-    fontSize: 48,
+    fontSize: 40,
     fontWeight: "bold",
-    marginBottom:25
+  },
+  subtitle: {
+    textAlign: "center",
+    fontSize: 24,
+    marginVertical: 10,
+  },
+  emojiContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "80%",
+    marginVertical:10
   },
   row: {
     flexDirection: "row",
@@ -397,28 +325,9 @@ const styles = StyleSheet.create({
     paddingVertical:5,
   },
   emojiImage: {
-    width: 40, 
+    width: 40,
     height: 40,
     resizeMode: "contain",
-  },
-  growthTrackerCard: {
-    backgroundColor: "#E3F2FD",
-    padding: 15,
-    borderRadius: 15,
-    width: "90%",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  noConceptionContainer: {
-    alignItems: "center",
-    padding: 10,
-  },
-  noConceptionText: {
-    marginTop: 5,
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#FF4500",
   },
 });
 

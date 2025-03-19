@@ -24,7 +24,7 @@ const CommunityHeader = () => {
 			</Pressable>
 			<Pressable onPress={() => router.push("communities")}>
 				<View>
-					<Text className="text-blue-500 text-lg  bg-blue-500/10 px-3 py-1 rounded-md border border-blue-500">
+					<Text className="text-black font-bold bg-[#6DE6FF] px-3 py-1 rounded-md border-2 border-black">
 						Communities
 					</Text>
 				</View>
@@ -35,8 +35,8 @@ const CommunityHeader = () => {
 
 const styles = StyleSheet.create({
 	profileImage: {
-		width: 60,
-		height: 60,
+		width: 50,
+		height: 50,
 		borderRadius: 50,		
 	},
 })

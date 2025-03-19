@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native"
 import { Image } from "expo-image"
-import Feather from "@expo/vector-icons/Feather"
+import { ChevronDown, ChevronUp } from "lucide-react-native"
 
 const CommunityPicker = ({ items, selectedValue, onValueChange }) => {
 	const [dropdownVisible, setDropdownVisible] = useState(false)
@@ -34,19 +34,7 @@ const CommunityPicker = ({ items, selectedValue, onValueChange }) => {
 				) : (
 					<Text>Select community</Text>
 				)}
-				{dropdownVisible ? (
-					<Feather
-						name="chevron-up"
-						size={20}
-						color="black"
-					/>
-				) : (
-					<Feather
-						name="chevron-down"
-						size={20}
-						color="black"
-					/>
-				)}
+				{dropdownVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
 			</TouchableOpacity>
 
 			{dropdownVisible && (

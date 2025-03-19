@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
@@ -12,10 +12,8 @@ import { loginUser } from "../../api/authApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Feather from "@expo/vector-icons/Feather"; // For the doctor icon
-import { AuthContext } from "../../context/AuthContext";
 
 export default function Login() {
-    const { setUserId } = useContext(AuthContext);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -23,7 +21,6 @@ export default function Login() {
         password: "",
     });
 
-    // Handle Login Submission
     const handleLogin = async () => {
         if (!formData.email || !formData.password) {
             Alert.alert("Error", "Please fill in all fields!");
@@ -38,7 +35,6 @@ export default function Login() {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);
                 await AsyncStorage.setItem("role", response.role);
-                setUserId(response.userId)
                 router.replace("/"); // Redirect to Home Page after successful login
             } else {
                 Alert.alert("Login Failed", response.message || "Invalid Credentials");

@@ -7,7 +7,7 @@ const TabBar = ({ state, descriptors, navigation }) => {
 	const { logout } = useContext(AuthContext);
 
 	return (
-		<View className="flex flex-row justify-between items-center bg-white py-2 px-5 shadow-lg">
+		<View className="flex flex-row justify-between items-center bg-white py-2 px-5 rounded-3xl shadow-lg absolute bottom-6 left-0 right-0 mx-5">
 			{state.routes.map((route, index) => {
 				const { options } = descriptors[route.key];
 				const label =
