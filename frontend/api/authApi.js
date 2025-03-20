@@ -19,3 +19,13 @@ export const loginUser = async (credentials) => {
         return { error: error.response?.data || "Login failed!" };
     }
 };
+
+export const loginDoctor = async (credentials) => {
+    try {
+        const response = await axiosInstance.post("/doctors/login", credentials);
+        return response.data;
+    } catch (error) {
+        console.error("Doctor Login Error:", error.response?.data || error.message);
+        return { error: error.response?.data || "Doctor login failed!" };
+    }
+};

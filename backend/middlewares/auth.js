@@ -23,10 +23,9 @@ exports.generateToken = (user) => {
         username: user.email,
         role: user.role
     };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '6h' });
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '24h' }); // Changed to 24 hours
     return token;
 };
-
 
 exports.verifyToken = (token) => {
     try {
