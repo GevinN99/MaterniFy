@@ -5,13 +5,16 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Alert,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { loginUser } from "../../api/authApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import Feather from "@expo/vector-icons/Feather"; // For the doctor icon
 
 export default function Login() {
     const router = useRouter();
@@ -20,10 +23,35 @@ export default function Login() {
         email: "",
         password: "",
     });
+    const [errors, setErrors] = useState({});
+    const [generalError, setGeneralError] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
+    // Validate form fields
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Invalid email format";
+        }
+        if (!formData.password) {
+            newErrors.password = "Password is required";
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Handle Login
     const handleLogin = async () => {
-        if (!formData.email || !formData.password) {
-            Alert.alert("Error", "Please fill in all fields!");
+        setGeneralError("");
+
+        if (!validateForm()) {
+            setGeneralError("Please fix the errors above.");
             return;
         }
 
@@ -31,106 +59,192 @@ export default function Login() {
 
         try {
             const response = await loginUser(formData);
+
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);
-                await AsyncStorage.setItem("role", response.role);
-                router.replace("/"); // Redirect to Home Page after successful login
+                await AsyncStorage.setItem("role", response.role || "mother");
+                router.replace("/");
             } else {
-                Alert.alert("Login Failed", response.message || "Invalid Credentials");
+                const errorMessage = response && typeof response === "object" && response.message
+                    ? response.message
+                    : "Invalid credentials. Please try again.";
+                setGeneralError(errorMessage);
             }
         } catch (error) {
             console.error("Login Error:", error);
-            Alert.alert("Login Error", error.message || "Please try again!");
+            const errorMessage = error.message || "Login failed. Please check your connection and try again.";
+            setGeneralError(errorMessage);
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Login to Your Account</Text>
+        <KeyboardAvoidingView
+            style={styles.keyboardContainer}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "android" ? -100 : 0}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <LinearGradient colors={["#A2C9F3", "#FFFFFF"]} style={styles.gradientBackground}>
+                    <View style={styles.container}>
+                        <Text style={styles.title}>Welcome Back</Text>
+                        <Text style={styles.subtitle}>Your Health, Your Journey</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={formData.email}
-                keyboardType="email-address"
-                onChangeText={(text) => setFormData({ ...formData, email: text })}
-            />
+                        {/* Email Input */}
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Email"
+                                placeholderTextColor="#A0B1C8"
+                                value={formData.email}
+                                keyboardType="email-address"
+                                onChangeText={(text) => setFormData({ ...formData, email: text })}
+                            />
+                        </View>
+                        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={formData.password}
-                secureTextEntry
-                onChangeText={(text) => setFormData({ ...formData, password: text })}
-            />
+                        {/* Password Input with Eye Button */}
+                        <View style={styles.inputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Password"
+                                placeholderTextColor="#A0B1C8"
+                                value={formData.password}
+                                secureTextEntry={!passwordVisible}
+                                onChangeText={(text) => setFormData({ ...formData, password: text })}
+                            />
+                            <TouchableOpacity
+                                style={styles.eyeButton}
+                                onPress={() => setPasswordVisible(!passwordVisible)}
+                            >
+                                <Ionicons
+                                    name={passwordVisible ? "eye" : "eye-off"}
+                                    size={24}
+                                    color="#A0B1C8"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-                {loading ? <LoadingSpinner /> : <Text style={styles.buttonText}>Login</Text>}
-            </TouchableOpacity>
+                        {/* Login Button */}
+                        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+                            <LinearGradient colors={["#bbdbff", "#74a8ff"]} style={styles.buttonGradient}>
+                                {loading ? <LoadingSpinner /> : <Text style={styles.buttonText}>Log In</Text>}
+                            </LinearGradient>
+                        </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => router.push("/auth/Signup")}>
-                <Text style={styles.link}>Don't have an account? Sign Up</Text>
-            </TouchableOpacity>
+                        {/* Signup Link */}
+                        <TouchableOpacity onPress={() => router.push("/auth/Signup")}>
+                            <Text style={styles.link}>New here? Sign Up</Text>
+                        </TouchableOpacity>
 
-            {/* Doctor Icon and Text at Bottom-Right */}
-            <TouchableOpacity
-                style={styles.doctorIcon}
-                onPress={() => router.push("/auth/DoctorLogin")}
-            >
-                <Feather name="user" size={30} color="#007AFF" />
-                <Text style={styles.doctorText}>Doctor Login</Text>
-            </TouchableOpacity>
-        </View>
+                        {/* General Error Message */}
+                        {generalError && <Text style={styles.errorMessage}>{generalError}</Text>}
+                    </View>
+                </LinearGradient>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    keyboardContainer: {
         flex: 1,
+    },
+    scrollContainer: {
+        flexGrow: 1,
+    },
+    gradientBackground: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    container: {
         alignItems: "center",
-        paddingVertical: 30,
-        backgroundColor: "#F5F5F5",
+        paddingVertical: 40,
+        paddingHorizontal: 20,
     },
     title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
+        fontSize: 36,
+        fontWeight: "700",
+        color: "#000000",
+        textAlign: "center",
+        marginBottom: 10,
+        textShadowColor: "rgba(0, 0, 0, 0.3)",
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 5,
+    },
+    subtitle: {
+        fontSize: 18,
+        color: "#000000",
+        marginBottom: 40,
+    },
+    inputContainer: {
+        width: "90%",
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        borderRadius: 12,
+        marginBottom: 15,
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.2)",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 3,
+        flexDirection: "row",
+        alignItems: "center",
     },
     input: {
-        width: "90%",
+        flex: 1,
         padding: 12,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        marginBottom: 10,
-        borderRadius: 8,
+        fontSize: 16,
+        color: "#3f3f3f",
+        backgroundColor: "transparent",
+    },
+    eyeButton: {
+        padding: 10,
     },
     button: {
-        backgroundColor: "#007AFF",
-        padding: 15,
-        borderRadius: 10,
         width: "90%",
+        borderRadius: 12,
+        overflow: "hidden",
+        marginTop: 20,
+    },
+    buttonGradient: {
+        paddingVertical: 15,
         alignItems: "center",
+        justifyContent: "center",
     },
     buttonText: {
-        color: "#fff",
-        fontWeight: "bold",
+        color: "#FFFFFF",
+        fontSize: 18,
+        fontWeight: "600",
+        textTransform: "uppercase",
     },
     link: {
-        marginTop: 10,
-        color: "#007AFF",
-    },
-    doctorIcon: {
-        position: "absolute", // Use absolute positioning
-        bottom: 20,          // Distance from bottom
-        right: 20,           // Distance from right
-        alignItems: "center",
-    },
-    doctorText: {
-        color: "#007AFF",
+        marginTop: 20,
+        color: "#ababab",
         fontSize: 16,
-        marginTop: 5,
+        fontWeight: "500",
+        textDecorationLine: "underline",
+    },
+    errorMessage: {
+        color: "#F87171",
+        fontSize: 16,
+        marginTop: 20,
+        textAlign: "center",
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        padding: 10,
+        borderRadius: 8,
+    },
+    errorText: {
+        color: "#F87171",
+        fontSize: 14,
+        marginTop: -10,
+        marginBottom: 10,
+        marginLeft: 15,
     },
 });

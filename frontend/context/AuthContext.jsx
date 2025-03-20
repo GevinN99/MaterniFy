@@ -20,8 +20,7 @@ export const AuthProvider = ({ children }) => {
                 if (token) {
                     setUser(token);
                     setRole(storedRole);
-                    // Only redirect if not already on a valid page
-                    const currentPath = router.pathname; // Note: router.pathname might not work directly with expo-router; adjust if needed
+                    const currentPath = router.pathname;
                     if (!currentPath || currentPath === "/auth/Login" || currentPath === "/auth/DoctorLogin") {
                         if (storedRole === "doctor") {
                             router.replace("/(tabs)/doctor-home");
@@ -38,7 +37,7 @@ export const AuthProvider = ({ children }) => {
             }
         };
         loadUser();
-    }, []); // Empty dependency array ensures this runs only once on mount
+    }, []);
 
     const logout = async () => {
         try {
