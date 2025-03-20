@@ -3,7 +3,6 @@ import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Checkbox } from "react-native-paper"; 
 import { useState } from "react";
 
-// Risk categories
 const lowRiskSymptoms = ["Nausea/Vomiting", "Mild headache"];
 const mediumRiskSymptoms = ["Swelling in hands/feet", "Abdominal pain", "Dizziness or fainting"];
 const highRiskSymptoms = ["Severe headache", "Blurred vision", "Shortness of breath", "Bleeding or spotting", "Baby movement reduced"];
@@ -18,14 +17,13 @@ const MyComponent = () => {
   const router = useRouter();
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
 
-  // ✅ Toggle symptom selection
+
   const toggleSymptom = (symptom) => {
     setSelectedSymptoms((prev) =>
       prev.includes(symptom) ? prev.filter((item) => item !== symptom) : [...prev, symptom]
     );
   };
 
-  // ✅ Determine risk level
   const determineRiskLevel = () => {
     const hasHighRisk = selectedSymptoms.some((symptom) => highRiskSymptoms.includes(symptom));
     const hasMediumRisk = selectedSymptoms.some((symptom) => mediumRiskSymptoms.includes(symptom));
@@ -39,15 +37,15 @@ const MyComponent = () => {
     }
   };
 
-  // ✅ Handle navigation based on risk level
+
   const handleNext = () => {
     const riskLevel = determineRiskLevel();
     if (riskLevel === "high") {
-      router.push("/highrisk"); // Navigate to high risk page
+      router.push("/highrisk"); 
     } else if (riskLevel === "medium") {
-      router.push("/mediumrisk"); // Navigate to medium risk page
+      router.push("/mediumrisk"); 
     } else {
-      router.push("/lowrisk"); // Navigate to low risk page
+      router.push("/lowrisk"); 
     }
   };
 
@@ -69,7 +67,6 @@ const MyComponent = () => {
         ))}
       </View>
 
-      {/* ✅ Next Button Navigates to the Risk Page */}
       <TouchableOpacity
         style={styles.button}
         onPress={handleNext}
