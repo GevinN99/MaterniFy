@@ -10,19 +10,19 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import { getProfile, updateProfile } from '../../api/profileAPI';
+
 export default function ProfileScreen() {
   // We’ll store the user’s profile in state
   const [profile, setProfile] = useState({
-    id: '',
-    name: '',
+    _id: '',
+    fullName: '',
     email: '',
-    dueDate: '',
-    bloodType: '',
-    allergies: '',
   });
 
   // Track loading state (for fetching data)
   const [loading, setLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   // Example: an API endpoint for fetching/updating the profile
   const PROFILE_API_URL = 'https://example.com/api/profile';
@@ -35,152 +35,95 @@ export default function ProfileScreen() {
   }, []);
 
   const fetchUserProfile = async () => {
-    try {
       setLoading(true);
-      // Example: GET request
-      const response = await fetch(`${PROFILE_API_URL}/123`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // authorization headers, if needed
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch profile data');
+      try {
+          const data = await getProfile();
+          setProfile(data);
+      } catch (error) {
+          Alert.alert("Error", "Failed to load profile.");
       }
-
-      const data = await response.json();
-      // data should have fields like: { id, name, email, dueDate, bloodType, allergies, ... }
-      setProfile({
-        id: data.id || '',
-        name: data.name || '',
-        email: data.email || '',
-        dueDate: data.dueDate || '',
-        bloodType: data.bloodType || '',
-        allergies: data.allergies || '',
-      });
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-      Alert.alert('Error', 'Could not load profile data.');
-    } finally {
       setLoading(false);
-    }
   };
 
   /**
    * Send updated profile info to the REST API (PUT or PATCH)
    */
   const handleUpdateProfile = async () => {
-    try {
+
+		try {
       setLoading(true);
-      // Example: PUT request with updated data
-      const response = await fetch(`${PROFILE_API_URL}/${profile.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          // authorization headers, if needed
-        },
-        body: JSON.stringify(profile),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      // Show success alert (or any other UI feedback)
-      Alert.alert('Success', 'Profile updated successfully!');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Failed to update profile. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+			const response = await updateProfile(JSON.stringify(profile));			
+			setLoading(false);
+      setIsEditing(false);
+		} catch (error) {
+			console.log(error);
+			setLoading(false);
+		}
   };
 
   return (
-    <View style={styles.container}>
+<View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
       </View>
 
-      {/* Scrollable content if needed, or wrap in a ScrollView */}
+      {/* Profile Content */}
       <View style={styles.content}>
-
         {/* PROFILE IMAGE */}
         <View style={styles.avatarContainer}>
           <Image
-            source={{
-              uri: 'https://cdn-icons-png.flaticon.com/512/194/194938.png',
-            }}
+            source={profile.profileImage}
             style={styles.avatar}
           />
-          <Text style={styles.avatarLabel}>MaterniFy User</Text>
         </View>
 
         {/* LOADING INDICATOR */}
         {loading && <ActivityIndicator size="large" color="#0078fe" style={{ marginVertical: 10 }} />}
 
-        {/* FIELDS */}
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          value={profile.name}
-          onChangeText={(val) => setProfile({ ...profile, name: val })}
-        />
-
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={styles.input}
-          value={profile.email}
-          onChangeText={(val) => setProfile({ ...profile, email: val })}
-        />
-
-        <Text style={styles.label}>Expected Due Date</Text>
-        <TextInput
-          style={styles.input}
-          value={profile.dueDate}
-          onChangeText={(val) => setProfile({ ...profile, dueDate: val })}
-          placeholder="YYYY-MM-DD"
-        />
-
-        <Text style={styles.label}>Blood Type</Text>
-        <TextInput
-          style={styles.input}
-          value={profile.bloodType}
-          onChangeText={(val) => setProfile({ ...profile, bloodType: val })}
-          placeholder="e.g. O+"
-        />
-
-        <Text style={styles.label}>Allergies</Text>
-        <TextInput
-          style={styles.input}
-          value={profile.allergies}
-          onChangeText={(val) => setProfile({ ...profile, allergies: val })}
-          placeholder="e.g. Penicillin"
-        />
-
-        {/* UPDATE BUTTON */}
+        {/* PROFILE FIELDS */}
+        <ProfileField label="Name" value={profile.fullName} editable={isEditing} onChangeText={(val) => setProfile({ ...profile, fullName: val })} />
+        <ProfileField label="Email" value={profile.email} editable={isEditing} onChangeText={(val) => setProfile({ ...profile, email: val })} />
+          
+        {/* EDIT BUTTON */}
         <TouchableOpacity
-          style={[styles.updateButton, loading && { opacity: 0.7 }]}
-          onPress={handleUpdateProfile}
+          style={styles.editButton}
+          onPress={() => setIsEditing(!isEditing)}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>Update</Text>
+          <Text style={styles.buttonText}>{isEditing ? 'Cancel' : 'Edit'}</Text>
         </TouchableOpacity>
 
+        {/* SAVE BUTTON (only visible in edit mode) */}
+        {isEditing && (
+          <TouchableOpacity
+            style={[styles.saveButton, loading && { opacity: 0.7 }]}
+            onPress={handleUpdateProfile}
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>Save Changes</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 }
 
+// Reusable Profile Field Component
+const ProfileField = ({ label, value, editable, onChangeText }) => (
+  <View style={styles.fieldContainer}>
+    <Text style={styles.label}>{label}</Text>
+    {editable ? (
+      <TextInput style={styles.input} value={value} onChangeText={onChangeText} />
+    ) : (
+      <Text style={styles.value}>{value || 'N/A'}</Text>
+    )}
+  </View>
+);
+
 // STYLES
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
 
   // Header
   header: {
@@ -189,40 +132,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 16,
   },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
+  headerTitle: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
 
   // Main content
-  content: {
-    flex: 1,
-    padding: 16,
-  },
+  content: { flex: 1, padding: 16 },
 
   // Avatar
-  avatarContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  avatar: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-  },
-  avatarLabel: {
-    marginTop: 8,
-    fontSize: 16,
-    fontWeight: '600',
-  },
+  avatarContainer: { alignItems: 'center', marginBottom: 20 },
+  avatar: { width: 96, height: 96, borderRadius: 48 },
+  avatarLabel: { marginTop: 8, fontSize: 16, fontWeight: '600' },
 
-  // Form Fields
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 12,
-  },
+  // Profile Field Styling
+  fieldContainer: { marginBottom: 10 },
+  label: { fontSize: 14, fontWeight: '600' },
+  value: { fontSize: 16, paddingVertical: 6, color: '#333' },
+
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
@@ -232,17 +156,24 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Update Button
-  updateButton: {
+  // Edit Button
+  editButton: {
     backgroundColor: '#0078fe',
     borderRadius: 20,
-    paddingVertical: 12,
-    marginTop: 24,
+    paddingVertical: 10,
     alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 16,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+
+  // Save Button (only in edit mode)
+  saveButton: {
+    backgroundColor: '#28a745',
+    borderRadius: 20,
+    paddingVertical: 10,
+    alignItems: 'center',
+    marginTop: 16,
   },
+
+  buttonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
