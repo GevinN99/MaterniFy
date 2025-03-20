@@ -28,6 +28,8 @@ const replySchema = new mongoose.Schema({
 	},
 	createdAt: { type: Date, default: Date.now },
 	likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+	replies: [{ type: Schema.Types.ObjectId, ref: "Reply" }], 
+	
 })
 
 const ReplyModel = mongoose.model("Reply", replySchema)

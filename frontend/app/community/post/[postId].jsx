@@ -1,46 +1,76 @@
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
-import React, { useEffect, useState } from "react"
-import { useLocalSearchParams } from "expo-router"
-import { likeUnlikePost, ge } from "../../../api/communityApi"
+import React, { useEffect, useState, useCallback, useContext } from "react"
+import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"
+import { likeUnlikePost, getPostById } from "../../../api/communityApi"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { getRepliesForPost } from "../../../api/communityApi"
 import ReplyCard from "../../../components/ReplyCard"
 import { useCommunity } from "../../../context/communityContext"
 import { Image } from "expo-image"
-import { useRouter } from "expo-router"
 import { formatTime, formatDate } from "../../../utils/timeAgo"
 import PostActionSection from "../../../components/PostActionSection"
+import { AuthContext } from "../../../context/AuthContext"
+import LoadingSpinner from "../../../components/LoadingSpinner"
 
-const postId = ({ community }) => {
+const post = ({ community }) => {
+	const { userId: user } = useContext(AuthContext)
 	const { postId } = useLocalSearchParams()
-	const { selectedPost, setUpdateTrigger } = useCommunity()
-	if (!selectedPost) {
-		return null
-	}
-	console.log(selectedPost)
+	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [replies, setReplies] = useState([])
-
-	const { likes, userId, communityId, createdAt, imageUrl, content } =
-		selectedPost
-	const [likeCount, setLikeCount] = useState(likes.length)
-	const usertest = "67bc9ceff607c265056765af"
-	const [liked, setLiked] = useState(likes.includes(usertest))
+	const [post, setPost] = useState(null)
+	const [likeCount, setLikeCount] = useState(0)	
+	const [liked, setLiked] = useState(false)
 	const router = useRouter()
-	const { selectPost } = useCommunity()
+	const { selectPost } = useCommunity()	
 
-	useEffect(() => {
-		const fetchReplies = async () => {
-			try {
-				const response = await getRepliesForPost(postId)
-				setReplies(response)
-			} catch (error) {
-				console.log(error)
+	useFocusEffect(
+		useCallback(() => {
+			const fetchPost = async () => {
+				try {
+					const response = await getPostById(postId)
+					console.log(response)
+					setPost(response)
+					setLikeCount(response.likes.length)
+					setLiked(response.likes.includes(usertest))
+				} catch (error) {
+					console.log(error)
+				}
 			}
-		}
 
-		fetchReplies()
-	}, [])
+			const fetchReplies = async () => {
+				try {
+					const response = await getRepliesForPost(postId)
+					setReplies(response)
+					console.log(response)
+				} catch (error) {
+					console.log(error)
+				}
+			}
+
+			fetchPost()
+			fetchReplies()
+		}, [])
+	)
+
+	if (!post) {
+		return (
+			<SafeAreaView className="flex-1 bg-[#E7EDEF]">
+				<View className="flex-1 justify-center items-center">
+					<LoadingSpinner />
+				</View>
+			</SafeAreaView>
+		)
+	}
+
+	const {
+		userId,
+		communityId,
+		createdAt,
+		imageUrl,
+		content,
+		replies: postReplies,
+	} = post
 
 	const handleLikeUnlike = async () => {
 		try {
@@ -62,7 +92,7 @@ const postId = ({ community }) => {
 	}
 
 	const handleReply = () => {
-		selectPost(selectedPost)
+		selectPost(post)
 		router.push(`/community/post/reply/${postId}`)
 	}
 
@@ -80,8 +110,8 @@ const postId = ({ community }) => {
 						{/* </View> */}
 						<Text className="text-gray-500">
 							@
-							{communityId.name ||
-								community.name
+							{(communityId.name ||
+								community.name)
 									.replace(/\s+/g, "")
 									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>
@@ -112,6 +142,7 @@ const postId = ({ community }) => {
 					onToggleMenu={toggleMenu}
 					onDelete={handleDelete}
 					showMenu={showMenu}
+					replyCount={postReplies.length}
 				/>
 
 				<View>
@@ -142,4 +173,4 @@ const styles = StyleSheet.create({
 	},
 })
 
-export default postId
+export default post
