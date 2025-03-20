@@ -10,13 +10,13 @@ import {
     Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { loginUser } from "../../api/authApi";
+import { loginDoctor } from "../../api/authApi"; // Import the new function
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
-export default function Login() {
+export default function DoctorLogin() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -44,8 +44,8 @@ export default function Login() {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Handle Login (for general users)
-    const handleLogin = async () => {
+    // Handle Doctor Login
+    const handleDoctorLogin = async () => {
         setGeneralError("");
         if (!validateForm()) {
             setGeneralError("Please fix the errors above.");
@@ -53,26 +53,22 @@ export default function Login() {
         }
         setLoading(true);
         try {
-            const response = await loginUser(formData);
+            const response = await loginDoctor(formData); // Use loginDoctor instead of loginUser
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);
-                await AsyncStorage.setItem("role", response.role || "mother");
-                router.replace("/");
+                await AsyncStorage.setItem("role", "doctor");
+                console.log("Doctor logged in, redirecting to /tabs/doctor-home");
+                router.replace("/(tabs)/doctor-home"); // Redirect to doctor's home
             } else {
-                const errorMessage = response?.message || "Invalid credentials. Please try again.";
+                const errorMessage = response?.error || "Invalid doctor credentials. Please try again.";
                 setGeneralError(errorMessage);
             }
         } catch (error) {
-            setGeneralError(error.message || "Login failed. Please try again.");
+            setGeneralError(error.message || "Doctor login failed. Please try again.");
         } finally {
             setLoading(false);
         }
-    };
-
-    // Handle Doctor Login Redirect
-    const handleDoctorLoginRedirect = () => {
-        router.push("/auth/DoctorLogin");
     };
 
     return (
@@ -84,14 +80,14 @@ export default function Login() {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <LinearGradient colors={["#A2C9F3", "#FFFFFF"]} style={styles.gradientBackground}>
                     <View style={styles.container}>
-                        <Text style={styles.title}>Welcome Back</Text>
-                        <Text style={styles.subtitle}>Your Health, Your Journey</Text>
+                        <Text style={styles.title}>Doctor Login</Text>
+                        <Text style={styles.subtitle}>Access Your Dashboard</Text>
 
                         {/* Email Input */}
                         <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Email"
+                                placeholder="Doctor Email"
                                 placeholderTextColor="#A0B1C8"
                                 value={formData.email}
                                 keyboardType="email-address"
@@ -123,29 +119,20 @@ export default function Login() {
                         </View>
                         {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-                        {/* Login Button */}
-                        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+                        {/* Doctor Login Button */}
+                        <TouchableOpacity style={styles.button} onPress={handleDoctorLogin} disabled={loading}>
                             <LinearGradient colors={["#bbdbff", "#74a8ff"]} style={styles.buttonGradient}>
-                                {loading ? <LoadingSpinner /> : <Text style={styles.buttonText}>Log In</Text>}
+                                {loading ? <LoadingSpinner /> : <Text style={styles.buttonText}>Doctor Login</Text>}
                             </LinearGradient>
                         </TouchableOpacity>
 
-                        {/* Signup Link */}
-                        <TouchableOpacity onPress={() => router.push("/auth/Signup")}>
-                            <Text style={styles.link}>New here? Sign Up</Text>
+                        {/* Back to General Login */}
+                        <TouchableOpacity onPress={() => router.push("/auth/Login")}>
+                            <Text style={styles.link}>Back to User Login</Text>
                         </TouchableOpacity>
 
                         {/* General Error Message */}
                         {generalError && <Text style={styles.errorMessage}>{generalError}</Text>}
-
-                        {/* Doctor Icon */}
-                        <TouchableOpacity
-                            style={styles.doctorIconContainer}
-                            onPress={handleDoctorLoginRedirect}
-                        >
-                            <Ionicons name="medkit" size={40} color="#74a8ff" />
-                            <Text style={styles.doctorIconText}>Doctor Login</Text>
-                        </TouchableOpacity>
                     </View>
                 </LinearGradient>
             </ScrollView>
@@ -207,14 +194,4 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     errorText: { color: "#F87171", fontSize: 14, marginTop: -10, marginBottom: 10, marginLeft: 15 },
-    doctorIconContainer: {
-        marginTop: 30,
-        alignItems: "center",
-    },
-    doctorIconText: {
-        color: "#74a8ff",
-        fontSize: 16,
-        fontWeight: "500",
-        marginTop: 5,
-    },
 });
