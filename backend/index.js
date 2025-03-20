@@ -52,6 +52,7 @@ app.use("/api/communities", communityRoutes)
 app.use("/api/community-replies", replyRoutes)
 app.use('/api/location', locationRoutes);
 app.use('/api/partner', partnerRoutes);
+app.use("/api/doctors", require("./routes/doctorRoutes"));
 
 const PORT = process.env.PORT || 8070;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
