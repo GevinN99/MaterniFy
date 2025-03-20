@@ -10,7 +10,7 @@ import {
     Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { loginDoctor } from "../../api/authApi"; // Import the new function
+import { loginDoctor } from "../../api/authApi"; // Correct named import
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
@@ -53,13 +53,13 @@ export default function DoctorLogin() {
         }
         setLoading(true);
         try {
-            const response = await loginDoctor(formData); // Use loginDoctor instead of loginUser
+            const response = await loginDoctor(formData); // Use loginDoctor
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);
                 await AsyncStorage.setItem("role", "doctor");
                 console.log("Doctor logged in, redirecting to /tabs/doctor-home");
-                router.replace("/(tabs)/doctor-home"); // Redirect to doctor's home
+                router.replace("/(tabs)/doctor-home");
             } else {
                 const errorMessage = response?.error || "Invalid doctor credentials. Please try again.";
                 setGeneralError(errorMessage);
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     buttonText: { color: "#FFFFFF", fontSize: 18, fontWeight: "600", textTransform: "uppercase" },
     link: { marginTop: 20, color: "#ababab", fontSize: 16, fontWeight: "500", textDecorationLine: "underline" },
     errorMessage: {
-        color: "#F87171",
+        color: "#F worship87171",
         fontSize: 16,
         marginTop: 20,
         textAlign: "center",
