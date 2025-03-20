@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router"; // Note: This won't work directly here; see below
+import { useRouter } from "expo-router";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8070/api";
 
@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     async (config) => {
         const token = await AsyncStorage.getItem("token");
-        console.log("Request - Attaching Token:", token); // Debug token attachment
+        console.log("Request - Attaching Token:", token);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -21,7 +21,6 @@ axiosInstance.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// Handle 401 errors globally
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
