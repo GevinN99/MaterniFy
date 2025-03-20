@@ -11,7 +11,7 @@ import { AuthContext } from "../context/AuthContext"
 const Post = ({ post, community }) => {
 	const { userId: user } = useContext(AuthContext)
 	const router = useRouter()
-	const { selectPost } = useCommunity()
+	const { selectPost, fetchPosts } = useCommunity()
 	const {
 		_id: postId,
 		likes,
@@ -30,7 +30,8 @@ const Post = ({ post, community }) => {
 		try {
 			const { likes } = await likeUnlikePost(postId)
 			setLikeCount(likes.length)
-			setLiked(likes.includes(user))			
+			setLiked(likes.includes(user))	
+			fetchPosts("posts")
 		} catch (error) {
 			console.error(error)
 		}

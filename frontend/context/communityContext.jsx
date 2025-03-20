@@ -112,16 +112,6 @@ export const CommunityProvider = ({ children }) => {
 		setUserCommunities((prevCommunities) => [...prevCommunities, newCommunity])		
 	}
 
-	const fetchPostsFromAllUsersCommunities = async () => {		
-		try {
-			const updatedPosts = await getPostsFromAllUsersCommunities(userId)
-			setPosts(updatedPosts || [])
-		} catch (error) {			
-			console.error(error)
-		}
-	}
-
-
 	return (
 		<CommunityContext.Provider
 			value={{
@@ -136,8 +126,7 @@ export const CommunityProvider = ({ children }) => {
 				handleLeaveCommunity,
 				selectPost,
 				selectedPost,
-				addCommunity,
-				// fetchPostsFromAllUsersCommunities
+				addCommunity,				
 			}}
 		>
 			{children}

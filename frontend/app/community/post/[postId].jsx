@@ -15,7 +15,7 @@ import LoadingSpinner from "../../../components/LoadingSpinner"
 const post = ({ community }) => {
 	const { userId: user } = useContext(AuthContext)
 	const { postId } = useLocalSearchParams()
-	const { setUpdateTrigger } = useCommunity()
+	const { fetchData } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [replies, setReplies] = useState([])
 	const [post, setPost] = useState(null)
@@ -32,7 +32,7 @@ const post = ({ community }) => {
 					console.log(response)
 					setPost(response)
 					setLikeCount(response.likes.length)
-					setLiked(response.likes.includes(usertest))
+					setLiked(response.likes.includes(user))
 				} catch (error) {
 					console.log(error)
 				}
@@ -75,9 +75,11 @@ const post = ({ community }) => {
 	const handleLikeUnlike = async () => {
 		try {
 			const { likes } = await likeUnlikePost(postId)
+			console.log("Like/Unlike API response:", likes)
+			console.log(user)
 			setLikeCount(likes.length)
-			setLiked(likes.includes(usertest))
-			setUpdateTrigger((prev) => !prev)
+			setLiked(likes.includes(user))
+			fetchData('posts')
 		} catch (error) {
 			console.error(error)
 		}
