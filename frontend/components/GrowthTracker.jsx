@@ -41,7 +41,7 @@ const growthStages = [
   { week: 33, fruit: "Coconut", image: require("../assets/images/fruits/Coconut.png") },
   { week: 34, fruit: "Zucchini", image: require("../assets/images/fruits/Zucchini.png") },
   { week: 35, fruit: "Little Pumpkin", image: require("../assets/images/fruits/Little Pumkin.png") },
-  { week: 36, fruit: "Pineapple", image: require("../assets/images/fruits/PineApple.png") },
+  { week: 36, fruit: "Pineapple", image: require("../assets/images/fruits/Pineapple.png") },
   { week: 37, fruit: "Patison", image: require("../assets/images/fruits/Patison.png") },
   { week: 38, fruit: "Watermelon", image: require("../assets/images/fruits/Watermelon.png") },
   { week: 39, fruit: "Melon", image: require("../assets/images/fruits/Melon.png") },
@@ -130,7 +130,7 @@ const GrowthTracker = () => {
       <ProgressBar progress={gestationalAge / 40} color="#4CAF50" style={styles.progressBar} />
       <Text style={styles.progressText}>{gestationalAge} / 40 weeks</Text>
 
-      <Button title="Change Conception Date" onPress={() => setShowPicker(true)} color="#FF9800" />
+      <Button title="Change Conception Date" onPress={() => setShowPicker(true)} color="#0f4d92" />
 
       {showPicker && (
         <DateTimePicker
@@ -149,7 +149,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 5,
-    backgroundColor: "#fffdef",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#4CAF50",
+    color: "#0f4d92"
   },
   subtitle: {
     fontSize: 18,
