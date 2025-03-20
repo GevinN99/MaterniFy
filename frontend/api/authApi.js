@@ -1,5 +1,6 @@
 import axiosInstance from "./axiosInstance";
 
+// User registration
 export const registerUser = async (userData) => {
     try {
         const response = await axiosInstance.post("/users/register", userData);
@@ -10,6 +11,7 @@ export const registerUser = async (userData) => {
     }
 };
 
+// User login
 export const loginUser = async (credentials) => {
     try {
         const response = await axiosInstance.post("/users/login", credentials);
@@ -20,6 +22,7 @@ export const loginUser = async (credentials) => {
     }
 };
 
+// Doctor login
 export const loginDoctor = async (credentials) => {
     try {
         const response = await axiosInstance.post("/doctors/login", credentials);

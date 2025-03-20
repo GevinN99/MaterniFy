@@ -36,20 +36,24 @@ exports.registerDoctor = async (req, res) => {
     }
 };
 
-// Doctor login
 exports.loginDoctor = async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // Log incoming request
+        console.log("Login attempt with:", { email, password });
+
         // Find doctor by email
         const doctor = await Doctor.findOne({ email });
         if (!doctor) {
+            console.log("Doctor not found for email:", email);
             return res.status(404).json({ message: "Doctor not found" });
         }
 
         // Compare password
         const isMatch = await bcrypt.compare(password, doctor.password);
         if (!isMatch) {
+            console.log("Password mismatch for email:", email);
             return res.status(400).json({ message: "Invalid credentials" });
         }
 
@@ -62,7 +66,7 @@ exports.loginDoctor = async (req, res) => {
 
         res.status(200).json({
             token,
-            userId: doctor._id, // Assuming your frontend expects userId
+            userId: doctor._id,
             message: "Doctor logged in successfully",
         });
     } catch (error) {
