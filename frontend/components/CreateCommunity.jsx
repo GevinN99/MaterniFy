@@ -1,25 +1,40 @@
 import { View, Text, Modal, TextInput, StyleSheet, Alert } from "react-native"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 import { TouchableOpacity } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 import { Image } from "expo-image"
-import { createCommunity } from "../api/communityApi"
-import uploadImage from "../utils/uploadImage"
+import { createCommunity, updateCommunity } from "../api/communityApi"
+import { uploadImageToFirebase, deleteImageFromFirebase } from "../utils/firebaseImage"
 
-const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
+const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCreated }) => {
 	const [loading, setLoading] = useState(false)
 	const [errors, setErrors] = useState({
 		name: "",
 		description: "",
-		server: ""
+		server: "",
 	})
-	const [communityDetails, setCommunityDetails] = useState({
-		name: "",
-		description: ""		
-	})
-	const [image, setImage] = useState(null)
+	const [communityDetails, setCommunityDetails] = useState(
+		editing
+			? { name: community.name, description: community.description }
+			: { name: "", description: "" }
+	)
+
+	const [image, setImage] = useState(
+		editing && community?.imageUrl ? community.imageUrl : null
+	)
+
+	useEffect(() => {
+		if (visible) {
+			setCommunityDetails(
+				editing 
+					? { name: community?.name, description: community?.description }
+					: { name: "", description: "" }
+			)
+			setImage(editing ? community?.imageUrl : null)
+		}
+	}, [visible, editing, community]) // Only runs when modal visibility changes
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -35,40 +50,87 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 		}
 	}
 
-	const handleSubmit = async () => {			
+	const handleSubmit = async () => {
 		// Reset errors
-		setErrors({ name: "", description: "", server: "" })	
-		
+		setErrors({ name: "", description: "", server: "" })
+
 		let hasErrors = false
 
 		if (!communityDetails.name.trim()) {
-			setErrors((prevErros) => ({ ...prevErros, name: "Community name is required" }))			
+			setErrors((prevErros) => ({
+				...prevErros,
+				name: "Community name is required",
+			}))
 			hasErrors = true
 		}
 
 		if (!communityDetails.description.trim()) {
-			setErrors((prevErros) => ({ ...prevErros, description: "Community description is required" }))			
+			setErrors((prevErros) => ({
+				...prevErros,
+				description: "Community description is required",
+			}))
 			hasErrors = true
 		}		
 
-		if (hasErrors) {			
+		if (
+			editing &&
+			communityDetails.name === community.name &&
+			communityDetails.description === community.description &&
+			image === community.imageUrl
+		) {
+			setErrors((prevErros) => ({
+				...prevErros,
+				server: "No changes detected",
+			}))
+			hasErrors = true
+			return 
+		}
+
+		if (hasErrors) {
 			return
-		}	
-		
+		}
+
 		setLoading(true)
 
 		try {
-			
-			let imageUrl =
-				"https://firebasestorage.googleapis.com/v0/b/maternify-4de04.firebasestorage.app/o/other%2F3d-leadership-bunch-people-user-social-600nw-2431792393.webp?alt=media&token=18f8c074-0a4c-4c6a-aaee-0fdb24a9a783"
-
-			if (image) {
-				imageUrl = await uploadImage(image)
+			let imageUrl = null
+		
+			// Check if a new image is selected and upload it
+			if (image && (!editing || image !== community.imageUrl)) {
+				if (editing && community.imageUrl) {
+					await deleteImageFromFirebase(community.imageUrl) // Delete the previous image
+				}
+				imageUrl = await uploadImageToFirebase(image, "community")
+			} else if (editing && !image) {
+				// If editing and no new image is selected, keep the old image
+				imageUrl = community.imageUrl
 			}
 
-			const response = await createCommunity({ ...communityDetails, imageUrl })			
-			setLoading(false)
-			onCommunityCreated()
+			if (!editing && !image) {
+				imageUrl = await uploadImageToFirebase(
+					require("../assets/images/communityAvatar.webp").uri,
+					"community"
+				)
+			}
+
+			if (editing) {
+				const response = await updateCommunity(community._id, {
+					...communityDetails,
+					imageUrl,
+				})
+
+				onCommunityCreated({
+					...communityDetails,
+					imageUrl,
+				})
+			} else {
+				const response = await createCommunity({
+					...communityDetails,
+					imageUrl,
+				})
+				onCommunityCreated(response.community)
+			}
+			setLoading(false)			
 			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
@@ -101,7 +163,9 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 								color="black"
 							/>
 						</TouchableOpacity>
-						<Text className="text-xl font-bold ml-4">Create Community</Text>
+						<Text className="text-xl font-bold ml-4">
+							{editing ? "Update Community" : "Create Community"}
+						</Text>
 					</View>
 					<View className="p-3 m-2 rounded-lg flex gap-4">
 						<View className="flex justify-center items-center">
@@ -110,7 +174,7 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 									<Image
 										source={{ uri: image }}
 										style={[styles.postImage]}
-										contentFit="cover"										
+										contentFit="cover"
 										transition={1000}
 									/>
 									<TouchableOpacity
@@ -152,10 +216,9 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 									setErrors((prevErrors) => ({
 										...prevErrors,
 										name: "",
+										server: "",
 									}))
-								}
-									
-								}
+								}}
 							/>
 						</View>
 
@@ -178,19 +241,27 @@ const CreateCommunity = ({ visible, onClose, onCommunityCreated }) => {
 									setErrors((prevErrors) => ({
 										...prevErrors,
 										description: "",
+										server: "",
 									}))
-								}
-								}
+								}}
 							/>
 						</View>
-						{errors.server && <Text className="text-red-500">{errors.server }</Text>}
+						{errors.server && (
+							<Text className="text-red-500">{errors.server}</Text>
+						)}
 						<TouchableOpacity
 							className="bg-blue-400 items-center py-3 rounded-md"
 							onPress={handleSubmit}
 							disabled={loading}
 						>
 							<Text className="font-bold text-white">
-								{loading ? "Creating..." : "Create Community"}
+								{loading
+									? editing
+										? "Updating..."
+										: "Creating..."
+									: editing
+									? "Update Community"
+									: "Create Community"}
 							</Text>
 						</TouchableOpacity>
 					</View>

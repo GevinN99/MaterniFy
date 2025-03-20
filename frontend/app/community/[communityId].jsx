@@ -1,6 +1,6 @@
-import { View, Text, ScrollView } from "react-native"
+import { View, ScrollView } from "react-native"
 import React, { useEffect, useState } from "react"
-import { router, useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams } from "expo-router"
 import CommunityDetails from "../../components/CommunityDetails"
 import { getCommunityById } from "../../api/communityApi"
 import Post from "../../components/Post"
@@ -17,13 +17,12 @@ const Community = () => {
 			try {
 				if (communityId) {
 					const fetchedCommunity = await getCommunityById(communityId)
-					setCommunity(fetchedCommunity || {})					
+					setCommunity(fetchedCommunity || {})
 				}
 			} catch (error) {
 				console.log(error)
 			}
 		}
-		
 
 		fetchCommunityDetails()
 	}, [communityId])
@@ -34,8 +33,7 @@ const Community = () => {
 				{community && (
 					<View>
 						<CommunityDetails
-							community={community}
-							// isMember={isMember}
+							community={community}							
 							handleJoin={handleJoinCommunity}
 							handleLeave={handleLeaveCommunity}
 						/>

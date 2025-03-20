@@ -1,23 +1,38 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8070/api"
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:8070/api";
 
 const axiosInstance = axios.create({
-	baseURL: API_URL,
-	headers: { "Content-Type": "application/json" },
-})
+    baseURL: API_URL,
+    headers: { "Content-Type": "application/json" },
+});
 
-// Automatically attach token to requests
 axiosInstance.interceptors.request.use(
-	async (config) => {
-		const token = await AsyncStorage.getItem("token")
-		if (token) {
-			config.headers.Authorization = `Bearer ${token}`
-		}
-		return config
-	},
-	(error) => Promise.reject(error)
-)
+    async (config) => {
+        const token = await AsyncStorage.getItem("token");
+        console.log("Request - Attaching Token:", token);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (error.response?.status === 401) {
+            console.log("401 Error Detected - Token might be invalid or expired");
+            await AsyncStorage.removeItem("token");
+            await AsyncStorage.removeItem("role");
+            await AsyncStorage.removeItem("userId");
+            console.log("Redirecting to login due to 401");
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default axiosInstance;

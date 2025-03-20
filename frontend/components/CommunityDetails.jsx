@@ -5,35 +5,29 @@ import {
 	TouchableOpacity,
 	Pressable,
 } from "react-native"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import { Image } from "expo-image"
-import getUserId from "../utils/getUserId"
 import Feather from "@expo/vector-icons/Feather"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { deleteCommunityById } from "../api/communityApi"
 import { useCommunity } from "../context/communityContext"
 import { useRouter } from "expo-router"
+import { AuthContext } from "../context/AuthContext"
+import CreateCommunity from "./CreateCommunity"
+import { deleteImage, deleteImageFromFirebase } from "../utils/firebaseImage"
 
 const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
-	const { imageUrl, name, description, admin, members } = community
-	const [userId, setUserId] = useState("")
-	const [isMember, setIsMember] = useState(false)
+	const { userId } = useContext(AuthContext)
+	const [isModalVisible, setIsModalVisible] = useState(false)
+	const [communityDetails, setCommunityDetails] = useState(community)
+	const { imageUrl, name, description, admin, members } = communityDetails
+	const [isMember, setIsMember] = useState(members?.includes(userId))
 	const [showMenu, setShowMenu] = useState(false)
 	const { fetchData } = useCommunity()
 	const router = useRouter()
 
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
-
-	useEffect(() => {
-		const fetchUserId = async () => {
-			const id = await getUserId()
-			setUserId(id)
-			setIsMember(members?.includes(id))
-		}
-
-		fetchUserId()
-	}, [members])
 
 	const isAdmin = admin?._id === userId
 
@@ -51,16 +45,26 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 		setShowMenu(!showMenu)
 	}
 
+	const onUpdate = () => {
+		setIsModalVisible(true)
+		onToggleMenu()
+	}
+
 	const onDelete = async () => {
 		try {
-			const response = await deleteCommunityById(community._id)
-			console.log(response)
+			const response = await deleteCommunityById(communityDetails._id)
+			await deleteImageFromFirebase(communityDetails.imageUrl, "community")
+			const posts = communityDetails.posts
+			for (const post of posts) {
+				if (post.imageUrl) {
+					await deleteImageFromFirebase(post.imageUrl, "post")
+				}
+			}
 			router.push("/communities")
 			fetchData()
 		} catch (error) {
 			console.error(error)
 		}
-		
 	}
 
 	return (
@@ -84,7 +88,7 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 			<View className="flex justify-center items-center -mt-10 mb-4 ">
 				<View className="rounded-xl overflow-hidden border-4 border-white shadow-md">
 					<Image
-						source={{ uri: imageUrl || "https://via.placeholder.com/100" }}
+						source={{ uri: imageUrl }}
 						style={styles.communityImage}
 						contentFit="cover"
 						placeholder={{ blurhash }}
@@ -129,8 +133,11 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 					)}
 
 					{showMenu && (
-						<View className="absolute top-8 right-8 z-30 rounded-md shadow-md p-1 bg-white">
-							<TouchableOpacity className="p-2 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100">
+						<View className="absolute top-5 right-8 z-30 rounded-md shadow-md p-1 bg-white">
+							<TouchableOpacity
+								className="p-2 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
+								onPress={onUpdate}
+							>
 								<Feather
 									name="edit"
 									size={20}
@@ -172,6 +179,16 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 					</View>
 				)}
 			</View>
+			<CreateCommunity
+				editing={true}
+				community={communityDetails}
+				visible={isModalVisible}
+				onClose={() => setIsModalVisible(false)}				
+				onCommunityCreated={(updatedCommunity) => {
+					setCommunityDetails((prev) => ({ ...prev, ...updatedCommunity})) // Update community state
+					fetchData("communities")
+				}}
+			/>
 		</View>
 	)
 }

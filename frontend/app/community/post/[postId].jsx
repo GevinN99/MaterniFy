@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native"
-import React, { useEffect, useState, useCallback } from "react"
+import React, { useEffect, useState, useCallback, useContext } from "react"
 import { useLocalSearchParams, useRouter, useFocusEffect } from "expo-router"
 import { likeUnlikePost, getPostById } from "../../../api/communityApi"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -9,30 +9,20 @@ import { useCommunity } from "../../../context/communityContext"
 import { Image } from "expo-image"
 import { formatTime, formatDate } from "../../../utils/timeAgo"
 import PostActionSection from "../../../components/PostActionSection"
-import getUserId from "../../../utils/getUserId"
+import { AuthContext } from "../../../context/AuthContext"
 import LoadingSpinner from "../../../components/LoadingSpinner"
 
 const post = ({ community }) => {
+	const { userId: user } = useContext(AuthContext)
 	const { postId } = useLocalSearchParams()
-	const { fetchData } = useCommunity()
+	const { setUpdateTrigger } = useCommunity()
 	const [showMenu, setShowMenu] = useState(false)
 	const [replies, setReplies] = useState([])
 	const [post, setPost] = useState(null)
-	const [likeCount, setLikeCount] = useState(0)
-	const [user, setUser] = useState("")
+	const [likeCount, setLikeCount] = useState(0)	
 	const [liked, setLiked] = useState(false)
 	const router = useRouter()
-	const { selectPost } = useCommunity()
-
-	const fetchUserId = async () => {
-		const id = await getUserId()
-		setUser(id)
-	}
-
-	// Fetch user ID on component mount
-	useEffect(() => {
-		fetchUserId()
-	}, [])
+	const { selectPost } = useCommunity()	
 
 	useFocusEffect(
 		useCallback(() => {
@@ -42,7 +32,7 @@ const post = ({ community }) => {
 					console.log(response)
 					setPost(response)
 					setLikeCount(response.likes.length)
-					setLiked(response.likes.includes(user))
+					setLiked(response.likes.includes(usertest))
 				} catch (error) {
 					console.log(error)
 				}
@@ -60,7 +50,7 @@ const post = ({ community }) => {
 
 			fetchPost()
 			fetchReplies()
-		}, [postId, user])
+		}, [])
 	)
 
 	if (!post) {
@@ -86,8 +76,8 @@ const post = ({ community }) => {
 		try {
 			const { likes } = await likeUnlikePost(postId)
 			setLikeCount(likes.length)
-			setLiked(likes.includes(user))
-			fetchData("posts")
+			setLiked(likes.includes(usertest))
+			setUpdateTrigger((prev) => !prev)
 		} catch (error) {
 			console.error(error)
 		}
@@ -120,9 +110,10 @@ const post = ({ community }) => {
 						{/* </View> */}
 						<Text className="text-gray-500">
 							@
-							{(communityId.name || community.name)
-								.replace(/\s+/g, "")
-								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+							{(communityId.name ||
+								community.name)
+									.replace(/\s+/g, "")
+									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
 						</Text>
 					</View>
 				</View>

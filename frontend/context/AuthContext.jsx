@@ -6,34 +6,55 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [userId, setUserId] = useState(null);
+    const [role, setRole] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
         const loadUser = async () => {
-            const token = await AsyncStorage.getItem("token");
-            const storedUserId = await AsyncStorage.getItem("userId");
-            if (token) {
-                setUser(token);
-                setUserId(storedUserId);
-                router.replace("/"); // Redirect to home page if user is logged in
-            } else {
-                router.replace("/auth/Login"); // Redirect to login if no token
+            try {
+                const token = await AsyncStorage.getItem("token");
+                const storedRole = await AsyncStorage.getItem("role");
+                console.log("AuthContext - Initial Load - Token:", token);
+                console.log("AuthContext - Initial Load - Role:", storedRole);
+
+                if (token) {
+                    setUser(token);
+                    setRole(storedRole);
+                    const currentPath = router.pathname;
+                    if (!currentPath || currentPath === "/auth/Login" || currentPath === "/auth/DoctorLogin") {
+                        if (storedRole === "doctor") {
+                            router.replace("/(tabs)/doctor-home");
+                        } else {
+                            router.replace("/(tabs)/index");
+                        }
+                    }
+                } else {
+                    router.replace("/auth/Login");
+                }
+            } catch (error) {
+                console.error("Error loading user from AsyncStorage:", error);
+                router.replace("/auth/Login");
             }
         };
         loadUser();
     }, []);
 
     const logout = async () => {
-        await AsyncStorage.removeItem("token");
-        await AsyncStorage.removeItem("userId");
-        setUser(null);
-        setUserId(null);
-        router.replace("/auth/Login"); // Redirect to login page on logout
+        try {
+            await AsyncStorage.removeItem("token");
+            await AsyncStorage.removeItem("userId");
+            await AsyncStorage.removeItem("role");
+            setUser(null);
+            setRole(null);
+            router.replace("/auth/Login");
+            console.log("Logged out successfully");
+        } catch (error) {
+            console.error("Logout Error:", error);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, userId, setUser, setUserId, logout }}>
+        <AuthContext.Provider value={{ user, setUser, role, logout }}>
             {children}
         </AuthContext.Provider>
     );

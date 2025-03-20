@@ -6,9 +6,21 @@ const router = express.Router()
 
 router.post("/create", auth.authenticate, postController.createPost)
 router.get("/post/:postId", auth.authenticate, postController.getPostById)
-router.get("/community/:communityId", auth.authenticate, postController.getPostsByCommunity)
-router.get("/:userId",auth.authenticate, postController.getPostsByAllCommunities)
+router.get(
+	"/community/:communityId",
+	auth.authenticate,
+	postController.getPostsByCommunity
+)
+router.get(
+	"/:userId",
+	auth.authenticate,
+	postController.getPostsByAllCommunities
+)
 router.delete("/delete/:postId", auth.authenticate, postController.deletePost)
-router.post("/like-unlike/:postId", auth.authenticate, postController.likeUnlikePost)
+router.post(
+	"/like-unlike/:postId",
+	auth.authenticate,
+	postController.likeUnlikePost
+)
 
 module.exports = router

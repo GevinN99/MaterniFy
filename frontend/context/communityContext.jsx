@@ -3,7 +3,7 @@ import {
 	getAllCommunities,
 	joinCommunity,
 	leaveCommunity,
-	getPostsFromAllUsersCommunities,
+	getPostsFromAllUsersCommunities,	
 } from "../api/communityApi"
 import { AuthContext } from "./AuthContext"
 
@@ -15,40 +15,54 @@ export const CommunityProvider = ({ children }) => {
 	const [nonUserCommunities, setNonUserCommunities] = useState([])
 	const [posts, setPosts] = useState([])
 	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(null)
+	const [communityError, setCommunityError] = useState(null)
+	const [postsError, setPostsError] = useState(null)
 	const [selectedPost, setSelectedPost] = useState(null)
 
 	useEffect(() => {
-		console.log("userId", userId)
+		console.log("User id from community", userId)
 		if (userId) {
-			fetchData(userId)
+			fetchData()
 		}
-	}, [userId])
+	}, [userId])	
 
-	const fetchData = async (userId ,fetchType = "both") => {
-		setLoading(true)
-		console.log("fetchType data", fetchType)
+	const fetchData = async (fetchType = "both") => {
+		if (!userId) {
+			console.error("No user id provided")
+			return
+		}
 		
-		try {
-			if (fetchType === "communities" || fetchType === "both") {
-				console.log("Fetching communities: ")
-				const { userCommunities, nonUserCommunities } =
-					await getAllCommunities(userId)
+		setCommunityError(null)
+		setPostsError(null)
+
+		if (fetchType === "communities" || fetchType === "both") {
+			try {				
+				console.log("Fetching communities for user: ", userId)
+				const { userCommunities, nonUserCommunities } = await getAllCommunities(
+					userId
+				)
 				setUserCommunities(userCommunities || [])
 				setNonUserCommunities(nonUserCommunities || [])
+			} catch (error) {
+				console.error("Error fetching communities:", error)
+				setCommunityError("Failed to fetch communities. Please try again later.")				
 			}
+		}
 
-			if (fetchType === "posts" || fetchType === "both") {
-				console.log("Fetching posts: ")
+		// Fetch posts
+		if (fetchType === "posts" || fetchType === "both") {
+			try {
+				
+				console.log("Fetching posts for user: ", userId)
 				const postsData = await getPostsFromAllUsersCommunities(userId)
 				setPosts(postsData || [])
+			} catch (error) {
+				console.error("Error fetching posts:", error)
+				setPostsError("Failed to fetch posts. Please try again later.")				
 			}
-		} catch (error) {
-			setError(error)
-			console.error(error)
-		} finally {
-			setLoading(false)
 		}
+
+		setLoading(false)
 	}
 
 	// Set selected post
@@ -57,7 +71,7 @@ export const CommunityProvider = ({ children }) => {
 	}
 
 	const handleJoinCommunity = async (communityId) => {
-		try {
+		try {						
 			await joinCommunity(communityId)
 
 			setUserCommunities((prevCommunities) => [
@@ -68,9 +82,9 @@ export const CommunityProvider = ({ children }) => {
 			])
 			setNonUserCommunities((prevCommunities) =>
 				prevCommunities.filter((community) => community._id !== communityId)
-			)
-
-			fetchData("posts")
+			)			
+			
+			fetchData("posts")				
 		} catch (error) {
 			console.error(error)
 		}
@@ -88,26 +102,42 @@ export const CommunityProvider = ({ children }) => {
 				...userCommunities.filter((community) => community._id === communityId),
 			])
 
-			fetchData("posts")
+			fetchData("posts")			
 		} catch (error) {
 			console.error(error)
 		}
+	}	
+
+	const addCommunity = (newCommunity) => {
+		setUserCommunities((prevCommunities) => [...prevCommunities, newCommunity])		
 	}
+
+	const fetchPostsFromAllUsersCommunities = async () => {		
+		try {
+			const updatedPosts = await getPostsFromAllUsersCommunities(userId)
+			setPosts(updatedPosts || [])
+		} catch (error) {			
+			console.error(error)
+		}
+	}
+
 
 	return (
 		<CommunityContext.Provider
 			value={{
 				fetchData,
-				userCommunities,
-				nonUserCommunities,
-				posts,
+				userCommunities,				
+				nonUserCommunities,				
+				posts,				
 				loading,
-				error,
+				postsError,
+				communityError,
 				handleJoinCommunity,
 				handleLeaveCommunity,
-				// setUpdateTrigger,
 				selectPost,
 				selectedPost,
+				addCommunity,
+				// fetchPostsFromAllUsersCommunities
 			}}
 		>
 			{children}

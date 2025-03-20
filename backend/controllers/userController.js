@@ -1,11 +1,22 @@
-//Manages user profiles, authentication
 const User = require('../models/userModel');
 const { hashPassword, comparePassword, generateToken } = require('../middlewares/auth');
 
 // Register a new user
 exports.registerUser = async (req, res) => {
     try {
-        const { fullName, email, password, role, languagePreference } = req.body;
+        const {
+            fullName,
+            email,
+            password,
+            role,
+            languagePreference,
+            profileImage,
+            homeLocation,
+            pregnancyDate,
+            partnerDetails,
+            age,
+            parentingDay,
+        } = req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -18,16 +29,23 @@ exports.registerUser = async (req, res) => {
             fullName,
             email,
             password: hashedPassword,
-            role,
-            languagePreference
+            role: role || "mother",
+            languagePreference: languagePreference || "English",
+            profileImage: profileImage || "https://www.w3schools.com/w3images/avatar2.png",
+            homeLocation: homeLocation || null,
+            pregnancyDate: pregnancyDate ? new Date(pregnancyDate) : null,
+            partnerDetails: partnerDetails || null,
+            age: age || null,
+            parentingDay: parentingDay ? new Date(parentingDay) : null,
         });
 
         await newUser.save();
-        console.log(newUser);
-        res.status(201).json({ message: 'User registered successfully' });
+
+        const token = generateToken(newUser);
+        res.status(201).json({ token, userId: newUser._id, role: newUser.role });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error("Signup Error:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
@@ -58,18 +76,17 @@ exports.loginUser = async (req, res) => {
 exports.getUserProfile = async (req, res) => {
     try {
         const userId = req.user.id;
-
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select('-password'); // Exclude password
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
         res.status(200).json(user);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 
 // Update user profile
 exports.updateUserProfile = async (req, res) => {

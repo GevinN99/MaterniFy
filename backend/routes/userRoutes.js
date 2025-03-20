@@ -16,3 +16,4 @@ router.get('/all-users', auth.authenticate, userController.getAllUsers);
 router.delete('/:userId', auth.authenticate, userController.deleteUser);
 
 module.exports = router;
+

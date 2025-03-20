@@ -19,22 +19,23 @@ import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import Feather from "@expo/vector-icons/Feather"
 
-const Communities = () => {
+const Communities = () => {		
 	const [searchQuery, setSearchQuery] = useState("")
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [searching, setSearching] = useState(false)
 	const [searchResults, setSearchResults] = useState([])
 	const {
-		userCommunities,
+		userCommunities,			
 		nonUserCommunities,
 		handleJoinCommunity,
-		handleLeaveCommunity,
-		fetchData,
-		error,
+		handleLeaveCommunity,		
+		communityError: error,
 		loading,
+		addCommunity,
 	} = useCommunity()
 	const router = useRouter()
 	const allCommunities = userCommunities.concat(nonUserCommunities)
+
 
 	useEffect(() => {
 		if (searching) {
@@ -65,7 +66,7 @@ const Communities = () => {
 
 				<TextInput
 					onFocus={() => setSearching(true)}
-					className="h-12 pl-10 pr-4 border border-gray-300 rounded-3xl bg-white mb-4 focus:outline-none focus:border-blue-500 duration-300 transition-all"
+					className="h-12 pl-10 pr-4 border border-gray-300 text-base rounded-3xl bg-white mb-4 focus:outline-none focus:border-blue-500 duration-300 transition-all"
 					placeholder="Search communities..."
 					value={searchQuery}
 					onChangeText={(value) => setSearchQuery(value)}
@@ -93,7 +94,7 @@ const Communities = () => {
 									size={24}
 									color="gray"
 								/>
-								<Text className="text-gray-500">
+								<Text className="text-gray-500 text-lg">
 									We couldn't find what you're looking for.
 								</Text>
 							</View>
@@ -110,8 +111,8 @@ const Communities = () => {
 											style={styles.communityImage}
 										/>
 										<View>
-											<Text className="font-bold">{community.name}</Text>
-											<Text>{community.description}</Text>
+											<Text className="font-bold text-lg">{community.name}</Text>
+											<Text className="text-base">{community.description}</Text>
 										</View>
 									</View>
 								</Pressable>
@@ -121,12 +122,12 @@ const Communities = () => {
 				</ScrollView>
 			) : (
 				<ScrollView className="px-4">
-					<Text className="text-2xl font-semibold my-4">Your communities</Text>
+					<Text className="text-2xl my-4">Your communities</Text>
 					<View>
 						{loading ? (
-							<LoadingSpinner />
+							<LoadingSpinner styles={"my-16"} />
 						) : error ? (
-							<ErrorMessage error="Failed to load communities" />
+							<ErrorMessage error={error} />
 						) : userCommunities && userCommunities.length > 0 ? (
 							userCommunities.map((community, index) => (
 								<Pressable
@@ -143,21 +144,21 @@ const Communities = () => {
 							))
 						) : (
 							<View className="flex-1 justify-center items-center">
-								<Text className="text-gray-500">
+								<Text className="text-gray-500 text-lg">
 									User has not joined any community
 								</Text>
 							</View>
 						)}
 					</View>
 
-					<Text className="text-2xl font-semibold mt-8 my-4">
+					<Text className="text-2xl mt-8 my-4">
 						Discover new communities
 					</Text>
 					<View>
 						{loading ? (
-							<LoadingSpinner />
+							<LoadingSpinner styles={"my-16"} />
 						) : error ? (
-							<ErrorMessage error="Failed to load communities" />
+							<ErrorMessage error={error} />
 						) : nonUserCommunities && nonUserCommunities.length > 0 ? (
 							nonUserCommunities.map((community, index) => (
 								<Pressable
@@ -175,8 +176,8 @@ const Communities = () => {
 								</Pressable>
 							))
 						) : (
-							<View className="flex-1 justify-center items-center">
-								<Text className="text-gray-500">
+							<View className="flex-1 justify-center items-center mb-4">
+								<Text className="text-gray-500 text-lg">
 									No new communities available
 								</Text>
 							</View>
@@ -186,7 +187,7 @@ const Communities = () => {
 			)}
 			<TouchableOpacity
 				onPress={() => setIsModalVisible(true)}
-				className="absolute right-6 bottom-5 z-10 bg-blue-200/70 text-blue-500 border border-blue-500 w-16 h-16 pl-1 pb-.5 flex justify-center items-center rounded-full "
+				className="absolute right-4 bottom-5 z-10 bg-blue-200/70 text-blue-500 border border-blue-500 w-20 h-20 pl-1 pb-.5 flex justify-center items-center rounded-full "
 			>
 				<Ionicons
 					name="create-outline"
@@ -197,7 +198,7 @@ const Communities = () => {
 			<CreateCommunity
 				visible={isModalVisible}
 				onClose={() => setIsModalVisible(false)}
-				onCommunityCreated={() => fetchData("communities")}
+				onCommunityCreated={addCommunity}
 			/>
 		</SafeAreaView>
 	)
@@ -205,8 +206,8 @@ const Communities = () => {
 
 const styles = StyleSheet.create({
 	communityImage: {
-		width: 40,
-		height: 40,
+		width: 50,
+		height: 50,
 		borderRadius: 50,
 	},
 })
