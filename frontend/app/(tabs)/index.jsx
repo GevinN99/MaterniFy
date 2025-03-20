@@ -135,26 +135,36 @@ const Landing = () => {
 
         <View style={styles.secContainer}>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/medical-report.png")} style={styles.sectors} />
-              <Text style={styles.topic}>Health Plan</Text>
+            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
+            <View style={styles.buttonbox}>
+            <Text style={styles.topic}>Health Plan</Text>
+            <Image source={require("../../assets/images/health_plan.png")} style={styles.sectors} />
+            </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/mental-health (1).png")} style={styles.sectors} />
-              <Text style={styles.topic}>Mental Health</Text>
+            <View style={styles.buttonbox}>
+            <Text style={styles.topic}>Mental Health</Text>
+            <Image source={require("../../assets/images/mental_health.png")} style={styles.sectors} />
+            </View>
             </TouchableOpacity>
           </View>
+
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/insurance-policy.png")} style={styles.sectors} />
-              <Text style={styles.topic}>Appointments</Text>
+            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
+            <View style={styles.buttonbox}>
+            <Text style={styles.topic}>Appointments</Text>
+            <Image source={require("../../assets/images/apoinment.png")} style={styles.sectors} />
+            </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <Image source={require("../../assets/images/first-aid-kit.png")} style={styles.sectors} />
-              <Text style={styles.topic}>Emergency</Text>
+            <View style={styles.buttonbox}>
+            <Text style={styles.topic}>Emergency</Text>
+            <Image source={require("../../assets/images/emergency.png")} style={[styles.sectors, { tintColor: "white" }]} />
+            </View>
             </TouchableOpacity>
           </View>
         </View>
+
 
         <View style={styles.calendarContainer}>
           <View style={styles.weekHeader}>
@@ -269,26 +279,30 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    gap:10,
+    marginBottom:10
   },
   sectors: {
-    width: 100,
-    height: 100,
-    margin: 30,
+    width: 50, 
+    height: 50,
+    resizeMode: "contain",
+    marginTop: 5,
+      
   },
   secContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
   topic: {
-    textAlign: "center",
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center",
+    color:"white"
   },
   calendarContainer:{
     margin: 30,
     alignItems:"center",
-    backgroundColor:"#E2E0E0",
+    backgroundColor:"#9DD2D8",
     paddingVertical:20,
     paddingHorizontal:20,
     height:220,
@@ -350,7 +364,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   growthTrackerCard: {
-    backgroundColor: "#E3F2FD",
+    backgroundColor: "#FADCE4",
     padding: 15,
     borderRadius: 15,
     width: "90%",
@@ -368,6 +382,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#FF4500",
   },
+  buttonbox:{
+    flexDirection: "row", 
+    justifyContent: "space-between",
+    alignItems: "center", 
+    width: 170, 
+    height: 100, 
+    backgroundColor: "#9DC3E2", 
+    borderRadius: 10, 
+    padding: 10,
+  }
 });
 
 export default Landing;
