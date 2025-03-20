@@ -30,7 +30,6 @@ export default function Login() {
     // Validate form fields
     const validateForm = () => {
         const newErrors = {};
-
         if (!formData.email.trim()) {
             newErrors.email = "Email is required";
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -41,43 +40,39 @@ export default function Login() {
         } else if (formData.password.length < 6) {
             newErrors.password = "Password must be at least 6 characters";
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    // Handle Login
+    // Handle Login (for general users)
     const handleLogin = async () => {
         setGeneralError("");
-
         if (!validateForm()) {
             setGeneralError("Please fix the errors above.");
             return;
         }
-
         setLoading(true);
-
         try {
             const response = await loginUser(formData);
-
             if (response.token && response.userId) {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);
                 await AsyncStorage.setItem("role", response.role || "mother");
                 router.replace("/");
             } else {
-                const errorMessage = response && typeof response === "object" && response.message
-                    ? response.message
-                    : "Invalid credentials. Please try again.";
+                const errorMessage = response?.message || "Invalid credentials. Please try again.";
                 setGeneralError(errorMessage);
             }
         } catch (error) {
-            console.error("Login Error:", error);
-            const errorMessage = error.message || "Login failed. Please check your connection and try again.";
-            setGeneralError(errorMessage);
+            setGeneralError(error.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }
+    };
+
+    // Handle Doctor Login Redirect
+    const handleDoctorLoginRedirect = () => {
+        router.push("/auth/DoctorLogin");
     };
 
     return (
@@ -105,7 +100,7 @@ export default function Login() {
                         </View>
                         {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-                        {/* Password Input with Eye Button */}
+                        {/* Password Input */}
                         <View style={styles.inputContainer}>
                             <TextInput
                                 style={styles.input}
@@ -142,6 +137,15 @@ export default function Login() {
 
                         {/* General Error Message */}
                         {generalError && <Text style={styles.errorMessage}>{generalError}</Text>}
+
+                        {/* Doctor Icon */}
+                        <TouchableOpacity
+                            style={styles.doctorIconContainer}
+                            onPress={handleDoctorLoginRedirect}
+                        >
+                            <Ionicons name="medkit" size={40} color="#74a8ff" />
+                            <Text style={styles.doctorIconText}>Doctor Login</Text>
+                        </TouchableOpacity>
                     </View>
                 </LinearGradient>
             </ScrollView>
@@ -150,21 +154,10 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-    keyboardContainer: {
-        flex: 1,
-    },
-    scrollContainer: {
-        flexGrow: 1,
-    },
-    gradientBackground: {
-        flex: 1,
-        justifyContent: "center",
-    },
-    container: {
-        alignItems: "center",
-        paddingVertical: 40,
-        paddingHorizontal: 20,
-    },
+    keyboardContainer: { flex: 1 },
+    scrollContainer: { flexGrow: 1 },
+    gradientBackground: { flex: 1, justifyContent: "center" },
+    container: { alignItems: "center", paddingVertical: 40, paddingHorizontal: 20 },
     title: {
         fontSize: 36,
         fontWeight: "700",
@@ -175,11 +168,7 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: 0, height: 2 },
         textShadowRadius: 5,
     },
-    subtitle: {
-        fontSize: 18,
-        color: "#000000",
-        marginBottom: 40,
-    },
+    subtitle: { fontSize: 18, color: "#000000", marginBottom: 40 },
     inputContainer: {
         width: "90%",
         backgroundColor: "rgba(255, 255, 255, 0.1)",
@@ -197,40 +186,17 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
-    input: {
-        flex: 1,
-        padding: 12,
-        fontSize: 16,
-        color: "#3f3f3f",
-        backgroundColor: "transparent",
-    },
-    eyeButton: {
-        padding: 10,
-    },
+    input: { flex: 1, padding: 12, fontSize: 16, color: "#3f3f3f", backgroundColor: "transparent" },
+    eyeButton: { padding: 10 },
     button: {
         width: "90%",
         borderRadius: 12,
         overflow: "hidden",
         marginTop: 20,
     },
-    buttonGradient: {
-        paddingVertical: 15,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    buttonText: {
-        color: "#FFFFFF",
-        fontSize: 18,
-        fontWeight: "600",
-        textTransform: "uppercase",
-    },
-    link: {
-        marginTop: 20,
-        color: "#ababab",
-        fontSize: 16,
-        fontWeight: "500",
-        textDecorationLine: "underline",
-    },
+    buttonGradient: { paddingVertical: 15, alignItems: "center", justifyContent: "center" },
+    buttonText: { color: "#FFFFFF", fontSize: 18, fontWeight: "600", textTransform: "uppercase" },
+    link: { marginTop: 20, color: "#ababab", fontSize: 16, fontWeight: "500", textDecorationLine: "underline" },
     errorMessage: {
         color: "#F87171",
         fontSize: 16,
@@ -240,11 +206,15 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 8,
     },
-    errorText: {
-        color: "#F87171",
-        fontSize: 14,
-        marginTop: -10,
-        marginBottom: 10,
-        marginLeft: 15,
+    errorText: { color: "#F87171", fontSize: 14, marginTop: -10, marginBottom: 10, marginLeft: 15 },
+    doctorIconContainer: {
+        marginTop: 30,
+        alignItems: "center",
+    },
+    doctorIconText: {
+        color: "#74a8ff",
+        fontSize: 16,
+        fontWeight: "500",
+        marginTop: 5,
     },
 });

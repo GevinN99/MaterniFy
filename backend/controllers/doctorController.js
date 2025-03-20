@@ -1,5 +1,8 @@
 const Doctor = require('../models/doctorModel');
 const { hashPassword, comparePassword, generateToken } = require('../middlewares/auth');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { SECRET_KEY } = process.env;
 
 // Register a new doctor (Signup)
 exports.registerDoctor = async (req, res) => {
@@ -35,27 +38,36 @@ exports.registerDoctor = async (req, res) => {
 
 // Doctor login
 exports.loginDoctor = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+    const { email, password } = req.body;
 
-        // Find the doctor by email
+    try {
+        // Find doctor by email
         const doctor = await Doctor.findOne({ email });
         if (!doctor) {
-            return res.status(404).json({ message: 'Doctor not found' });
+            return res.status(404).json({ message: "Doctor not found" });
         }
 
-        // Compare the provided password with the stored hashed password
-        const passwordMatch = await comparePassword(password, doctor.password);
-        if (!passwordMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+        // Compare password
+        const isMatch = await bcrypt.compare(password, doctor.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Invalid credentials" });
         }
 
         // Generate JWT token
-        const token = generateToken(doctor);
-        res.status(200).json({ token, doctorId: doctor._id, role: doctor.role });
+        const token = jwt.sign(
+            { id: doctor._id, role: "doctor" },
+            SECRET_KEY,
+            { expiresIn: "24h" }
+        );
+
+        res.status(200).json({
+            token,
+            userId: doctor._id, // Assuming your frontend expects userId
+            message: "Doctor logged in successfully",
+        });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error("Doctor Login Error:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 
