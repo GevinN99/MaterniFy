@@ -15,7 +15,7 @@ const Exercises = ({ route }) => {
     navigation.setOptions({
       title: "Mental Health Exercises",
       headerTintColor: "#333333",
-      headerStyle: { backgroundColor: "#A3C8E8" }, // Add this line
+      headerStyle: { backgroundColor: "#B4E4FF" }, // Add this line
       headerLeft: () => (
         <View className="flex-row items-center pl-2">
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -48,7 +48,7 @@ const Exercises = ({ route }) => {
   return (
     <SafeAreaView className="flex-1 bg-[#FCFCFC] p-4">
       <View className="items-center mb-4">
-        <Text className="text-2xl font-bold text-[#265D9C] mt-5 mb-2">
+        <Text className="text-2xl font-bold text-[#555555] mt-5 mb-2">
           Start Your Mindfulness Journey
         </Text>
       </View>
