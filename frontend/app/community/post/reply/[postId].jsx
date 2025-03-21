@@ -14,7 +14,7 @@ import { useRouter, useLocalSearchParams } from "expo-router"
 
 const reply = () => {
 	const router = useRouter()
-	const { selectedPost, setUpdateTrigger } = useCommunity()
+	const { selectedPost, fetchData } = useCommunity()
 	const { parentReplyId } = useLocalSearchParams()
 	const [loading, setLoading] = useState(false)
 	const { userId, communityId } = selectedPost
@@ -34,7 +34,7 @@ const reply = () => {
 		try {
 			const response = await createReply(replyData)
 			setLoading(false)
-			setUpdateTrigger((prev) => !prev)
+			fetchData('posts')
 			router.back()
 		} catch (error) {
 			console.log(error)

@@ -143,10 +143,16 @@ const getCommunityById = async (req, res) => {
 			.populate("admin", "fullName profileImage")
 			.populate({
 				path: "posts", // Populates the posts array
-				populate: {
-					path: "userId", // Further populates the user inside each post
-					select: "fullName profileImage email", // Fetches only these fields from the user
-				},
+				populate: [
+					{
+						path: "userId", // Further populates the user inside each post
+						select: "fullName profileImage email", // Fetches only these fields from the user
+					},
+					{
+						path: "communityId", // Populate community details inside each post
+						select: "name", // Include only the community name
+					},
+				],
 			})
 
 		if (!community) {
@@ -218,6 +224,7 @@ const leaveCommunity = async (req, res) => {
 		community.members = community.members.filter(
 			(member) => member.toString() !== userId.toString()
 		)
+		
 		await community.save()
 		res.status(200).json({ message: "Left community successfully" })
 	} catch (error) {

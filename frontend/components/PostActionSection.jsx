@@ -12,7 +12,8 @@ const PostActionSection = ({
 	onToggleMenu,
 	onDelete,
 	showMenu,
-	replyCount
+	replyCount,
+	admin
 }) => {
 	return (
 		<View className="flex flex-row justify-between mt-4">
@@ -46,17 +47,19 @@ const PostActionSection = ({
 			</View>
 
 			{/* Ellipsis Icon for menu */}
-			<Pressable onPress={onToggleMenu}>
-				<Ionicons
-					name="ellipsis-vertical-sharp"
-					size={20}
-					color="black"
-				/>
-			</Pressable>
+			{admin &&
+				<Pressable onPress={onToggleMenu}>
+					<Ionicons
+						name="ellipsis-vertical-sharp"
+						size={20}
+						color="black"
+					/>
+				</Pressable>
+			}
 
 			{/* Conditional Menu */}
 			{showMenu && (
-				<View className="absolute right-5 bottom-1 rounded-md shadow-md z-10 p-1 bg-white">
+				<View className="absolute right-5 bottom-1 rounded-md shadow-md z-10 p-1 bg-white">					
 					<Pressable
 						onPress={onDelete}
 						className="p-2 rounded-md flex flex-row gap-2 items-center"

@@ -6,12 +6,12 @@ import {
     TouchableOpacity,
     Image,
     StyleSheet,
-    ScrollView,
-    Picker,
+    ScrollView,    
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Picker } from "@react-native-picker/picker"
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { registerUser } from "../../api/authApi";

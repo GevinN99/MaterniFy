@@ -49,6 +49,12 @@ export const createPost = async (data) => {
 	return response.data
 }
 
+export const deletePost = async (postId) => {
+	const response = await axiosInstance.delete(`/community-posts/delete/${postId}`)
+	// console.log(response)
+	return response.data
+}
+
 export const getPostById = async (postId) => {
 	const response = await axiosInstance.get(`/community-posts/post/${postId}`)
 	// console.log(response)
