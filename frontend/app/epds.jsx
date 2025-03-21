@@ -193,7 +193,7 @@ const epds = () => {
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
     
     return (
-      <SafeAreaView className="flex-1 bg-[#FCFCFC]">
+      <SafeAreaView className="flex-1 bg-[#B4E4FF]">
         <View className="flex-row items-center justify-between p-4">
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={24} color="#333333" />

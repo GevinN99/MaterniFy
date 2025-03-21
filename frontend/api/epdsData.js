@@ -7,7 +7,7 @@ export const questions = [
           { text: "Definitely not so much now", score: 2 },
           { text: "Not at all", score: 3 }
       ],
-      image: require("../assets/images/question1.jpeg"),
+      image: require("../assets/images/epds1.png"),
   },
   {
       question: "I have looked forward with enjoyment to things",
