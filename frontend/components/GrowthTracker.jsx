@@ -41,7 +41,7 @@ const growthStages = [
   { week: 33, fruit: "Coconut", image: require("../assets/images/fruits/Coconut.png") },
   { week: 34, fruit: "Zucchini", image: require("../assets/images/fruits/Zucchini.png") },
   { week: 35, fruit: "Little Pumpkin", image: require("../assets/images/fruits/Little Pumkin.png") },
-  { week: 36, fruit: "Pineapple", image: require("../assets/images/fruits/Pineapple.png") },
+  { week: 36, fruit: "Pineapple", image: require("../assets/images/fruits/PineApple.png") },  
   { week: 37, fruit: "Patison", image: require("../assets/images/fruits/Patison.png") },
   { week: 38, fruit: "Watermelon", image: require("../assets/images/fruits/Watermelon.png") },
   { week: 39, fruit: "Melon", image: require("../assets/images/fruits/Melon.png") },
