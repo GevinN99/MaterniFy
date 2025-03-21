@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  SafeAreaView,
   ActivityIndicator,
+  Dimensions,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import {Ionicons} from "@expo/vector-icons";
+import {router} from "expo-router";
 import moment from "moment";
-import { Svg, Circle } from "react-native-svg";
-import { LinearGradient } from "expo-linear-gradient";
-import { LineChart } from "react-native-chart-kit";
-import { Dimensions } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import {Circle, Svg} from "react-native-svg";
+import {LinearGradient} from "expo-linear-gradient";
+import {LineChart} from "react-native-chart-kit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BabyGrowthTracker from "../../components/GrowthTracker";
 
 const Landing = () => {
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
-  const [scores, setScores] = useState([5, 10, 15]); 
+  const [scores, setScores] = useState([5, 10, 15]);
   const [conceptionDate, setConceptionDate] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
 
@@ -52,17 +52,17 @@ const Landing = () => {
       }
     };
     fetchConceptionDate();
-  }, [conceptionDate]); 
-  
-    useEffect(() => {
-      const fetchProfilePic = async () => {
-        const storedPic = await AsyncStorage.getItem("profilePic");
-        if (storedPic) {
-          setProfilePic(storedPic);
-        }
-      };
-      fetchProfilePic();
-    }, []);
+  }, [conceptionDate]);
+
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      const storedPic = await AsyncStorage.getItem("profilePic");
+      if (storedPic) {
+        setProfilePic(storedPic);
+      }
+    };
+    fetchProfilePic();
+  }, []);
 
   const getWeekDates = () => {
     const startOfWeek = currentWeek.startOf("isoweek");
@@ -82,172 +82,183 @@ const Landing = () => {
     const strokeWidth = 10;
     const circumference = 2 * Math.PI * radius;
     const progress = (percentage / 100) * circumference;
-  
+
     return (
-      <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <Svg width={100} height={100}>
-          <Circle cx="50" cy="50" r={radius} stroke="#E0E0E0" strokeWidth={strokeWidth} fill="none" />
-          <Circle
-            cx="50"
-            cy="50"
-            r={radius}
-            stroke="orange"
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference - progress}
-            strokeLinecap="round"
-          />
-        </Svg>
-        <View style={{ position: "absolute", justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{percentage}%</Text>
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Svg width={100} height={100}>
+            <Circle cx="50" cy="50" r={radius} stroke="#E0E0E0" strokeWidth={strokeWidth} fill="none" />
+            <Circle
+                cx="50"
+                cy="50"
+                r={radius}
+                stroke="orange"
+                strokeWidth={strokeWidth}
+                fill="none"
+                strokeDasharray={circumference}
+                strokeDashoffset={circumference - progress}
+                strokeLinecap="round"
+            />
+          </Svg>
+          <View style={{ position: "absolute", justifyContent: "center", alignItems: "center" }}>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>{percentage}%</Text>
+          </View>
         </View>
-      </View>
     );
   };
-  
+
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <ScrollView contentContainerStyle={styles.container}>
-      {profilePic ? (
-      <Image source={{ uri: profilePic }} style={styles.profileImage} />
-        ) : (
-          <Image source={require("../../assets/images/landing.png")} style={styles.profileImage} />
-        )} 
-        <Text style={styles.title}>Welcome, {userName ? userName : "Mom"}!</Text>
-
-
-        <View style={styles.growthTrackerCard}>
-          {conceptionDate ? (
-            <BabyGrowthTracker conceptionDate={conceptionDate} />
+      <SafeAreaView style={styles.safeContainer}>
+        <ScrollView contentContainerStyle={styles.container}>
+          {profilePic ? (
+              <Image source={{ uri: profilePic }} style={styles.profileImage} />
           ) : (
-            <View style={styles.noConceptionContainer}>
-              <ActivityIndicator size="large" color="#0000ff" />
-              <Text style={styles.noConceptionText}>
-                Please set your conception date to track Baby's Growth..
-              </Text>
-              
-            </View>
+              <Image source={require("../../assets/images/landing.png")} style={styles.profileImage} />
           )}
-        </View>
+          <Text style={styles.title}>Welcome, {userName ? userName : "Mom"}!</Text>
 
 
-        <View style={styles.secContainer}>
-          <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
-            <View style={styles.buttonbox}>
-            <Text style={styles.topic}>Health Plan</Text>
-            <Image source={require("../../assets/images/health_plan.png")} style={styles.sectors} />
-            </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-            <View style={styles.buttonbox}>
-            <Text style={styles.topic}>Mental Health</Text>
-            <Image source={require("../../assets/images/mental_health.png")} style={styles.sectors} />
-            </View>
-            </TouchableOpacity>
+          <View style={styles.growthTrackerCard}>
+            {conceptionDate ? (
+                <BabyGrowthTracker conceptionDate={conceptionDate} />
+            ) : (
+                <View style={styles.noConceptionContainer}>
+                  <ActivityIndicator size="large" color="#0000ff" />
+                  <Text style={styles.noConceptionText}>
+                    Please set your conception date to track Baby's Growth..
+                  </Text>
+
+                </View>
+            )}
           </View>
 
-          <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
-            <View style={styles.buttonbox}>
-            <Text style={styles.topic}>Appointments</Text>
-            <Image source={require("../../assets/images/apoinment.png")} style={styles.sectors} />
-            </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-            <View style={styles.buttonbox}>
-            <Text style={styles.topic}>Emergency</Text>
-            <Image source={require("../../assets/images/emergency.png")} style={[styles.sectors, { tintColor: "white" }]} />
-            </View>
-            </TouchableOpacity>
-          </View>
-        </View>
 
-
-        <View style={styles.calendarContainer}>
-          <View style={styles.weekHeader}>
-            <TouchableOpacity onPress={handlePrevWeek}>
-              <Ionicons name="chevron-back" size={24} color="#64A8F1" />
-            </TouchableOpacity>
-            <Text style={styles.weekTitle}>{currentWeek.format("  MMMM D  ")}</Text>
-            <TouchableOpacity onPress={handleNextWeek}>
-              <Ionicons name="chevron-forward" size={24} color="#64A8F1" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.weekDays}>
-            {getWeekDates().map((date) => (
-              <TouchableOpacity key={date.format("YYYY-MM-DD")} onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}>
-                <Text style={[styles.dayText, selectedDate === date.format("YYYY-MM-DD") && styles.selectedDay]}>
-                {date.format("dd").charAt(0)}{"\n"}{"\n"}{date.format("D")}
-                </Text>
+          <View style={styles.secContainer}>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
+                <View style={styles.buttonbox}>
+                  <Text style={styles.topic}>Health Plan</Text>
+                  <Image source={require("../../assets/images/health_plan.png")} style={styles.sectors} />
+                </View>
               </TouchableOpacity>
-            ))}
-          </View>
-          {selectedDate && (
-            <View style={{ alignItems: "center", marginTop: 10 }}>
-              <Text style={styles.dateText}>Doctor Checkup</Text>
-              <Text>{selectedDate}</Text>
+              <TouchableOpacity onPress={() => router.push("/emergency")}>
+                <View style={styles.buttonbox}>
+                  <Text style={styles.topic}>Mental Health</Text>
+                  <Image source={require("../../assets/images/mental_health.png")} style={styles.sectors} />
+                </View>
+              </TouchableOpacity>
             </View>
-)}
 
-        </View>
-        <LinearGradient 
-          colors={['#E2E0E0', '#64A8F1']} 
-          style={styles.healthplan}>
-          <Text style={styles.healthtitle}>
-            Today's Health plan
-          </Text>
-          <Text style={styles.texthealth}>
-          "You need 8 glasses of water today 💧"
-          </Text>
-          <Text style={styles.texthealth}>
-          "Remember to take your iron supplements"
-          </Text>
-          <Text style={styles.texthealth}>
-          "Mild back pain detected? Try 5 mins of stretching."
-          </Text>
-          <CircularProgress percentage={100} />
-          
-      </LinearGradient>
-
-      <View style={{ alignItems: "center", padding: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
-            Mental Health Summary
-          </Text>
-
-          <View style={{ marginTop: 5, marginBottom:20 }}>
-          <LineChart
-            data={{
-              labels: ["Last month", "Jan 26 - Feb 1", "Today"],
-              datasets: [{ data: scores }],
-            }}
-            width={screenWidth * 0.9}
-            height={250}
-            yAxisLabel=""
-            chartConfig={{
-              backgroundColor: "#E3F2FD",
-              backgroundGradientFrom: "#E3F2FD",
-              backgroundGradientTo: "#BBDEFB",
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-
-              style: { borderRadius: 16 },
-              propsForDots: { r: "5", strokeWidth: "2", stroke: "#2196F3" },
-            }}
-            bezier
-            style={{ borderRadius: 16 }}
-          />
-          
-            <Text style={{ fontSize: 18, textAlign:"center" }}>
-              ⚠ {getRiskMessage(scores[scores.length - 1])}
-            </Text>
+            <View style={styles.row}>
+              <TouchableOpacity onPress={() => router.push("/appointments/UserAppointments")}>
+                <View style={styles.buttonbox}>
+                  <Text style={styles.topic}>Appointments</Text>
+                  <Image source={require("../../assets/images/apoinment.png")} style={styles.sectors}/>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/emergency")}>
+                <View style={styles.buttonbox}>
+                  <Text style={styles.topic}>Emergency</Text>
+                  <Image source={require("../../assets/images/emergency.png")} style={[styles.sectors, { tintColor: "white" }]} />
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-            </ScrollView>
-    </SafeAreaView>
+
+
+          <View style={styles.calendarContainer}>
+            <View style={styles.weekHeader}>
+              <TouchableOpacity onPress={handlePrevWeek}>
+                <Ionicons name="chevron-back" size={24} color="#64A8F1" />
+              </TouchableOpacity>
+              <Text style={styles.weekTitle}>{currentWeek.format("  MMMM D  ")}</Text>
+              <TouchableOpacity onPress={handleNextWeek}>
+                <Ionicons name="chevron-forward" size={24} color="#64A8F1" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.weekDays}>
+              {getWeekDates().map((date) => (
+                  <TouchableOpacity
+                      key={date.format("YYYY-MM-DD")}
+                      onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}
+                  >
+                    <Text
+                        style={[
+                          styles.dayText,
+                          selectedDate === date.format("YYYY-MM-DD") && styles.selectedDay,
+                        ]}
+                    >
+                      {date.format("dd").charAt(0)}
+                      {"\n"}
+                      {"\n"}
+                      {date.format("D")}
+                    </Text>
+                  </TouchableOpacity>
+              ))}
+            </View>
+            {selectedDate && (
+                <View style={{ alignItems: "center", marginTop: 10 }}>
+                  <Text style={styles.dateText}>Doctor Checkup</Text>
+                  <Text>{selectedDate}</Text>
+                </View>
+            )}
+          </View>
+
+          <LinearGradient
+              colors={['#E2E0E0', '#64A8F1']}
+              style={styles.healthplan}>
+            <Text style={styles.healthtitle}>
+              Today's Health plan
+            </Text>
+            <Text style={styles.texthealth}>
+              "You need 8 glasses of water today 💧"
+            </Text>
+            <Text style={styles.texthealth}>
+              "Remember to take your iron supplements"
+            </Text>
+            <Text style={styles.texthealth}>
+              "Mild back pain detected? Try 5 mins of stretching."
+            </Text>
+            <CircularProgress percentage={100} />
+
+          </LinearGradient>
+
+          <View style={{ alignItems: "center", padding: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
+              Mental Health Summary
+            </Text>
+
+            <View style={{ marginTop: 5, marginBottom:20 }}>
+              <LineChart
+                  data={{
+                    labels: ["Last month", "Jan 26 - Feb 1", "Today"],
+                    datasets: [{ data: scores }],
+                  }}
+                  width={screenWidth * 0.9}
+                  height={250}
+                  yAxisLabel=""
+                  chartConfig={{
+                    backgroundColor: "#E3F2FD",
+                    backgroundGradientFrom: "#E3F2FD",
+                    backgroundGradientTo: "#BBDEFB",
+                    decimalPlaces: 0,
+                    color: (opacity = 1) => `rgba(33, 150, 243, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+
+                    style: { borderRadius: 16 },
+                    propsForDots: { r: "5", strokeWidth: "2", stroke: "#2196F3" },
+                  }}
+                  bezier
+                  style={{ borderRadius: 16 }}
+              />
+
+              <Text style={{ fontSize: 18, textAlign:"center" }}>
+                ⚠ {getRiskMessage(scores[scores.length - 1])}
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
   );
 };
 
@@ -283,11 +294,11 @@ const styles = StyleSheet.create({
     marginBottom:10
   },
   sectors: {
-    width: 50, 
+    width: 50,
     height: 50,
     resizeMode: "contain",
     marginTop: 5,
-      
+
   },
   secContainer: {
     alignItems: "center",
@@ -359,7 +370,7 @@ const styles = StyleSheet.create({
     paddingVertical:5,
   },
   emojiImage: {
-    width: 40, 
+    width: 40,
     height: 40,
     resizeMode: "contain",
   },
@@ -383,13 +394,13 @@ const styles = StyleSheet.create({
     color: "#FF4500",
   },
   buttonbox:{
-    flexDirection: "row", 
+    flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", 
-    width: 170, 
-    height: 100, 
-    backgroundColor: "#9DC3E2", 
-    borderRadius: 10, 
+    alignItems: "center",
+    width: 170,
+    height: 100,
+    backgroundColor: "#9DC3E2",
+    borderRadius: 10,
     padding: 10,
   }
 });

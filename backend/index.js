@@ -15,6 +15,7 @@ const quizRoutes = require('./routes/quizRoutes');
 const replyRoutes = require("./routes/community-routes/replyRoutes")
 const locationRoutes = require('./routes/locationRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 
 const app = express()
 
@@ -53,7 +54,7 @@ app.use("/api/community-replies", replyRoutes)
 app.use('/api/location', locationRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use("/api/doctors", require("./routes/doctorRoutes"));
+app.use("/api/appointments", appointmentRoutes);
 
 const PORT = process.env.PORT || 8070;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-

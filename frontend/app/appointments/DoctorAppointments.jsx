@@ -1,4 +1,3 @@
-// app/appointments/doctorAppointments.js
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { getDoctorAppointments, cancelAppointment } from "../../api/appointmentApi";

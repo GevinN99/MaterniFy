@@ -5,10 +5,10 @@ import {CommunityProvider} from "../context/communityContext";
 import Header from "../components/Header";
 
 function RootLayout() {
-	return (
-		<AuthProvider>
-			<CommunityProvider>
-				<Stack>
+    return (
+        <AuthProvider>
+            <CommunityProvider>
+                <Stack>
                     <Stack.Screen name="(tabs)"
                                   options={{headerShown: false}}/>
                     <Stack.Screen name="auth/Login"
@@ -38,10 +38,10 @@ function RootLayout() {
                             headerShown: false,
                         }}
                     />
-				</Stack>
-			</CommunityProvider>
-		</AuthProvider>
-	);
+                </Stack>
+            </CommunityProvider>
+        </AuthProvider>
+    );
 }
 
 export default RootLayout;
