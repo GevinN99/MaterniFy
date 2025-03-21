@@ -37,7 +37,6 @@ app.use(
 	})
 )
 
-
 // Connect to MongoDB
 connectDB()
 

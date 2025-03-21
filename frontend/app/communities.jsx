@@ -6,6 +6,7 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 	Pressable,
+	RefreshControl,
 } from "react-native"
 import { Image } from "expo-image"
 import { Ionicons } from "@expo/vector-icons"
@@ -14,28 +15,29 @@ import React, { useEffect, useState } from "react"
 import { useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
 import CreateCommunity from "../components/CreateCommunity"
-import {useCommunity} from "../context/communityContext"
+import { useCommunity } from "../context/communityContext"
 import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import Feather from "@expo/vector-icons/Feather"
 
-const Communities = () => {		
+const Communities = () => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [searching, setSearching] = useState(false)
 	const [searchResults, setSearchResults] = useState([])
 	const {
-		userCommunities,			
+		userCommunities,
+		setUserCommunities,
 		nonUserCommunities,
 		handleJoinCommunity,
-		handleLeaveCommunity,		
+		handleLeaveCommunity,
 		communityError: error,
-		loading,
-		addCommunity,
+		loading,		
+		fetchData,
+		refreshData,		
 	} = useCommunity()
 	const router = useRouter()
 	const allCommunities = userCommunities.concat(nonUserCommunities)
-
 
 	useEffect(() => {
 		if (searching) {
@@ -49,6 +51,12 @@ const Communities = () => {
 			}
 		}
 	}, [searchQuery, searching])
+
+	useEffect(() => {
+		if (searching) {			
+			fetchData()
+		}
+	}, [searching])
 
 	const handleNavigateToCommunity = (communityId) => {
 		router.push(`/community/${communityId}`)
@@ -111,7 +119,9 @@ const Communities = () => {
 											style={styles.communityImage}
 										/>
 										<View>
-											<Text className="font-bold text-lg">{community.name}</Text>
+											<Text className="font-bold text-lg">
+												{community.name}
+											</Text>
 											<Text className="text-base">{community.description}</Text>
 										</View>
 									</View>
@@ -121,7 +131,15 @@ const Communities = () => {
 					</View>
 				</ScrollView>
 			) : (
-				<ScrollView className="px-4">
+				<ScrollView
+					className="px-4"
+					refreshControl={
+						<RefreshControl
+							refreshing={loading} // Bind to refreshing state
+							onRefresh={refreshData} // Trigger onRefresh function
+						/>
+					}
+				>
 					<Text className="text-2xl my-4">Your communities</Text>
 					<View>
 						{loading ? (
@@ -151,9 +169,7 @@ const Communities = () => {
 						)}
 					</View>
 
-					<Text className="text-2xl mt-8 my-4">
-						Discover new communities
-					</Text>
+					<Text className="text-2xl mt-8 my-4">Discover new communities</Text>
 					<View>
 						{loading ? (
 							<LoadingSpinner styles={"my-16"} />
@@ -198,7 +214,8 @@ const Communities = () => {
 			<CreateCommunity
 				visible={isModalVisible}
 				onClose={() => setIsModalVisible(false)}
-				onCommunityCreated={addCommunity}
+				onCommunityCreated={(newCommunity) =>
+					setUserCommunities((prevCommunities) => [...prevCommunities, newCommunity])}
 			/>
 		</SafeAreaView>
 	)

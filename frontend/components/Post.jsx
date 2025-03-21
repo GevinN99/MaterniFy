@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet } from "react-native"
 import React, { useState, useEffect, useContext } from "react"
 import { Image } from "expo-image"
-import { likeUnlikePost } from "../api/communityApi"
+import { deletePost } from "../api/communityApi"
 import { useCommunity } from "../context/communityContext"
 import { useRouter } from "expo-router"
 import { timeAgo } from "../utils/timeAgo"
@@ -9,9 +9,9 @@ import PostActionSection from "./PostActionSection"
 import { AuthContext } from "../context/AuthContext"
 
 const Post = ({ post, community }) => {
-	const { userId: user } = useContext(AuthContext)
+	const { userId: user } = useContext(AuthContext)	
 	const router = useRouter()
-	const { selectPost } = useCommunity()
+	const { selectPost, fetchData, handleLikeUnlike } = useCommunity()
 	const {
 		_id: postId,
 		likes,
@@ -22,26 +22,28 @@ const Post = ({ post, community }) => {
 		content,
 		replies,
 	} = post	
+	const admin = user === post.userId._id
 	const [showMenu, setShowMenu] = useState(false)
-	const [likeCount, setLikeCount] = useState(likes.length)	
-	const [liked, setLiked] = useState(likes.includes(user))	
 
-	const handleLikeUnlike = async () => {
-		try {
-			const { likes } = await likeUnlikePost(postId)
-			setLikeCount(likes.length)
-			setLiked(likes.includes(user))			
-		} catch (error) {
-			console.error(error)
-		}
-	}
+	const liked = likes.includes(user)
+	const likeCount = likes.length
 
 	const toggleMenu = () => {
 		setShowMenu(!showMenu)
 	}
 
-	const onDelete = () => {
-		// Delete post
+	const onLike = async () => { 
+		handleLikeUnlike(postId)		
+	}
+
+	const onDelete = async () => {
+		try {
+			const response = await deletePost(postId)
+			toggleMenu()			
+			fetchData("posts")
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	const onReply = () => {
@@ -60,7 +62,9 @@ const Post = ({ post, community }) => {
 					<View className="flex flex-row items-center ">
 						<Text className="font-bold text-xl mr-2">{userId.fullName}</Text>
 						<Text className="mt-1">•</Text>
-						<Text className="font-extralight ml-1 mt-1">{timeAgo(createdAt)}</Text>
+						<Text className="font-extralight ml-1 mt-1">
+							{timeAgo(createdAt)}
+						</Text>
 					</View>
 
 					<Text className="text-gray-500 text-lg">
@@ -85,12 +89,13 @@ const Post = ({ post, community }) => {
 			<PostActionSection
 				liked={liked}
 				likeCount={likeCount}
-				onLike={handleLikeUnlike}
+				onLike={onLike}
 				onReply={onReply}
 				replyCount={replies.length}
 				onToggleMenu={toggleMenu}
 				onDelete={onDelete}
 				showMenu={showMenu}
+				admin={admin}
 			/>
 		</View>
 	)

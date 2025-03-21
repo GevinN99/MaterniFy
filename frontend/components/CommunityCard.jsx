@@ -22,6 +22,7 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 	const handleToggleMembership = () => {
 		if (isMember) {
 			handleLeave(communityId)
+			
 		} else {
 			handleJoin(communityId)
 		}

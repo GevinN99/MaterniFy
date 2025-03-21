@@ -24,7 +24,7 @@ function RootLayout() {
                     <Stack.Screen name="community/[communityId]"
                                   options={{header: () => <Header title="Community Details"/>}}/>
                     <Stack.Screen name="communityUser/[userId]"
-                                  options={{header: () => <Header title="Community User Profile"/>}}/>
+                                  options={{header: () => <Header title="User Profile"/>}}/>
                     <Stack.Screen name="community/post/[postId]" options={{header: () => <Header title="Post"/>}}/>
                     <Stack.Screen name="community/post/reply/[postId]"
                                   options={{header: () => <Header title="Reply"/>}}/>

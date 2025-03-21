@@ -4,31 +4,59 @@ import {
 	FlatList,
 	ScrollView,
 	TouchableOpacity,
+	Pressable,
 	StyleSheet,
 } from "react-native"
 import { useLocalSearchParams } from "expo-router"
 import { SafeAreaView } from "react-native-safe-area-context"
-import { Ionicons } from "@expo/vector-icons"
 import { Image } from "expo-image"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import Feather from "@expo/vector-icons/Feather"
-import CommunityUserProfileTabs from "../../components/CommunityUserProfileTabs"
 import { useCommunity } from "../../context/communityContext"
 import CompactCommunityCard from "../../components/CompactCommunityCard"
 import Post from "../../components/Post"
+import axiosInstance from "../../api/axiosInstance"
+import { useRouter } from "expo-router"
 
 const CommunityUserProfile = () => {
 	const { userId } = useLocalSearchParams()
-	const { userCommunities, posts } = useCommunity()
-	const [userPosts, setUserPosts] = useState(
-		posts.filter((post) => post.userId._id === userId)
-	)
+	const [user, setUser] = useState()
+	const { userCommunities, posts, selectPost } = useCommunity()
+	const [userPosts, setUserPosts] = useState([])	
+	const router = useRouter()
+
+	useEffect(() => {								
+		const fetchUser = async () => {
+			try {
+				const response = await axiosInstance.get("/users/profile")				
+				setUser(response.data.fullName)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+
+		fetchUser()
+
+		if (userCommunities.length > 0 && posts.length > 0) {
+			const filteredPosts = posts.filter((post) => {				
+				return post.userId._id === userId
+			})			
+			setUserPosts(filteredPosts)		
+		} else {
+			setUserPosts([])
+		}
+	}, [posts])	
+
+	const handleNavigation = (postId, post) => {
+		selectPost(post)
+		router.push(`/community/post/${postId}`)
+	}
 
 	const renderHeader = () => (
 		<View className="relative rounded-xl">
 			<View className="bg-white p-4 rounded-xl mx-4">
 				<View className="bg-blue-100 pt-6 pb-16 px-4 rounded-lg relative mx-4">
-					<Text className="text-2xl font-bold text-center">Chamika Banu</Text>
+					<Text className="text-2xl font-bold text-center">{user}</Text>
 				</View>
 
 				{/* Community Image */}
@@ -65,19 +93,23 @@ const CommunityUserProfile = () => {
 					/>
 					<Text className="ml-4 text-2xl font-bold">Communities</Text>
 				</View>
-
-				<ScrollView
-					horizontal
-					showsHorizontalScrollIndicator={false}
-					className="pl-2 py-2"
-				>
-					{userCommunities.map((community) => (
-						<CompactCommunityCard
-							key={community._id}
-							community={community}
-						/>
-					))}
-				</ScrollView>
+				{userCommunities.length === 0 ? (
+					<Text>user have not joined any community</Text>
+				) : (
+					<ScrollView
+						horizontal
+						showsHorizontalScrollIndicator={false}
+						className="pl-2 py-2"
+					>
+						{userCommunities.map((community, index) => (
+							<CompactCommunityCard
+								key={community._id}
+								community={community}
+								classname={index === userCommunities.length - 1 ? 'mr-6' : ''}
+							/>
+						))}
+					</ScrollView>
+				)}
 			</View>
 
 			{/* Posts Section Header */}
@@ -100,11 +132,22 @@ const CommunityUserProfile = () => {
 				keyExtractor={(post) => post._id}
 				renderItem={({ item }) => (
 					<View className="px-4">
-						<Post post={item} />
+						<Pressable							
+							onPress={() => handleNavigation(item._id, item)}
+						>
+							<Post post={item} />
+						</Pressable>
 					</View>
 				)}
 				ListHeaderComponent={renderHeader}
 				contentContainerStyle={{ paddingBottom: 16 }}
+				ListEmptyComponent={() => (
+					<View className="flex items-center justify-center mt-4">
+						<Text className="text-gray-500">
+							You have not posted anything yet
+						</Text>
+					</View>
+				)}
 			/>
 		</SafeAreaView>
 	)

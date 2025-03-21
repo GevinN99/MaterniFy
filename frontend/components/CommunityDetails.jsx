@@ -14,13 +14,13 @@ import { useCommunity } from "../context/communityContext"
 import { useRouter } from "expo-router"
 import { AuthContext } from "../context/AuthContext"
 import CreateCommunity from "./CreateCommunity"
-import { deleteImage, deleteImageFromFirebase } from "../utils/firebaseImage"
+import { deleteImageFromFirebase } from "../utils/firebaseImage"
 
 const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 	const { userId } = useContext(AuthContext)
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [communityDetails, setCommunityDetails] = useState(community)
-	const { imageUrl, name, description, admin, members } = communityDetails
+	let { imageUrl, name, description, admin, members } = communityDetails
 	const [isMember, setIsMember] = useState(members?.includes(userId))
 	const [showMenu, setShowMenu] = useState(false)
 	const { fetchData } = useCommunity()
@@ -29,17 +29,26 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 	const blurhash =
 		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
 
-	const isAdmin = admin?._id === userId
+	const isAdmin = admin._id === userId	
 
 	const handleJoinCommunity = () => {
+		setCommunityDetails((prev) => ({
+			...prev,
+			members: [...prev.members, userId], // Correctly add the user to the members list
+		}))
 		handleJoin(community._id)
 		setIsMember(true)
 	}
 
 	const handleLeaveCommunity = () => {
+		setCommunityDetails((prev) => ({
+			...prev,
+			members: prev.members.filter((memberId) => memberId !== userId), // Remove the user from the members list
+		}))
 		handleLeave(community._id)
 		setIsMember(false)
 	}
+
 
 	const onToggleMenu = () => {
 		setShowMenu(!showMenu)
@@ -140,8 +149,7 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 							>
 								<Feather
 									name="edit"
-									size={20}
-									// color={"#3b82f6"}
+									size={20}									
 								/>
 								<Text>Update Community</Text>
 							</TouchableOpacity>
@@ -151,8 +159,7 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 							>
 								<Feather
 									name="trash"
-									size={20}
-									// color="#ef4444"
+									size={20}									
 								/>
 								<Text>Delete Community</Text>
 							</TouchableOpacity>
@@ -187,7 +194,7 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 				onCommunityCreated={(updatedCommunity) => {
 					setCommunityDetails((prev) => ({ ...prev, ...updatedCommunity})) // Update community state
 					fetchData("communities")
-				}}
+				}}				
 			/>
 		</View>
 	)

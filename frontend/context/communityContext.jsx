@@ -4,6 +4,7 @@ import {
 	joinCommunity,
 	leaveCommunity,
 	getPostsFromAllUsersCommunities,	
+	likeUnlikePost
 } from "../api/communityApi"
 import { AuthContext } from "./AuthContext"
 
@@ -19,24 +20,23 @@ export const CommunityProvider = ({ children }) => {
 	const [postsError, setPostsError] = useState(null)
 	const [selectedPost, setSelectedPost] = useState(null)
 
-	useEffect(() => {
-		console.log("User id from community", userId)
+	useEffect(() => {		
 		if (userId) {
 			fetchData()
 		}
-	}, [userId])	
+	}, [userId])
 
 	const fetchData = async (fetchType = "both") => {
 		if (!userId) {
 			console.error("No user id provided")
 			return
 		}
-		
+
 		setCommunityError(null)
 		setPostsError(null)
 
 		if (fetchType === "communities" || fetchType === "both") {
-			try {				
+			try {
 				console.log("Fetching communities for user: ", userId)
 				const { userCommunities, nonUserCommunities } = await getAllCommunities(
 					userId
@@ -45,24 +45,46 @@ export const CommunityProvider = ({ children }) => {
 				setNonUserCommunities(nonUserCommunities || [])
 			} catch (error) {
 				console.error("Error fetching communities:", error)
-				setCommunityError("Failed to fetch communities. Please try again later.")				
+				setCommunityError(
+					"Failed to fetch communities. Please try again later."
+				)
 			}
 		}
 
 		// Fetch posts
 		if (fetchType === "posts" || fetchType === "both") {
 			try {
-				
 				console.log("Fetching posts for user: ", userId)
 				const postsData = await getPostsFromAllUsersCommunities(userId)
 				setPosts(postsData || [])
 			} catch (error) {
 				console.error("Error fetching posts:", error)
-				setPostsError("Failed to fetch posts. Please try again later.")				
+				setPostsError("Failed to fetch posts. Please try again later.")
 			}
 		}
 
 		setLoading(false)
+	}
+
+	const refreshData = async () => {
+		setLoading(true) // Start loading when refreshing
+		await fetchData() // Refresh both posts and communities
+	}
+
+
+	// Like/Unlike functionality
+	const handleLikeUnlike = async (postId) => {
+		console.log("Like/Unlike post id:", postId)
+		try {
+			const { likes } = await likeUnlikePost(postId)
+			setPosts((prevPosts) =>
+				prevPosts.map((post) =>
+					post._id === postId ? { ...post, likes } : post
+				)
+			)			
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	// Set selected post
@@ -71,7 +93,7 @@ export const CommunityProvider = ({ children }) => {
 	}
 
 	const handleJoinCommunity = async (communityId) => {
-		try {						
+		try {
 			await joinCommunity(communityId)
 
 			setUserCommunities((prevCommunities) => [
@@ -82,9 +104,10 @@ export const CommunityProvider = ({ children }) => {
 			])
 			setNonUserCommunities((prevCommunities) =>
 				prevCommunities.filter((community) => community._id !== communityId)
-			)			
+			)
 			
-			fetchData("posts")				
+			// fetchData()
+			
 		} catch (error) {
 			console.error(error)
 		}
@@ -101,43 +124,31 @@ export const CommunityProvider = ({ children }) => {
 				...prevCommunities,
 				...userCommunities.filter((community) => community._id === communityId),
 			])
-
-			fetchData("posts")			
+			
+			// fetchData()
+			
 		} catch (error) {
 			console.error(error)
 		}
 	}	
 
-	const addCommunity = (newCommunity) => {
-		setUserCommunities((prevCommunities) => [...prevCommunities, newCommunity])		
-	}
-
-	const fetchPostsFromAllUsersCommunities = async () => {		
-		try {
-			const updatedPosts = await getPostsFromAllUsersCommunities(userId)
-			setPosts(updatedPosts || [])
-		} catch (error) {			
-			console.error(error)
-		}
-	}
-
-
 	return (
 		<CommunityContext.Provider
 			value={{
 				fetchData,
-				userCommunities,				
-				nonUserCommunities,				
-				posts,				
+				refreshData,
+				userCommunities,
+				nonUserCommunities,
+				setUserCommunities,
+				posts,
 				loading,
 				postsError,
 				communityError,
+				handleLikeUnlike,
 				handleJoinCommunity,
 				handleLeaveCommunity,
 				selectPost,
-				selectedPost,
-				addCommunity,
-				// fetchPostsFromAllUsersCommunities
+				selectedPost,				
 			}}
 		>
 			{children}
