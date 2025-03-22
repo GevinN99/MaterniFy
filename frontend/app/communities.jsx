@@ -214,7 +214,7 @@ const Communities = () => {
 						) : (
 							<View className="flex-1 justify-center items-center my-4">
 								<Text className="text-gray-500 text-lg text-center">
-									Explore and find communities to join!
+									Explore and find communities to join or create your own!
 								</Text>
 							</View>
 						)}

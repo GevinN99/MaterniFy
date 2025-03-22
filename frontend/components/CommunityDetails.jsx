@@ -16,18 +16,19 @@ import { AuthContext } from "../context/AuthContext"
 import CreateCommunity from "./CreateCommunity"
 import { deleteImageFromFirebase } from "../utils/firebaseImage"
 import { DEFAULT_COMMUNITY_IMAGE_URL } from "../utils/constants"
+import LoadingSpinner from "./LoadingSpinner"
 
 const CommunityDetails = ({
 	community,
 	handleJoin,
-	handleLeave,
-	setIsDeleting,
+	handleLeave,	
 }) => {
 	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userId } = useContext(AuthContext)
+	const [loading, setLoading] = useState(false)
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [communityDetails, setCommunityDetails] = useState(community)
-	let { imageUrl, name, description, admin, members } = communityDetails
+	let { imageUrl, name, description, admin, members, posts } = communityDetails
 	const [isMember, setIsMember] = useState(members?.includes(userId)) // Check if user is a member
 	const [showMenu, setShowMenu] = useState(false)
 	const { fetchData } = useCommunity()
@@ -64,6 +65,7 @@ const CommunityDetails = ({
 
 	const onDelete = async () => {
 		try {
+			setLoading(true)
 			const response = await deleteCommunityById(communityDetails._id)
 			// Delete community image from Firebase if it's not the default image
 			if (communityDetails.imageUrl !== DEFAULT_COMMUNITY_IMAGE_URL) {
@@ -83,6 +85,8 @@ const CommunityDetails = ({
 			fetchData()
 		} catch (error) {
 			console.error(error)
+		} finally {
+			setLoading(false)
 		}
 	}
 
@@ -90,16 +94,28 @@ const CommunityDetails = ({
 		<View className="relative flex-1 bg-white rounded-lg p-4">
 			<View className="bg-blue-100 pt-6 pb-14 px-4 rounded-lg relative">
 				<Text className="text-2xl font-bold text-center">{name}</Text>
-				<View className="flex flex-row items-center justify-center gap-1.5 mt-1">
-					<Feather
-						name="users"
-						size={16}
-						color="#6b7280"
-					/>
-					<Text className="text-gray-500 text-base">
-						{members?.length || 0}{" "}
-						{members?.length === 1 ? "member" : "members"}
-					</Text>
+				<View className="mt-1 flex flex-row justify-center items-center gap-4">
+					<View className="flex flex-row items-center gap-1.5 ">
+						<Feather
+							name="users"
+							size={16}
+							color="#6b7280"
+						/>
+						<Text className="text-gray-500 text-base">
+							{members?.length || 0}{" "}
+							{members?.length === 1 ? "member" : "members"}
+						</Text>
+					</View>
+					<View className="flex flex-row items-center gap-1.5 ">
+						<Feather
+							name="file-text"
+							size={16}
+							color="#6b7280"
+						/>
+						<Text className="text-gray-500 text-base">
+							{posts?.length || 0} {posts?.length === 1 ? "post" : "posts"}
+						</Text>
+					</View>
 				</View>
 			</View>
 
@@ -138,7 +154,7 @@ const CommunityDetails = ({
 							<Ionicons
 								name="shield-checkmark-outline"
 								size={14}
-								color="#3b82f6"
+								color="#22c55e"
 							/>
 						</View>
 						<Text className="text-sm text-gray-500">
@@ -171,13 +187,22 @@ const CommunityDetails = ({
 							<TouchableOpacity
 								className="p-3 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
 								onPress={onDelete}
+								disabled={loading}
 							>
-								<Feather
-									name="trash"
-									size={20}
-									color={"#ef4444"}
-								/>
-								<Text className="text-red-500">Delete Community</Text>
+								{loading ? (
+									// Show a loading indicator if the delete action is in progress
+									<LoadingSpinner/>
+								) : (
+									// Show the delete icon and text if not loading
+									<>
+										<Feather
+											name="trash"
+											size={20}
+											color={"#ef4444"}
+										/>
+										<Text className="text-red-500">Delete Community</Text>
+									</>
+								)}
 							</TouchableOpacity>
 						</View>
 					)}
@@ -225,8 +250,8 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 	},
 	adminImage: {
-		width: 40,
-		height: 40,
+		width: 50,
+		height: 50,
 		borderRadius: 50,
 	},
 })

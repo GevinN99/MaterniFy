@@ -31,7 +31,7 @@ const CommunityUserProfile = () => {
 		const fetchUser = async () => {
 			try {
 				const response = await axiosInstance.get("/users/profile") // Fetch user profile info
-				setUser(response.data.fullName)
+				setUser(response.data)
 			} catch (error) {
 				console.log(error)
 			}
@@ -59,7 +59,7 @@ const CommunityUserProfile = () => {
 		<View className="relative rounded-xl">
 			<View className="bg-white p-4 rounded-xl mx-4">
 				<View className="bg-blue-100 pt-6 pb-16 px-4 rounded-lg relative mx-4">
-					<Text className="text-2xl font-bold text-center">{user}</Text>
+					<Text className="text-2xl font-bold text-center">{user?.fullName}</Text>
 				</View>
 
 				{/* Community Image */}
@@ -67,7 +67,7 @@ const CommunityUserProfile = () => {
 					<View className="rounded-full overflow-hidden border-4 border-white shadow-md">
 						<Image
 							source={{
-								uri: "https://images.unsplash.com/photo-1494145904049-0dca59b4bbad?q=80&w=3388&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+								uri: user?.profileImage,
 							}}
 							style={styles.profileImage}
 							placeholder={{ blurhash }}
@@ -101,7 +101,7 @@ const CommunityUserProfile = () => {
 				{userCommunities.length === 0 ? (
 					<View className="flex items-center my-8 gap-4">
 						<Text className="text-gray-500 text-lg  ">
-							No communities joined yet.
+							You have not joined any community yet.
 						</Text>
 						<TouchableOpacity
 							onPress={() => router.push("communities")}
