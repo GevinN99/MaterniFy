@@ -17,7 +17,7 @@ export default function UserAppointments() {
     const [bookedAppointments, setBookedAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("booked");
+    const [activeTab, setActiveTab] = useState("booked"); // Default to "Booked Appointments"
 
     const loadPendingAppointments = async () => {
         setLoading(true);
@@ -47,7 +47,7 @@ export default function UserAppointments() {
     const loadDoctors = async () => {
         setLoading(true);
         try {
-            const data = await getAvailableDoctors(); // Assumes this returns only online doctors
+            const data = await getAvailableDoctors();
             setDoctors(data);
         } catch (error) {
             Alert.alert("Error", "Failed to load doctors.");
@@ -112,6 +112,7 @@ export default function UserAppointments() {
             <Text style={styles.appointmentText}>
                 Experience: {item.doctorId?.experienceYears || 0} years
             </Text>
+            {/* Removed Cancel Button */}
         </View>
     );
 
@@ -120,6 +121,7 @@ export default function UserAppointments() {
             <View style={styles.container}>
                 <Text style={styles.title}>My Appointments</Text>
 
+                {/* Tab Navigation */}
                 <View style={styles.tabContainer}>
                     <TouchableOpacity
                         style={[styles.tabButton, activeTab === "booked" && styles.activeTab]}
@@ -149,6 +151,7 @@ export default function UserAppointments() {
                     </TouchableOpacity>
                 </View>
 
+                {/* Tab Content */}
                 {loading ? (
                     <ActivityIndicator size="large" color="#007AFF" style={styles.loading} />
                 ) : (
@@ -179,6 +182,7 @@ export default function UserAppointments() {
                     </View>
                 )}
 
+                {/* Online Doctors Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Online Doctors</Text>
                     <FlatList

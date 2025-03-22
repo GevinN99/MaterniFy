@@ -59,3 +59,4 @@ export const cancelAppointment = async (appointmentId) => {
         return { error: error.response?.data || "Failed to cancel appointment" };
     }
 };
+

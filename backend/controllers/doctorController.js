@@ -91,6 +91,44 @@ exports.updateOnlineStatus = async (req, res) => {
     }
 };
 
+exports.updateDoctorProfile = async (req, res) => {
+    try {
+        const doctorId = req.user.id;
+        const { fullName, experienceYears, specialization, profileImage } = req.body;
+        console.log("Updating profile for doctor ID:", doctorId, "with:", req.body);
+
+        const updatedDoctor = await Doctor.findByIdAndUpdate(
+            doctorId,
+            { fullName, experienceYears, specialization, profileImage },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!updatedDoctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        res.status(200).json({ message: 'Doctor profile updated successfully', doctor: updatedDoctor });
+    } catch (error) {
+        console.error("Update Doctor Profile Error:", error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+exports.deleteDoctorProfile = async (req, res) => {
+    try {
+        const doctorId = req.user.id;
+        console.log("Deleting profile for doctor ID:", doctorId);
+        const doctor = await Doctor.findByIdAndDelete(doctorId);
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+        res.status(200).json({ message: 'Doctor profile deleted successfully' });
+    } catch (error) {
+        console.error("Delete Doctor Profile Error:", error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
 exports.getAvailableDoctors = async (req, res) => {
     try {
         const doctors = await Doctor.find({ isOnline: true }).select('-password');
