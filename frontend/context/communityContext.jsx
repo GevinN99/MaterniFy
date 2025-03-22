@@ -36,7 +36,7 @@ export const CommunityProvider = ({ children }) => {
 		setPostsError(null)
 
 		if (fetchType === "communities" || fetchType === "both") {
-			try {
+			try {				
 				// console.log("Fetching communities for user: ", userId)
 				const { userCommunities, nonUserCommunities } = await getAllCommunities(
 					userId
@@ -53,7 +53,7 @@ export const CommunityProvider = ({ children }) => {
 
 		// Fetch posts
 		if (fetchType === "posts" || fetchType === "both") {
-			try {
+			try {	
 				// console.log("Fetching posts for user: ", userId)
 				const postsData = await getPostsFromAllUsersCommunities(userId)
 				setPosts(postsData || [])
@@ -139,6 +139,7 @@ export const CommunityProvider = ({ children }) => {
 				nonUserCommunities,
 				setUserCommunities,
 				posts,
+				setPosts,
 				loading,
 				postsError,
 				communityError,

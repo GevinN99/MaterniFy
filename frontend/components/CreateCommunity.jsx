@@ -106,13 +106,17 @@ const CreateCommunity = ({
 		setLoading(true)
 
 		try {
-			let imageUrl = DEFAULT_COMMUNITY_IMAGE_URL
+			let imageUrl = DEFAULT_COMMUNITY_IMAGE_URL			
 
 			// Check if a new image is selected and upload it
 			if (image && (!editing || image !== community.imageUrl)) {
-				if (editing && community.imageUrl) {
-					await deleteImageFromFirebase(community.imageUrl) // Delete the previous image
-				}
+				if (
+					editing &&
+					community.imageUrl &&
+					community.imageUrl !== DEFAULT_COMMUNITY_IMAGE_URL
+				) {															
+					await deleteImageFromFirebase(community.imageUrl) 
+				}				
 				imageUrl = await uploadImageToFirebase(image, "community")
 			} else if (editing && !image) {
 				// If editing and no new image is selected, keep the old image

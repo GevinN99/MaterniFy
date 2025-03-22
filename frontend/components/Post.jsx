@@ -63,7 +63,7 @@ const Post = ({ post, community, replying }) => {
 					source={{ uri: userId.profileImage }}
 					style={styles.profileImage}
 					contentFit="cover"
-					placeholder={{ blurhash }}
+					placeholder={{ blurhash }}									
 				/>
 				<View className="ml-4 flex">
 					{/* Display user's name and post timestamp */}
