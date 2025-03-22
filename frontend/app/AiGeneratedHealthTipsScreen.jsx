@@ -38,7 +38,7 @@ export default function AiGeneratedHealthTipsScreen() {
   }, []);
 
   return (
-    <LinearGradient colors={['#FFF', '#E8F4FA']} style={styles.gradientContainer}>
+    <LinearGradient colors={['#FFF', '#FCFCFC']} style={styles.gradientContainer}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Greeting */}
         <Text style={styles.heading}>✨ Hi, Sarah!</Text>
@@ -78,7 +78,7 @@ export default function AiGeneratedHealthTipsScreen() {
 const styles = StyleSheet.create({
   gradientContainer: { flex: 1 },
   container: { flexGrow: 1, backgroundColor: 'transparent', padding: 20 },
-  heading: { fontSize: 24, fontWeight: '700', marginBottom: 8, textAlign: 'center', color: '#333' },
+  heading: { fontSize: 24, fontWeight: '700', marginBottom: 8, textAlign: 'center', color: '#333333' },
   introText: { fontSize: 14, fontWeight: '400', color: '#555', textAlign: 'center', marginBottom: 20 },
   conditionsContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 6 },
   conditionsTitle: { fontSize: 16, fontWeight: '600', color: '#333' },
@@ -86,6 +86,6 @@ const styles = StyleSheet.create({
   healthPlanText: { fontSize: 14, color: '#333', lineHeight: 20 },
   noPlanText: { fontSize: 14, color: 'red', textAlign: 'center', marginBottom: 10 },
   errorText: { color: 'red', fontSize: 14, textAlign: 'center', marginBottom: 10 },
-  button: { backgroundColor: '#007AFF', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 25, alignSelf: 'center', marginTop: 20 },
+  button: { backgroundColor: '#B4E4FF', paddingVertical: 12, paddingHorizontal: 30, borderRadius: 25, alignSelf: 'center', marginTop: 20 },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

@@ -12,7 +12,7 @@ export default function HealthPlanScreen() {
 
   return (
     <LinearGradient
-      colors={['#64B9F1', '#FFFFFF']} // Gradient from light blue to white
+      colors={['#B4E4FF', '#FFFFFF']} // Gradient from light blue to white
       style={styles.gradientContainer}
     >
       <View style={styles.container}>
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   // Base button style
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#F7C8E0',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,

@@ -11,23 +11,26 @@ exports.generateHealthPlan = async (req, res) => {
             return res.status(400).json({ message: 'Missing required health data' });
         }
 
-        // Claude API request
-        const apiResponse = await axios.post('https://api.anthropic.com/v1/messages', {
-            model: "claude-3-sonnet-20240229", // Latest model
-            max_tokens: 1024,
+       // OpenAI ChatGPT API request
+       const apiResponse = await axios.post(
+        "https://api.openai.com/v1/chat/completions",
+        {
+            model: "gpt-4-turbo", // OpenAI model
             messages: [
                 {
                     role: "user",
-                    content: `Provide a structured JSON response for a customized pregnancy health plan for a ${age}-year-old, weight ${weight}kg, with medical history: ${medicalHistory}, at the ${pregnancyStage}.`
+                    content: `Provide a structured pregnancy health plan for a ${age}-year-old, weighing ${weight}kg, with medical history: ${medicalHistory}, at the ${pregnancyStage}. Format the response as JSON.`
                 }
-            ]
-        }, {
+            ],
+            max_tokens: 1024
+        },
+        {
             headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': process.env.ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01'
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`, // OpenAI API Key from .env
+                'Content-Type': 'application/json'
             }
-        });
+        }
+    );
 
         // Extract AI-generated plan correctly
         const aiGeneratedPlan = apiResponse.data.content;
