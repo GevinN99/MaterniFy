@@ -20,7 +20,7 @@ const exerciseDetails = () => {
       navigation.setOptions({
         title: "Mental Health Exercises",
         headerTintColor: "#333333",
-        headerStyle: { backgroundColor: "#FCFCFC" }, // Add this line
+        headerStyle: { backgroundColor: "#B4E4FF" }, // Add this line
         headerLeft: () => (
           <View className="flex-row items-center pl-2">
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -78,7 +78,7 @@ const exerciseDetails = () => {
       }
     
       return (
-        <SafeAreaView className="flex-1 bg-[#A3C8E8] p-4">
+        <SafeAreaView className="flex-1 bg-[#B4E4FF] p-4">
             <ScrollView contentContainerStyle={{ padding: 20 }}>
                 {/* Title */}
                 <View className="items-center mt-4">
@@ -118,7 +118,7 @@ const exerciseDetails = () => {
                     {!isSpeaking ? (
                         <TouchableOpacity
                             onPress={handlePlayAudio}
-                            className="bg-[#FDD1D4] p-4 rounded-full w-40 flex-row justify-center items-center shadow-md"
+                            className="bg-[#F7C8E0] p-4 rounded-full w-40 flex-row justify-center items-center shadow-md"
                         >
                             <Play color="white" size={20} />
                             <Text className="text-white text-center font-semibold ml-2">Play Audio</Text>

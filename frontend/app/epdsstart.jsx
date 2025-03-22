@@ -12,7 +12,7 @@ export default function EPDSWelcome() {
     navigation.setOptions({
       title: "EPDS Assessment",
       headerTintColor: "#333333",
-      headerStyle: { backgroundColor: "#A3C8E8" }, // Add this line
+      headerStyle: { backgroundColor: "#B4E4FF" }, // Add this line
       headerLeft: () => (
         <View className="flex-row items-center pl-2">
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -26,17 +26,17 @@ export default function EPDSWelcome() {
   return (
     <SafeAreaView
       style={{ paddingTop: Platform.OS === "android" ? 0 : undefined }}
-      className="flex-1 bg-[#A3C8E8]"
+      className="flex-1 bg-[#B4E4FF]"
     >
       <View className="flex-1 justify-between">
         {/* Top Section */}
         <View className="flex-1 items-center justify-center">
         <Image
-          source={require("../assets/images/epds1.png")}
+          source={require("../assets/images/EPDSstart.png")}
           className="w-60 h-60 mb-4"
           resizeMode="contain"
         />
-        <Text className="text-2xl font-semibold text-white text-center mb-2">
+        <Text className="text-2xl font-semibold text-[#555555] text-center mb-2">
             Resolve all your mental problems
           </Text>
           <Text className="text-md text-white text-center px-6">
@@ -46,13 +46,13 @@ export default function EPDSWelcome() {
         {/* Bottom Section */}
         <View className="bg-[#FCFCFC] rounded-t-3xl py-20 px-6">
           <TouchableOpacity
-            className="w-full bg-[#A3C8E8] py-4 rounded-lg items-center"
+            className="w-full bg-[#B4E4FF] py-4 rounded-lg items-center"
             onPress={() => router.push("epds")}
           >
             <Text className="text-lg font-semibold text-white">Take the EPDS Test</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="w-full bg-[#FDD1D4] py-4 rounded-lg items-center"
+            className="w-full bg-[#F7C8E0] py-4 rounded-lg items-center"
             onPress={() => router.push("epdsResults")}
           >
             <Text className="text-lg font-semibold text-[#333333]">View Past Scores</Text>

@@ -21,14 +21,14 @@ const AnimatedHeart = ({ score }) => {
 
     return (
         <View className="relative items-center my-5">
-            <View className="w-24 h-24 border-2 border-red-500 bg-gray-200 rounded-full overflow-hidden">
+            <View className="w-24 h-24 border-2 border-[#B4E4FF] bg-[#EAEFF4] rounded-full overflow-hidden">
                 <Animated.View
                     style={{
                         height: fillAnim.interpolate({
                             inputRange: [0, 1],
                             outputRange: ["0%", "100%"],
                         }),
-                        backgroundColor: score >= 27 ? "#FF0000" : "#FF69B4",
+                        backgroundColor: score >= 27 ? "#FF0000" : "#E1AFD1",
                         width: "100%",
                         position: "absolute",
                         bottom: 0,
@@ -130,19 +130,19 @@ const epds = () => {
             <ScrollView contentContainerStyle={{ alignItems: 'center', padding: 20 }}>
                 {/* Header with Background Image */}
                 <View className="w-full items-center mt-5">
-                    <Text className="text-2xl font-bold text-[#265D9C] mb-2">
+                    <Text className="text-4l font-bold text-[#333333] mb-2">
                         Your Postpartum Depression Score
                     </Text>
                 </View>
             {/* Score Display */}
-            <View className="bg-[#F0F8FF] p-8 rounded-xl w-11/12 items-center mb-5">
+            <View className="bg-[#EAEFF4] p-8 rounded-xl w-11/12 items-center mb-5">
                 <AnimatedHeart score={score} />
                 <Text className="text-3xl font-bold text-[#333333] mb-2">Your Score: {score}</Text>
                 <Text className="text-base text-[#555555] text-center">{recommendations.message}</Text>
             </View>
             
             {/* Personalized Encouraging Message */}
-            <View className="bg-[#FDD1D4] p-6 rounded-2xl w-11/12 mb-6 opacity-80">
+            <View className="bg-[#B4E4FF] p-6 rounded-2xl w-11/12 mb-6 opacity-80">
                 <Text className="text-base text-[#333333] text-center font-medium">
                 {encouragingMessage}
                 </Text>
@@ -150,7 +150,7 @@ const epds = () => {
 
             {/* Self-Care Tips */}
             <View className="w-11/12 items-center">
-                <Text className="text-xl font-semibold text-[#265D9C] mb-4">
+                <Text className="text-xl font-semibold text-[#555555] mb-4">
                 Self-Care Tips:
                 </Text>
                 {personalizedSelfCareTips.map((tip, i) => (
@@ -158,14 +158,14 @@ const epds = () => {
                     key={i}
                     className="bg-white p-5 rounded-xl mb-4 shadow-md border border-[#EAEFF4] flex-row items-center"
                 >
-                <Ionicons name={tip.icon} size={24} color="#A3C8E8" className="mr-4" />
+                <Ionicons name={tip.icon} size={24} color="#F7C8E0" className="mr-4" />
                 <View className="flex-1">
                     <Text className="text-base text-[#333333] font-medium">
                         {tip.text}
                     </Text>
                     {tip.link && (
                     <TouchableOpacity onPress={() => Linking.openURL(tip.link)}>
-                        <Text className="text-base text-[#265D9C] underline mt-1">
+                        <Text className="text-base text-[#7469B6] underline mt-1">
                             Learn More
                         </Text>
                     </TouchableOpacity>
@@ -179,7 +179,7 @@ const epds = () => {
                 <TouchableOpacity
                   key={i}
                   onPress={() => router.push(`/exercises?score=${score}`)}
-                  className="bg-[#FDD1D4] p-4 rounded-md w-11/12 items-center mt-3"
+                  className="bg-[#E1AFD1] p-4 rounded-md w-11/12 items-center mt-3"
                 >
                 <Text className="text-base font-medium text-[#333333]">{action.label}</Text>
                 </TouchableOpacity>
@@ -191,51 +191,66 @@ const epds = () => {
 
     const currentQuestion = questions[currentQuestionIndex] || {};
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-
+    
     return (
-      <SafeAreaView className="flex-1 bg-[#FCFCFC]">
+      <SafeAreaView className="flex-1 bg-[#B4E4FF]">
         <View className="flex-row items-center justify-between p-4">
-            <TouchableOpacity onPress={() => router.back()}>
-                <Ionicons name="arrow-back" size={24} color="#333333" />
-            </TouchableOpacity>
-            <Text className="text-lg font-semibold text-[#333333]">Skin Type Quiz</Text>
-            <View style={{ width: 24 }} />
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={24} color="#333333" />
+          </TouchableOpacity>
+          <Text className="text-lg font-semibold text-[#333333]">EPDS Quiz</Text>
+          <View style={{ width: 24 }} />
         </View>
-
+    
         <ScrollView className="flex-1 p-4">
-            <View className="mb-6">
-                <View className="w-full bg-[#EAEFF4] h-2 rounded-full">
-                    <View className="bg-[#A3C8E8] h-2 rounded-full" style={{ width: `${progress}%` }} />
-                </View>
+          <View className="mb-6">
+            <View className="w-full bg-[#EAEFF4] h-2 rounded-full">
+              <View className="bg-[#F7C8E0] h-2 rounded-full" style={{ width: `${progress}%` }} />
             </View>
+          </View>
 
-            <View className="bg-[#FDD1D4] shadow-md p-6 rounded-lg">
-                {/* Display the image */}
-                {currentQuestion.image && (
-                    <Image source={currentQuestion.image} className="w-full h-40 mb-4 rounded-lg" resizeMode="contain" />
-                )}
-                <Text className="text-xl font-semibold mb-4 text-center text-[#333333]">
-                    {currentQuestion?.question || "Loading question..."}
-                </Text>
-                {currentQuestion?.options?.length > 0 ? (
-                    currentQuestion.options.map((option, optionIndex) => (
-                        <TouchableOpacity
-                            key={optionIndex}
-                            onPress={() => handleAnswer(option.score)}
-                            className="p-4 my-2 rounded-md bg-gray-100 border border-gray-300"
-                        >
-                            <Text className="text-base text-center text-[#A555555]">
-                                {option.text}
-                            </Text>
-                        </TouchableOpacity>
-                    ))
-                ) : (
-                    <Text className="text-center text-[#555555]">Loading options...</Text>
-                )}
+          <View className="p-4 justify-center items-center">
+            <Text className="text-lg font-semibold text-[#333333] mb-2">
+                Question {currentQuestionIndex + 1} of {questions.length}
+            </Text>
+          </View>
+    
+          <View className="flex-1 justify-center items-center">
+            <View className="bg-[#B4E4FF] shadow-md p-6 rounded-lg w-full max-w-md">
+              {/* Display the image in a circular frame */}
+              {currentQuestion.image && (
+                <View className="items-center mb-4">
+                  <Image 
+                    source={currentQuestion.image} 
+                    className="w-32 h-32 rounded-full border-2 border-dotted border-[#F7C8E0]" 
+                    resizeMode="cover"
+                  />
+                </View>
+              )}
+              
+              <Text className="text-xl font-semibold mb-4 text-center text-[#333333]">
+                {currentQuestion?.question || "Loading question..."}
+              </Text>
+              {currentQuestion?.options?.length > 0 ? (
+                currentQuestion.options.map((option, optionIndex) => (
+                  <TouchableOpacity
+                    key={optionIndex}
+                    onPress={() => handleAnswer(option.score)}
+                    className="p-4 my-2 rounded-md bg-gray-100 border border-gray-300"
+                  >
+                    <Text className="text-base text-center text-[#A555555]">
+                      {option.text}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text className="text-center text-[#555555]">Loading options...</Text>
+              )}
             </View>
+          </View>
         </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
     );
-};
+}    
 
 export default epds;
