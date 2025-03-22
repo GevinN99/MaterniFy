@@ -6,42 +6,75 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 	Pressable,
+	RefreshControl,
 } from "react-native"
 import { Image } from "expo-image"
 import { Ionicons } from "@expo/vector-icons"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
 import CreateCommunity from "../components/CreateCommunity"
-import {useCommunity} from "../context/communityContext"
+import { useCommunity } from "../context/communityContext"
 import ErrorMessage from "../components/ErrorMessage"
 import LoadingSpinner from "../components/LoadingSpinner"
 import Feather from "@expo/vector-icons/Feather"
 
-const Communities = () => {		
+const Communities = () => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [searching, setSearching] = useState(false)
 	const [searchResults, setSearchResults] = useState([])
+	const [isButtonVisible, setIsButtonVisible] = useState(true)
+	const hideTimeout = useRef(null)
+
 	const {
-		userCommunities,			
+		userCommunities,
+		setUserCommunities,
 		nonUserCommunities,
 		handleJoinCommunity,
-		handleLeaveCommunity,		
+		handleLeaveCommunity,
 		communityError: error,
 		loading,
-		addCommunity,
+		fetchData,
+		refreshData,
 	} = useCommunity()
 	const router = useRouter()
 	const allCommunities = userCommunities.concat(nonUserCommunities)
 
+	// Function to show the button and hide it after 3 seconds of inactivity
+	const showButton = () => {
+		// Clear any existing timeout
+		if (hideTimeout.current) {
+			clearTimeout(hideTimeout.current)
+		}
+
+		setIsButtonVisible(true)
+
+		// Set timeout to hide button after 3 seconds of inactivity
+		hideTimeout.current = setTimeout(() => {
+			setIsButtonVisible(false)
+		}, 3000)
+	}
+
+	// Show button on component mount
+	useEffect(() => {
+		showButton()
+
+		// Clean up timeout on unmount
+		return () => {
+			if (hideTimeout.current) {
+				clearTimeout(hideTimeout.current)
+			}
+		}
+	}, [])
 
 	useEffect(() => {
 		if (searching) {
 			if (searchQuery.trim() === "") {
 				setSearchResults(allCommunities) // Show all communities when search is empty
 			} else {
+				// Filter communities based on the search query
 				const results = allCommunities.filter((community) =>
 					community.name.toLowerCase().includes(searchQuery.toLowerCase())
 				)
@@ -50,12 +83,22 @@ const Communities = () => {
 		}
 	}, [searchQuery, searching])
 
+	// Fetch data when search is active
+	useEffect(() => {
+		if (searching) {
+			fetchData()
+		}
+	}, [searching])
+
 	const handleNavigateToCommunity = (communityId) => {
 		router.push(`/community/${communityId}`)
 	}
 
 	return (
-		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
+		<SafeAreaView
+			className="flex-1 bg-[#E7EDEF]"
+			onTouchStart={showButton}
+		>
 			<View className="relative flex justify-center px-4">
 				<Ionicons
 					name="search-outline"
@@ -65,7 +108,10 @@ const Communities = () => {
 				/>
 
 				<TextInput
-					onFocus={() => setSearching(true)}
+					onFocus={() => {
+						setSearching(true)
+						showButton()
+					}}
 					className="h-12 pl-10 pr-4 border border-gray-300 text-base rounded-3xl bg-white mb-4 focus:outline-none focus:border-blue-500 duration-300 transition-all"
 					placeholder="Search communities..."
 					value={searchQuery}
@@ -73,8 +119,13 @@ const Communities = () => {
 				/>
 			</View>
 
+			{/* Display search results */}
 			{searching ? (
-				<ScrollView className=" mx-4 bg-white rounded-xl mb-4 ">
+				<ScrollView
+					className=" mx-4 bg-white rounded-xl mb-4 "
+					onScrollBeginDrag={showButton}
+					onTouchStart={showButton}
+				>
 					<View className="flex flex-row items-center px-4 mt-4 mb-2">
 						<Text className="text-xl font-bold flex-1">Search results</Text>
 						<Pressable onPress={() => setSearching(false)}>
@@ -99,6 +150,7 @@ const Communities = () => {
 								</Text>
 							</View>
 						) : (
+							// Display each community in search results
 							searchResults.map((community, index) => (
 								<Pressable
 									key={index}
@@ -111,7 +163,9 @@ const Communities = () => {
 											style={styles.communityImage}
 										/>
 										<View>
-											<Text className="font-bold text-lg">{community.name}</Text>
+											<Text className="font-bold text-lg">
+												{community.name}
+											</Text>
 											<Text className="text-base">{community.description}</Text>
 										</View>
 									</View>
@@ -121,13 +175,28 @@ const Communities = () => {
 					</View>
 				</ScrollView>
 			) : (
-				<ScrollView className="px-4">
+				<ScrollView
+					className="px-4"
+					refreshControl={
+						<RefreshControl
+							refreshing={loading}
+							onRefresh={refreshData}
+						/>
+					}
+					onScrollBeginDrag={showButton}
+					onTouchStart={showButton}
+				>
 					<Text className="text-2xl my-4">Your communities</Text>
 					<View>
 						{loading ? (
 							<LoadingSpinner styles={"my-16"} />
 						) : error ? (
-							<ErrorMessage error={error} />
+							<ErrorMessage
+								error={
+									"Something went wrong while fetching communities. Please try again later."
+								}
+								styles={"my-8"}
+							/>
 						) : userCommunities && userCommunities.length > 0 ? (
 							userCommunities.map((community, index) => (
 								<Pressable
@@ -143,22 +212,25 @@ const Communities = () => {
 								</Pressable>
 							))
 						) : (
-							<View className="flex-1 justify-center items-center">
-								<Text className="text-gray-500 text-lg">
-									User has not joined any community
+							<View className="flex-1 justify-center items-center my-4">
+								<Text className="text-gray-500 text-lg text-center">
+									Explore and find communities to join or create your own!
 								</Text>
 							</View>
 						)}
 					</View>
 
-					<Text className="text-2xl mt-8 my-4">
-						Discover new communities
-					</Text>
+					<Text className="text-2xl mt-8 my-4">Discover new communities</Text>
 					<View>
 						{loading ? (
 							<LoadingSpinner styles={"my-16"} />
 						) : error ? (
-							<ErrorMessage error={error} />
+							<ErrorMessage
+								error={
+									"Something went wrong while fetching communities. Please try again later."
+								}
+								styles={"my-8"}
+							/>
 						) : nonUserCommunities && nonUserCommunities.length > 0 ? (
 							nonUserCommunities.map((community, index) => (
 								<Pressable
@@ -176,29 +248,43 @@ const Communities = () => {
 								</Pressable>
 							))
 						) : (
-							<View className="flex-1 justify-center items-center mb-4">
-								<Text className="text-gray-500 text-lg">
-									No new communities available
+							<View className="flex-1 justify-center items-center mt-4 mb-12">
+								<Text className="text-gray-500 text-lg text-center">
+									There are currently no new communities available. Check back later.
 								</Text>
 							</View>
 						)}
 					</View>
 				</ScrollView>
 			)}
-			<TouchableOpacity
-				onPress={() => setIsModalVisible(true)}
-				className="absolute right-4 bottom-5 z-10 bg-blue-200/70 text-blue-500 border border-blue-500 w-20 h-20 pl-1 pb-.5 flex justify-center items-center rounded-full "
-			>
-				<Ionicons
-					name="create-outline"
-					size={28}
-					color="#3b82f6"
-				/>
-			</TouchableOpacity>
+
+			{/* Only render the button when visible */}
+			{isButtonVisible && (
+				<TouchableOpacity
+					onPress={() => {
+						setIsModalVisible(true)
+						showButton()
+					}}
+					className="absolute right-4 bottom-5 z-10 bg-blue-200/70 text-blue-500 border border-blue-500 w-20 h-20 pl-1 pb-.5 flex justify-center items-center rounded-full"
+				>
+					<Ionicons
+						name="create-outline"
+						size={28}
+						color="#3b82f6"
+					/>
+				</TouchableOpacity>
+			)}
+
+			{/* Modal for creating community */}
 			<CreateCommunity
 				visible={isModalVisible}
 				onClose={() => setIsModalVisible(false)}
-				onCommunityCreated={addCommunity}
+				onCommunityCreated={(newCommunity) =>
+					setUserCommunities((prevCommunities) => [
+						...prevCommunities,
+						newCommunity,
+					])
+				}
 			/>
 		</SafeAreaView>
 	)

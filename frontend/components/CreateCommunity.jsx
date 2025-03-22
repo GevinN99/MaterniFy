@@ -6,9 +6,19 @@ import { TouchableOpacity } from "react-native"
 import * as ImagePicker from "expo-image-picker"
 import { Image } from "expo-image"
 import { createCommunity, updateCommunity } from "../api/communityApi"
-import { uploadImageToFirebase, deleteImageFromFirebase } from "../utils/firebaseImage"
+import {
+	uploadImageToFirebase,
+	deleteImageFromFirebase,
+} from "../utils/firebaseImage"
+import { DEFAULT_COMMUNITY_IMAGE_URL } from "../utils/constants"
 
-const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCreated }) => {
+const CreateCommunity = ({
+	editing,
+	community,
+	visible,
+	onClose,
+	onCommunityCreated,
+}) => {
 	const [loading, setLoading] = useState(false)
 	const [errors, setErrors] = useState({
 		name: "",
@@ -28,7 +38,7 @@ const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCrea
 	useEffect(() => {
 		if (visible) {
 			setCommunityDetails(
-				editing 
+				editing
 					? { name: community?.name, description: community?.description }
 					: { name: "", description: "" }
 			)
@@ -56,6 +66,7 @@ const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCrea
 
 		let hasErrors = false
 
+		// Validate community name
 		if (!communityDetails.name.trim()) {
 			setErrors((prevErros) => ({
 				...prevErros,
@@ -64,14 +75,16 @@ const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCrea
 			hasErrors = true
 		}
 
+		// Validate community description
 		if (!communityDetails.description.trim()) {
 			setErrors((prevErros) => ({
 				...prevErros,
 				description: "Community description is required",
 			}))
 			hasErrors = true
-		}		
+		}
 
+		// Check if there are no changes when editing
 		if (
 			editing &&
 			communityDetails.name === community.name &&
@@ -83,7 +96,7 @@ const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCrea
 				server: "No changes detected",
 			}))
 			hasErrors = true
-			return 
+			return
 		}
 
 		if (hasErrors) {
@@ -93,24 +106,21 @@ const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCrea
 		setLoading(true)
 
 		try {
-			let imageUrl = null
-		
+			let imageUrl = DEFAULT_COMMUNITY_IMAGE_URL			
+
 			// Check if a new image is selected and upload it
 			if (image && (!editing || image !== community.imageUrl)) {
-				if (editing && community.imageUrl) {
-					await deleteImageFromFirebase(community.imageUrl) // Delete the previous image
-				}
+				if (
+					editing &&
+					community.imageUrl &&
+					community.imageUrl !== DEFAULT_COMMUNITY_IMAGE_URL
+				) {															
+					await deleteImageFromFirebase(community.imageUrl) 
+				}				
 				imageUrl = await uploadImageToFirebase(image, "community")
 			} else if (editing && !image) {
 				// If editing and no new image is selected, keep the old image
 				imageUrl = community.imageUrl
-			}
-
-			if (!editing && !image) {
-				imageUrl = await uploadImageToFirebase(
-					require("../assets/images/communityAvatar.webp").uri,
-					"community"
-				)
 			}
 
 			if (editing) {
@@ -130,7 +140,7 @@ const CreateCommunity = ({ editing, community, visible, onClose, onCommunityCrea
 				})
 				onCommunityCreated(response.community)
 			}
-			setLoading(false)			
+			setLoading(false)
 			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
