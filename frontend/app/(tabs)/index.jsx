@@ -16,52 +16,70 @@ import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
+import { Dimensions } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BabyGrowthTracker from "../../components/GrowthTracker";
+import axiosInstance from "../../api/axiosInstance";
 
 const Landing = () => {
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
-  const [scores, setScores] = useState([5, 10, 15]); 
+  const [scores, setScores] = useState([]);
   const [conceptionDate, setConceptionDate] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
-    const fetchUserName = async () => {
-      const storedName = await AsyncStorage.getItem("userName");
-      if (storedName) {
-        setUserName(storedName);
-      }
-    };
-    fetchUserName();
-  }, []);
-
-  const screenWidth = Dimensions.get("window").width;
-
-  useEffect(() => {
-    const fetchConceptionDate = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch user name
+        const storedName = await AsyncStorage.getItem("userName");
+        if (storedName) {
+          setUserName(storedName);
+        }
+
+        // Fetch scores
+        const response = await axiosInstance.get("/quizzes/get-response");
+        const thisWeekScores = response.data.filter((item) => {
+          const itemDate = new Date(item.createdAt);
+          const now = new Date();
+          const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+          return itemDate >= startOfWeek;
+        });
+
+        setScores(thisWeekScores);
+
+        // Fetch conception date
         const storedDate = await AsyncStorage.getItem("conceptionDate");
         if (storedDate) {
           setConceptionDate(storedDate);
         }
-      } catch (error) {
-        console.error("Error fetching conception date:", error);
+
+        // Fetch profile picture
+        const storedPic = await AsyncStorage.getItem("profilePic");
+        if (storedPic) {
+          setProfilePic(storedPic);
+        }
+      } catch (err) {
+        console.log("Error fetching data:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchConceptionDate();
-  }, [conceptionDate]); 
-  
-  useEffect(() => {
-    const fetchProfilePic = async () => {
-      const storedPic = await AsyncStorage.getItem("profilePic");
-      if (storedPic) {
-        setProfilePic(storedPic);
-      }
-    };
-    fetchProfilePic();
+
+    fetchData();
   }, []);
+
+  if (loading) return <ActivityIndicator size="large" color="#A3C8E8" />;
+
+  const screenWidth = Dimensions.get("window").width;
+  const chartData = {
+    labels: scores.map((item) => new Date(item.createdAt).toLocaleDateString()),
+    datasets: [{ data: scores.map((item) => item.totalScore) }],
+  };
 
   const getWeekDates = () => {
     const startOfWeek = currentWeek.startOf("isoweek");
@@ -81,7 +99,7 @@ const Landing = () => {
     const strokeWidth = 8;
     const circumference = 2 * Math.PI * radius;
     const progress = (percentage / 100) * circumference;
-  
+
     return (
       <View style={{ justifyContent: "center", alignItems: "center" }}>
         <Svg width={90} height={90}>
@@ -140,6 +158,7 @@ const Landing = () => {
               <Text style={styles.noConceptionText}>
                 Please set your conception date to track Baby's Growth
               </Text>
+
               <TouchableOpacity 
                 style={styles.addDateButton}
                 onPress={() => router.push("/SetConceptionDate")}
@@ -169,7 +188,7 @@ const Landing = () => {
 
             <TouchableOpacity 
               style={styles.quickAccessButton}
-              onPress={() => router.push("/mental-health")}
+              onPress={() => router.push("/epdsstart")}
             >
               <View style={styles.buttonIconContainer}>
                 <Image 
@@ -210,8 +229,10 @@ const Landing = () => {
           </View>
         </View>
 
+
         {/* Calendar Section */}
         <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+
         <View style={styles.calendarContainer}>
           <View style={styles.weekHeader}>
             <TouchableOpacity onPress={handlePrevWeek}>
@@ -268,6 +289,7 @@ const Landing = () => {
           )}
         </View>
 
+
         {/* Today's Health Plan */}
         <Text style={styles.sectionTitle}>Today's Health Plan</Text>
         <LinearGradient 
@@ -299,41 +321,39 @@ const Landing = () => {
           </View>
         </LinearGradient>
 
-        {/* Mental Health Summary */}
-        <Text style={styles.sectionTitle}>Mental Health Summary</Text>
-        <View style={styles.mentalHealthCard}>
-          <LineChart
-            data={{
-              labels: ["Week 1", "Week 2", "Week 3"],
-              datasets: [{ data: scores }],
-            }}
-            width={screenWidth - 40}
-            height={220}
-            yAxisLabel=""
-            chartConfig={{
-              backgroundColor: "#FCFCFC",
-              backgroundGradientFrom: "#FCFCFC",
-              backgroundGradientTo: "#FCFCFC",
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(180, 228, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(51, 51, 51, ${opacity})`,
-              style: { borderRadius: 16 },
-              propsForDots: { r: "6", strokeWidth: "2", stroke: "#F7C8E0" },
-            }}
-            bezier
-            style={{ borderRadius: 16, marginVertical: 8 }}
-          />
-          
-          <View style={styles.riskMessageContainer}>
-            <Ionicons 
-              name={scores[scores.length - 1] <= 10 ? "checkmark-circle" : "warning"} 
-              size={24} 
-              color={scores[scores.length - 1] <= 10 ? "#4CAF50" : "#FFC107"} 
-            />
-            <Text style={styles.riskMessage}>
-              {getRiskMessage(scores[scores.length - 1])}
+        {/* Mental Health Summary */}       
+    
+
+        <View style={{ alignItems: "center", padding: 20 }}>
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Mental Health Summary</Text>
+          {scores.length > 0 ? (
+            <View>
+              {scores.length === 0 ? (<Text>No users scores found for now</Text>) : (
+              <LineChart
+                data={chartData}
+                width={screenWidth - 32}
+                height={220}
+                yAxisInterval={1}
+                chartConfig={{
+                  backgroundColor: "#FCFCFC",
+                  backgroundGradientFrom: "#FCFCFC",
+                  backgroundGradientTo: "#FCFCFC",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(163, 200, 232, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(51, 51, 51, ${opacity})`,
+                  style: { borderRadius: 16 },
+                  propsForDots: { r: "6", strokeWidth: "2", stroke: "#A3C8E8" },
+                }}
+                bezier
+                style={{ marginVertical: 8, borderRadius: 16, backgroundColor: "#EAEFF4" }}
+              />)}
+            </View>
+          ) : (
+            <Text style={{ fontSize: 16, textAlign: "center", color: "#64A8F1", marginTop: 20 }}>
+              No scores available. Try the EPDS test to track your mental health.
+
             </Text>
-          </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -466,6 +486,7 @@ const styles = StyleSheet.create({
     color: "#333333",
     marginTop: 5,
   },
+  
   calendarContainer: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,

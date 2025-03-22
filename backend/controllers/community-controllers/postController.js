@@ -5,17 +5,15 @@ const CommunityModel = require("../../models/community-models/communityModel")
 const createPost = async (req, res) => {
 	try {
 		console.log("creatign post")
-		// Get the content and communityId from the request body
+		
 		const { content, communityId, imageUrl } = req.body
-		// Get the userId from the request object
+		
 		const userId = req.user.id
-
-		// Check if content exists
+		
 		if (!content) {
 			return res.status(400).json({ error: "Content required" })
 		}
-
-		// Check if communityId exists
+		
 		if (!communityId) {
 			return res.status(400).json({ error: "Community ID required" })
 		}
@@ -26,11 +24,9 @@ const createPost = async (req, res) => {
 			communityId,
 			imageUrl,
 		})
-
-		// Save the new post
+		
 		await newPost.save()
-
-		// Add the post ID to the community's posts array
+		
 		await CommunityModel.findByIdAndUpdate(communityId, {
 			$push: { posts: newPost._id },
 		})

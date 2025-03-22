@@ -1,33 +1,5 @@
 const CommunityModel = require("../../models/community-models/communityModel")
 
-// Get all communities
-// const getAllCommunities = async (req, res) => {
-// 	try {
-//         // Find all communities
-// 		const communities = await CommunityModel.find()
-// 		res.status(200).json(communities)
-// 	} catch (error) {
-// 		console.error(error)
-// 		res.status(500).json({ error: 'Faild to fetch communities' })
-// 	}
-// }
-
-// Get user communities
-// const getUserCommunities = async (req, res) => {
-// 	try {
-// 		const { userId } = req.params
-// 		if (!userId) return res.status(400).json({ error: "User ID is required" })
-// 		console.log(`Fetching communities for user ID: ${userId}`)
-
-// 		const userCommunities = await CommunityModel.find({ members: userId })
-
-// 		res.status(200).json(userCommunities)
-// 	} catch (error) {
-// 		console.error(error)
-// 		res.status(500).json({ error: "Failed to fetch user's communities" })
-// 	}
-// }
-
 // Get both user communities and non-user communities
 const getAllCommunities = async (req, res) => {	
 	try {
@@ -36,7 +8,7 @@ const getAllCommunities = async (req, res) => {
 
 		const userCommunities = await CommunityModel.find({ members: userId })
 		const nonUserCommunities = await CommunityModel.find({
-			members: { $ne: userId },
+			members: { $ne: userId }, // $ne means "not equal"
 		})
 
 		res.status(200).json({ userCommunities, nonUserCommunities })
@@ -143,10 +115,16 @@ const getCommunityById = async (req, res) => {
 			.populate("admin", "fullName profileImage")
 			.populate({
 				path: "posts", // Populates the posts array
-				populate: {
-					path: "userId", // Further populates the user inside each post
-					select: "fullName profileImage email", // Fetches only these fields from the user
-				},
+				populate: [
+					{
+						path: "userId", // Further populates the user inside each post
+						select: "fullName profileImage email", // Fetches only these fields from the user
+					},
+					{
+						path: "communityId", // Populate community details inside each post
+						select: "name", // Include only the community name
+					},
+				],
 			})
 
 		if (!community) {
@@ -218,6 +196,7 @@ const leaveCommunity = async (req, res) => {
 		community.members = community.members.filter(
 			(member) => member.toString() !== userId.toString()
 		)
+		
 		await community.save()
 		res.status(200).json({ message: "Left community successfully" })
 	} catch (error) {

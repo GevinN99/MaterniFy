@@ -9,38 +9,44 @@ const TabBar = ({ state, descriptors, navigation }) => {
 	return (
 		<View className="flex flex-row justify-between items-center bg-white py-2 px-5 shadow-lg">
 			{state.routes.map((route, index) => {
-				const { options } = descriptors[route.key];
+				const { options } = descriptors[route.key]
 				const label =
 					options.tabBarLabel !== undefined
 						? options.tabBarLabel
 						: options.title !== undefined
-							? options.title
-							: route.name;
+						? options.title
+						: route.name
 
-				if (["_sitemap", "+not-found"].includes(route.name)) return null;
+				if (["_sitemap", "+not-found"].includes(route.name)) return null
 
-				const isFocused = state.index === index;
+				const isFocused = state.index === index
 
+				// Function to handle tab press
 				const onPress = () => {
 					const event = navigation.emit({
 						type: "tabPress",
 						target: route.key,
 						canPreventDefault: true,
-					});
+					})
 
 					if (!isFocused && !event.defaultPrevented) {
-						navigation.navigate(route.name, route.params);
+						navigation.navigate(route.name, route.params)
 					}
-				};
+				}
 
-				const color = isFocused ? "#3b82f6" : "#6b7280";
+				const color = isFocused ? "#3b82f6" : "#6b7280"
 
-				// Safeguard: Check if tabBarIcon exists and is a function
-				const icon = typeof options.tabBarIcon === "function" ? (
-					options.tabBarIcon({ color })
-				) : (
-					<Feather name="alert-circle" size={24} color={color} /> // Fallback icon
-				);
+				// Check if the tab has a custom icon, otherwise use a fallback
+				const icon =
+					typeof options.tabBarIcon === "function" ? (
+						options.tabBarIcon({ color })
+					) : (
+						<Feather
+							name="alert-circle"
+							size={24}
+							color={color}
+						/>
+					)
 
 				return (
 					<TouchableOpacity
@@ -61,7 +67,7 @@ const TabBar = ({ state, descriptors, navigation }) => {
 							{label}
 						</Text>
 					</TouchableOpacity>
-				);
+				)
 			})}
 
 			{/* Logout Button */}
