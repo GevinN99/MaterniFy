@@ -15,26 +15,30 @@ import { useRouter } from "expo-router"
 import { AuthContext } from "../context/AuthContext"
 import CreateCommunity from "./CreateCommunity"
 import { deleteImageFromFirebase } from "../utils/firebaseImage"
+import { DEFAULT_COMMUNITY_IMAGE_URL } from "../utils/constants"
 
-const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
+const CommunityDetails = ({
+	community,
+	handleJoin,
+	handleLeave,
+	setIsDeleting,
+}) => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userId } = useContext(AuthContext)
 	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [communityDetails, setCommunityDetails] = useState(community)
 	let { imageUrl, name, description, admin, members } = communityDetails
-	const [isMember, setIsMember] = useState(members?.includes(userId))
+	const [isMember, setIsMember] = useState(members?.includes(userId)) // Check if user is a member
 	const [showMenu, setShowMenu] = useState(false)
 	const { fetchData } = useCommunity()
 	const router = useRouter()
 
-	const blurhash =
-		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
-
-	const isAdmin = admin._id === userId	
+	const isAdmin = admin._id === userId // Check if the current user is the community admin
 
 	const handleJoinCommunity = () => {
 		setCommunityDetails((prev) => ({
 			...prev,
-			members: [...prev.members, userId], // Correctly add the user to the members list
+			members: [...prev.members, userId], // Add the user to the members list
 		}))
 		handleJoin(community._id)
 		setIsMember(true)
@@ -49,7 +53,6 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 		setIsMember(false)
 	}
 
-
 	const onToggleMenu = () => {
 		setShowMenu(!showMenu)
 	}
@@ -62,7 +65,14 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 	const onDelete = async () => {
 		try {
 			const response = await deleteCommunityById(communityDetails._id)
-			await deleteImageFromFirebase(communityDetails.imageUrl, "community")
+			// Delete community image from Firebase if it's not the default image
+			if (communityDetails.imageUrl !== DEFAULT_COMMUNITY_IMAGE_URL) {
+				await deleteImageFromFirebase(communityDetails.imageUrl, "community")
+			} else {
+				console.log("image is default. not deleted")
+			}
+
+			// Delete all post images related to the community
 			const posts = communityDetails.posts
 			for (const post of posts) {
 				if (post.imageUrl) {
@@ -86,7 +96,7 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 						size={16}
 						color="#6b7280"
 					/>
-					<Text className="text-gray-500">
+					<Text className="text-gray-500 text-base">
 						{members?.length || 0}{" "}
 						{members?.length === 1 ? "member" : "members"}
 					</Text>
@@ -106,8 +116,11 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 				</View>
 			</View>
 
+			{/* Community Description */}
 			<View className="px-5">
-				<Text className="text-center text-gray-600 mb-6">{description}</Text>
+				<Text className="text-center text-lg text-gray-600 mb-6">
+					{description}
+				</Text>
 
 				<View className="bg-white border border-gray-400 rounded-xl p-3 mb-6 flex flex-row justify-center items-center gap-3 z-50">
 					<Image
@@ -121,17 +134,18 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 					/>
 					<View className="flex-1">
 						<View className="flex flex-row items-center gap-2">
-							<Text className="font-medium">{admin?.fullName}</Text>
+							<Text className="text-lg">{admin?.fullName}</Text>
 							<Ionicons
 								name="shield-checkmark-outline"
 								size={14}
 								color="#3b82f6"
 							/>
 						</View>
-						<Text className="text-xs text-gray-500">
+						<Text className="text-sm text-gray-500">
 							Community Administrator
 						</Text>
 					</View>
+					{/* Admin Actions Menu */}
 					{isAdmin && (
 						<Pressable onPress={onToggleMenu}>
 							<Feather
@@ -141,32 +155,35 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 						</Pressable>
 					)}
 
+					{/* Dropdown Menu for Admin Actions */}
 					{showMenu && (
-						<View className="absolute top-5 right-8 z-30 rounded-md shadow-md p-1 bg-white">
+						<View className="absolute top-5 right-10 z-30 rounded-md shadow-md bg-white">
 							<TouchableOpacity
-								className="p-2 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
+								className="p-3 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
 								onPress={onUpdate}
 							>
 								<Feather
 									name="edit"
-									size={20}									
+									size={20}
 								/>
 								<Text>Update Community</Text>
 							</TouchableOpacity>
 							<TouchableOpacity
-								className="p-2 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
+								className="p-3 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
 								onPress={onDelete}
 							>
 								<Feather
 									name="trash"
-									size={20}									
+									size={20}
+									color={"#ef4444"}
 								/>
-								<Text>Delete Community</Text>
+								<Text className="text-red-500">Delete Community</Text>
 							</TouchableOpacity>
 						</View>
 					)}
 				</View>
 
+				{/* Join/Leave Button for Members */}
 				{!isAdmin && (
 					<View className="flex flex-col gap-3">
 						<TouchableOpacity
@@ -176,7 +193,7 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 							}`}
 						>
 							<Text
-								className={`text-base font-medium ${
+								className={`text-lg font-medium ${
 									isMember ? "text-red-500" : "text-blue-500"
 								}`}
 							>
@@ -186,15 +203,16 @@ const CommunityDetails = ({ community, handleJoin, handleLeave }) => {
 					</View>
 				)}
 			</View>
+			{/* Community Update Modal */}
 			<CreateCommunity
 				editing={true}
 				community={communityDetails}
 				visible={isModalVisible}
-				onClose={() => setIsModalVisible(false)}				
+				onClose={() => setIsModalVisible(false)}
 				onCommunityCreated={(updatedCommunity) => {
-					setCommunityDetails((prev) => ({ ...prev, ...updatedCommunity})) // Update community state
+					setCommunityDetails((prev) => ({ ...prev, ...updatedCommunity })) // Update community state
 					fetchData("communities")
-				}}				
+				}}
 			/>
 		</View>
 	)

@@ -6,15 +6,14 @@ import { useRouter } from "expo-router"
 import { AuthContext } from "../context/AuthContext"
 
 const CompactCommunityCard = ({ community, classname }) => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userId } = useContext(AuthContext)
 	const router = useRouter()
 	const { imageUrl, name, members, _id: communityId, admin } = community
-	const blurhash =
-		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
 
 	return (
 		<TouchableOpacity
-			className={`w-[160px] bg-white rounded-xl overflow-hidden pb-4 mx-2 ${classname}`}
+			className={`w-[160px] bg-white rounded-xl overflow-hidden pb-4 mx-3 ${classname}`}
 			onPress={() => router.push(`/community/${communityId}`)}
 		>
 			{/* Community Cover Image */}

@@ -16,7 +16,7 @@ const createReply = async (req, res) => {
 				.json({ message: "Content, postId, and communityId are required" })
 		}
 
-		// Check if post exists
+		// Check if post exists		
 		const post = await PostModel.findById(postId)
 		if (!post) {
 			return res.status(404).json({ message: "Post not found" })
@@ -55,31 +55,6 @@ const createReply = async (req, res) => {
 		res.status(500).json({ message: "Server error" })
 	}
 }
-
-// const getRepliesForPost = async (req, res) => {
-// 	const { postId } = req.params
-
-// 	try {
-
-// 		const replies = await ReplyModel.find({ postId })
-// 			.populate("communityId", "name _id")
-// 			.populate("userId", "fullName profileImage")
-// 			.populate("parentReplyId")
-// 			.populate({
-// 				path: "postId",
-// 				select: "_id userId",
-// 				populate: {
-// 					path: "userId",
-// 					select: "fullName",
-// 				},
-// 			})
-
-// 		res.status(200).json(replies)
-// 	} catch (error) {
-// 		console.error(error)
-// 		res.status(500).json({ message: "Server error" })
-// 	}
-// }
 
 // Fetch replies for a post, including nested replies
 const getRepliesForPost = async (req, res) => {
@@ -137,6 +112,25 @@ const getRepliesForPost = async (req, res) => {
 	}
 }
 
+const getReplyById = async (req, res) => {
+	try {
+		const { replyId } = req.params
+		const reply = await ReplyModel.findById(replyId)
+			.populate("userId", "fullName profileImage")
+			.populate("postId", "title")
+			.populate("communityId", "name")
+
+		if (!reply) {
+			return res.status(404).json({ message: "Reply not found" })
+		}
+
+		return res.status(200).json(reply)
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Internal server error" })
+	}
+}
+
 // Like or unlike a reply
 const likeUnlikeReply = async (req, res) => {
 	try {
@@ -170,8 +164,44 @@ const likeUnlikeReply = async (req, res) => {
 	}
 }
 
+const deleteReply = async (req, res) => {	
+	try {
+		const { replyId } = req.params
+		const userId = req.user.id // Assuming the user is logged in and their ID is available in req.user
+		// Check if reply exists
+		const reply = await ReplyModel.findById(replyId)
+
+		if (!reply) {
+			return res.status(404).json({ message: "Reply not found" })
+		}
+
+		// Delete the reply
+		await ReplyModel.findByIdAndDelete(replyId)
+
+		// Optionally, remove the reply from the parent post or parent reply
+		if (reply.parentReplyId) {
+			await ReplyModel.findByIdAndUpdate(reply.parentReplyId, {
+				$pull: { replies: replyId },
+			})
+		} else {
+			await PostModel.findByIdAndUpdate(reply.postId, {
+				$pull: { replies: replyId },
+			})
+		}
+
+		return res.status(200).json({ message: "Reply deleted successfully" })
+	} catch (error) {
+		console.error(error)
+		return res.status(500).json({ message: "Server error" })
+	}
+}
+
+module.exports = { deleteReply }
+
 module.exports = {
 	createReply,
+	getReplyById,
 	getRepliesForPost,
 	likeUnlikeReply,
+	deleteReply,
 }

@@ -20,7 +20,7 @@ export const CommunityProvider = ({ children }) => {
 	const [postsError, setPostsError] = useState(null)
 	const [selectedPost, setSelectedPost] = useState(null)
 
-	useEffect(() => {		
+	useEffect(() => {
 		if (userId) {
 			fetchData()
 		}
@@ -37,7 +37,7 @@ export const CommunityProvider = ({ children }) => {
 
 		if (fetchType === "communities" || fetchType === "both") {
 			try {
-				console.log("Fetching communities for user: ", userId)
+				// console.log("Fetching communities for user: ", userId)
 				const { userCommunities, nonUserCommunities } = await getAllCommunities(
 					userId
 				)
@@ -54,7 +54,7 @@ export const CommunityProvider = ({ children }) => {
 		// Fetch posts
 		if (fetchType === "posts" || fetchType === "both") {
 			try {
-				console.log("Fetching posts for user: ", userId)
+				// console.log("Fetching posts for user: ", userId)
 				const postsData = await getPostsFromAllUsersCommunities(userId)
 				setPosts(postsData || [])
 			} catch (error) {
@@ -66,22 +66,22 @@ export const CommunityProvider = ({ children }) => {
 		setLoading(false)
 	}
 
+	// Refresh data (re-fetch both communities and posts)
 	const refreshData = async () => {
-		setLoading(true) // Start loading when refreshing
-		await fetchData() // Refresh both posts and communities
+		setLoading(true)
+		await fetchData()
 	}
-
 
 	// Like/Unlike functionality
 	const handleLikeUnlike = async (postId) => {
-		console.log("Like/Unlike post id:", postId)
+		// console.log("Like/Unlike post id:", postId)
 		try {
 			const { likes } = await likeUnlikePost(postId)
 			setPosts((prevPosts) =>
 				prevPosts.map((post) =>
 					post._id === postId ? { ...post, likes } : post
 				)
-			)			
+			)
 		} catch (error) {
 			console.error(error)
 		}
@@ -105,9 +105,8 @@ export const CommunityProvider = ({ children }) => {
 			setNonUserCommunities((prevCommunities) =>
 				prevCommunities.filter((community) => community._id !== communityId)
 			)
-			
-			// fetchData()
-			
+
+			fetchData("posts")
 		} catch (error) {
 			console.error(error)
 		}
@@ -124,13 +123,12 @@ export const CommunityProvider = ({ children }) => {
 				...prevCommunities,
 				...userCommunities.filter((community) => community._id === communityId),
 			])
-			
-			// fetchData()
-			
+
+			fetchData("posts")
 		} catch (error) {
 			console.error(error)
 		}
-	}	
+	}
 
 	return (
 		<CommunityContext.Provider
@@ -148,7 +146,7 @@ export const CommunityProvider = ({ children }) => {
 				handleJoinCommunity,
 				handleLeaveCommunity,
 				selectPost,
-				selectedPost,				
+				selectedPost,
 			}}
 		>
 			{children}

@@ -3,8 +3,7 @@ import {
 	View,
 	Text,
 	TextInput,
-	TouchableOpacity,
-	Image,
+	TouchableOpacity,	
 	Modal,
 	StyleSheet,
 	ScrollView,
@@ -17,10 +16,13 @@ import { uploadImageToFirebase } from "../utils/firebaseImage"
 import CommunityPicker from "./CommunityPicker"
 import Feather from "@expo/vector-icons/Feather"
 import { useCommunity } from "../context/communityContext"
+import axiosInstance from "../api/axiosInstance"
+import { Image } from "expo-image"
 
 const CreatePost = ({ visible, onClose }) => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userCommunities, fetchData } = useCommunity()
-	const [inputHeight, setInputHeight] = useState(30)
+	const [inputHeight, setInputHeight] = useState(30) // State to handle input field height dynamically
 	const [loading, setLoading] = useState(false)
 	const [postDetails, setPostDetails] = useState({
 		content: "",
@@ -32,6 +34,20 @@ const CreatePost = ({ visible, onClose }) => {
 		server: "",
 	})
 	const [image, setImage] = useState(null)
+	const [profileImage, setProfileImage] = useState()
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			try {
+				const response = await axiosInstance.get("/users/profile")
+				setProfileImage(response.data.profileImage)
+			} catch (error) {
+				console.log(error)
+			}
+		}
+
+		fetchUser()
+	}, [])
 
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -51,6 +67,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 		let hasErrors = false
 
+		// Validate content field
 		if (!postDetails.content.trim()) {
 			setErrors((prevErros) => ({
 				...prevErros,
@@ -59,6 +76,7 @@ const CreatePost = ({ visible, onClose }) => {
 			hasErrors = true
 		}
 
+		// Validate community selection
 		if (!postDetails.communityId) {
 			setErrors((prevErros) => ({
 				...prevErros,
@@ -82,7 +100,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 			const response = await createPost({ ...postDetails, imageUrl })
 			setLoading(false)
-			fetchData("posts")			
+			fetchData("posts")
 			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
@@ -91,6 +109,7 @@ const CreatePost = ({ visible, onClose }) => {
 		}
 	}
 
+	// Function to handle modal close and reset state
 	const handleClose = () => {
 		setPostDetails({ content: "", communityId: "" })
 		setErrors({ content: "", community: "", server: "" })
@@ -123,17 +142,21 @@ const CreatePost = ({ visible, onClose }) => {
 								<View className="flex flex-row items-center gap-4 mb-4">
 									<Image
 										source={{
-											uri: "https://images.unsplash.com/photo-1494145904049-0dca59b4bbad?q=80&w=3388&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+											uri: profileImage,
 										}}
-										style={styles.profileImage} // Only Image uses StyleSheet
+										style={styles.profileImage}
+										contentFit="cover"
+										placeholder={{ blurhash }}
 									/>
 									<Text className="font-semibold">Ellyse Perry</Text>
 								</View>
 
+								{/* Display content error if present */}
 								{errors.content && (
 									<Text className="text-red-500 my-1">*{errors.content}</Text>
 								)}
 								<View className="transition duration-300 rounded-lg px-4 pt-4 mb-4 pb-2 bg-white">
+									{/* Text input for post content */}
 									<TextInput
 										className="mb-4 outline-none"
 										placeholder="What's on your mind?"
@@ -158,6 +181,8 @@ const CreatePost = ({ visible, onClose }) => {
 											maxHeight: 200,
 										}}
 									/>
+
+									{/* Display selected image */}
 									{image && (
 										<View>
 											<Image
@@ -178,12 +203,10 @@ const CreatePost = ({ visible, onClose }) => {
 											</TouchableOpacity>
 										</View>
 									)}
+
+									{/* Image picker and character count */}
 									<View className="flex flex-row justify-between items-center mt-4 ">
 										<TouchableOpacity onPress={pickImage}>
-											{/* <Camera
-											size={20}
-											className="text-gray-400"
-										/> */}
 											<Feather
 												name="camera"
 												style={styles.icon}
@@ -198,9 +221,12 @@ const CreatePost = ({ visible, onClose }) => {
 									</View>
 								</View>
 
+								{/* Display community selection error if present */}
 								{errors.community && (
 									<Text className="text-red-500 my-1">*{errors.community}</Text>
 								)}
+
+								{/* Community picker dropdown */}
 								<CommunityPicker
 									items={userCommunities.map((community) => ({
 										label: community.name,
@@ -221,6 +247,7 @@ const CreatePost = ({ visible, onClose }) => {
 									}}
 								/>
 							</View>
+							{/* Display server error if present */}
 							{errors.server && (
 								<Text className="text-red-500 mt-4">{errors.server}</Text>
 							)}

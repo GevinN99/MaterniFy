@@ -8,8 +8,9 @@ import { timeAgo } from "../utils/timeAgo"
 import PostActionSection from "./PostActionSection"
 import { AuthContext } from "../context/AuthContext"
 
-const Post = ({ post, community }) => {
-	const { userId: user } = useContext(AuthContext)	
+const Post = ({ post, community, replying }) => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
+	const { userId: user } = useContext(AuthContext)
 	const router = useRouter()
 	const { selectPost, fetchData, handleLikeUnlike } = useCommunity()
 	const {
@@ -21,10 +22,13 @@ const Post = ({ post, community }) => {
 		imageUrl,
 		content,
 		replies,
-	} = post	
+	} = post
+
+	// Check if the logged-in user is the admin (author) of the post
 	const admin = user === post.userId._id
 	const [showMenu, setShowMenu] = useState(false)
 
+	// Check if the logged-in user has liked the post
 	const liked = likes.includes(user)
 	const likeCount = likes.length
 
@@ -32,14 +36,14 @@ const Post = ({ post, community }) => {
 		setShowMenu(!showMenu)
 	}
 
-	const onLike = async () => { 
-		handleLikeUnlike(postId)		
+	const onLike = async () => {
+		handleLikeUnlike(postId)
 	}
 
 	const onDelete = async () => {
 		try {
 			const response = await deletePost(postId)
-			toggleMenu()			
+			toggleMenu()
 			fetchData("posts")
 		} catch (error) {
 			console.log(error)
@@ -53,12 +57,16 @@ const Post = ({ post, community }) => {
 
 	return (
 		<View className="bg-white p-4 my-2 rounded-2xl">
+			{/* User info section */}
 			<View className="flex flex-row items-center">
 				<Image
 					source={{ uri: userId.profileImage }}
 					style={styles.profileImage}
+					contentFit="cover"
+					placeholder={{ blurhash }}
 				/>
 				<View className="ml-4 flex">
+					{/* Display user's name and post timestamp */}
 					<View className="flex flex-row items-center ">
 						<Text className="font-bold text-xl mr-2">{userId.fullName}</Text>
 						<Text className="mt-1">•</Text>
@@ -67,7 +75,8 @@ const Post = ({ post, community }) => {
 						</Text>
 					</View>
 
-					<Text className="text-gray-500 text-lg">
+					{/* Display community name */}
+					<Text className="text-gray-500 text-base">
 						@
 						{(communityId.name || community.name)
 							.replace(/\s+/g, "")
@@ -75,7 +84,11 @@ const Post = ({ post, community }) => {
 					</Text>
 				</View>
 			</View>
+
+			{/* Post content */}
 			<Text className="mt-4 text-lg">{content}</Text>
+
+			{/* Display post image if available */}
 			{imageUrl && (
 				<View className="flex my-4 items-center w-full overflow-hidden rounded-2xl">
 					<Image
@@ -86,17 +99,21 @@ const Post = ({ post, community }) => {
 					/>
 				</View>
 			)}
-			<PostActionSection
-				liked={liked}
-				likeCount={likeCount}
-				onLike={onLike}
-				onReply={onReply}
-				replyCount={replies.length}
-				onToggleMenu={toggleMenu}
-				onDelete={onDelete}
-				showMenu={showMenu}
-				admin={admin}
-			/>
+
+			{/* Post actions (like, reply, delete) */}
+			{!replying && (
+				<PostActionSection
+					liked={liked}
+					likeCount={likeCount}
+					onLike={onLike}
+					onReply={onReply}
+					replyCount={replies.length}
+					onToggleMenu={toggleMenu}
+					onDelete={onDelete}
+					showMenu={showMenu}
+					admin={admin}
+				/>
+			)}
 		</View>
 	)
 }

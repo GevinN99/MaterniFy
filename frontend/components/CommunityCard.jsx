@@ -7,6 +7,7 @@ import Feather from "@expo/vector-icons/Feather"
 import { AuthContext } from "../context/AuthContext"
 
 const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userId } = useContext(AuthContext)
 	const {
 		imageUrl,
@@ -15,9 +16,8 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 		description,
 		_id: communityId,
 		admin,
-	} = community
-	const blurhash =
-		"|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj["
+	} = community		
+	
 
 	const handleToggleMembership = () => {
 		if (isMember) {
@@ -31,7 +31,7 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 	return (
 		<View className="bg-white rounded-xl mb-4 overflow-hidden shadow-sm">
 			<View className="flex flex-row gap-2">
-				{/* Image section */}				
+				
 				<View className="w-[100px] shadow-sm">
 					{imageUrl && (
 						<Image
@@ -45,7 +45,7 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 				</View>
 
 				<View className="flex-1 justify-between p-2">
-					{/* Name and member count */}					
+					
 					<Text className="text-lg font-bold">{name}</Text>
 					<View className="flex-row items-center bg-gray-100 px-2 py-2 -ml-1 rounded-full self-start my-2">
 						<Feather
@@ -57,9 +57,9 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 							{members.length} {members.length === 1 ? "member" : "members"}
 						</Text>
 					</View>
-					{/* </View> */}
+					
 
-					{/* Description */}
+					
 					<Text
 						className="text-base text-gray-500 leading-5"
 						numberOfLines={2}
@@ -67,7 +67,7 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 					>
 						{description}
 					</Text>
-					{/* <View className="flex flex-row justify-between mt-4">						 */}
+					
 					{admin === userId ? (
 						<View className="flex-row mt-4 self-end items-center px-3 py-1.5 rounded-full border border-green-500/20 bg-green-500/10">
 							<Ionicons
@@ -110,7 +110,7 @@ const CommunityCard = ({ community, isMember, handleJoin, handleLeave }) => {
 								</View>
 							)}
 						</TouchableOpacity>
-					)}					
+					)}
 				</View>
 			</View>
 		</View>
