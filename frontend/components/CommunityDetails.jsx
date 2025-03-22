@@ -63,15 +63,15 @@ const CommunityDetails = ({
 		onToggleMenu()
 	}
 
-	const onDelete = async () => {
+	const onDelete = async () => {		
 		try {
 			setLoading(true)
+			
 			const response = await deleteCommunityById(communityDetails._id)
-			// Delete community image from Firebase if it's not the default image
+									
+			// Delete community image from Firebase if it's not the default image			
 			if (communityDetails.imageUrl !== DEFAULT_COMMUNITY_IMAGE_URL) {
 				await deleteImageFromFirebase(communityDetails.imageUrl, "community")
-			} else {
-				console.log("image is default. not deleted")
 			}
 
 			// Delete all post images related to the community

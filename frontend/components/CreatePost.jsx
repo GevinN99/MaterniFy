@@ -99,8 +99,8 @@ const CreatePost = ({ visible, onClose }) => {
 			}
 
 			const response = await createPost({ ...postDetails, imageUrl })
-			setLoading(false)
-			fetchData("posts")
+			setLoading(false)			
+			fetchData()
 			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
@@ -145,7 +145,7 @@ const CreatePost = ({ visible, onClose }) => {
 											uri: profileImage,
 										}}
 										style={styles.profileImage}
-										contentFit="cover"
+										contentFit="contain"
 										placeholder={{ blurhash }}
 									/>
 									<Text className="font-semibold">Ellyse Perry</Text>

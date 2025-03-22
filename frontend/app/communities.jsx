@@ -250,8 +250,7 @@ const Communities = () => {
 						) : (
 							<View className="flex-1 justify-center items-center mt-4 mb-12">
 								<Text className="text-gray-500 text-lg text-center">
-									There are currently no new communities available.{"\n"}Check
-									back later.
+									There are currently no new communities available. Check back later.
 								</Text>
 							</View>
 						)}

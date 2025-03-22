@@ -7,6 +7,7 @@ import Post from "../../components/Post"
 import { useCommunity } from "../../context/communityContext"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useRouter } from "expo-router"
+import LoadingSpinner from "../../components/LoadingSpinner"
 
 const Community = () => {
 	const router = useRouter()
@@ -18,9 +19,9 @@ const Community = () => {
 	// Fetch the community details on mount and when communityId or posts change
 	useEffect(() => {
 		const fetchCommunityDetails = async () => {
-			try {				
+			try {											
 				const fetchedCommunity = await getCommunityById(communityId)
-				setCommunity(fetchedCommunity || {})
+				setCommunity(fetchedCommunity)
 			} catch (error) {
 				console.log(error)
 			}
@@ -32,6 +33,16 @@ const Community = () => {
 	const handleNavigation = (postId, post) => {
 		selectPost(post)
 		router.push(`/community/post/${postId}`)
+	}
+
+	if (!community) { 
+		return (
+			<SafeAreaView className="flex-1 bg-[#E7EDEF]">
+				<View className="flex-1 justify-center items-center">
+					<LoadingSpinner/>
+				</View>
+			</SafeAreaView>
+		)
 	}
 
 	return (
