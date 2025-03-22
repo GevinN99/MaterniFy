@@ -82,6 +82,25 @@ export default function TabsLayout() {
 					),
 				}}
 			/>
+			<Tabs.Screen
+				name="profile"
+				options={{
+					headerTitle: "Profile",
+					headerShown: false,
+					tabBarLabel: "Profile",
+					tabBarIcon: ({ color }) => (
+						// <UsersRound
+						// 	className={`text-${focused ? "blue-500" : "gray-500"}`}
+						// 	size={26}
+						// />
+						<Feather 
+							name="user" 
+							size={24} 
+							color={color}
+						/>
+					),
+				}}
+			/>
 		</Tabs>
 	);
 }

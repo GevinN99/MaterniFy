@@ -71,13 +71,13 @@ const TabBar = ({ state, descriptors, navigation }) => {
 			})}
 
 			{/* Logout Button */}
-			<TouchableOpacity
+			{/* <TouchableOpacity
 				onPress={logout}
 				className="flex items-center px-4 py-2 bg-red-500 rounded-full"
 			>
 				<Feather name="log-out" size={20} color="white" />
 				<Text className="text-white text-xs mt-1">Logout</Text>
-			</TouchableOpacity>
+			</TouchableOpacity> */}
 		</View>
 	);
 };
