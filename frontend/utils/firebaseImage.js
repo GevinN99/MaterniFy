@@ -32,7 +32,7 @@ export const uploadImageToFirebase = async (uri, folder = "profile_pics") => {
 }
 
 // Function to delete a Image
-export const deleteImageFromFirebase = async (imageUrl, folder) => {
+export const deleteImageFromFirebase = async (imageUrl) => {
 	try {
 		// Extract the file path from the image URL
 		const filePath = decodeURIComponent(imageUrl.split("/o/")[1].split("?")[0])		

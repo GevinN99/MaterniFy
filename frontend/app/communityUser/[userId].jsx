@@ -19,16 +19,18 @@ import axiosInstance from "../../api/axiosInstance"
 import { useRouter } from "expo-router"
 
 const CommunityUserProfile = () => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userId } = useLocalSearchParams()
 	const [user, setUser] = useState()
 	const { userCommunities, posts, selectPost } = useCommunity()
-	const [userPosts, setUserPosts] = useState([])	
+	const [userPosts, setUserPosts] = useState([])
 	const router = useRouter()
 
-	useEffect(() => {								
+	// Fetch user data and filter posts related to this user
+	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const response = await axiosInstance.get("/users/profile")				
+				const response = await axiosInstance.get("/users/profile") // Fetch user profile info
 				setUser(response.data.fullName)
 			} catch (error) {
 				console.log(error)
@@ -37,15 +39,16 @@ const CommunityUserProfile = () => {
 
 		fetchUser()
 
+		// Filter posts that belong to the current user
 		if (userCommunities.length > 0 && posts.length > 0) {
-			const filteredPosts = posts.filter((post) => {				
+			const filteredPosts = posts.filter((post) => {
 				return post.userId._id === userId
-			})			
-			setUserPosts(filteredPosts)		
+			})
+			setUserPosts(filteredPosts)
 		} else {
 			setUserPosts([])
 		}
-	}, [posts])	
+	}, [posts])
 
 	const handleNavigation = (postId, post) => {
 		selectPost(post)
@@ -67,6 +70,7 @@ const CommunityUserProfile = () => {
 								uri: "https://images.unsplash.com/photo-1494145904049-0dca59b4bbad?q=80&w=3388&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
 							}}
 							style={styles.profileImage}
+							placeholder={{ blurhash }}
 							contentFit="cover"
 							transition={300}
 						/>
@@ -85,7 +89,8 @@ const CommunityUserProfile = () => {
 					</View>
 				</View>
 			</View>
-			<View className="mt-4">
+			{/* Communities Section */}
+			<View className="mt-8">
 				<View className=" flex-row items-center ml-4 mb-2">
 					<Feather
 						name="users"
@@ -94,8 +99,23 @@ const CommunityUserProfile = () => {
 					<Text className="ml-4 text-2xl font-bold">Communities</Text>
 				</View>
 				{userCommunities.length === 0 ? (
-					<Text>user have not joined any community</Text>
+					<View className="flex items-center my-8 gap-4">
+						<Text className="text-gray-500 text-lg  ">
+							No communities joined yet.
+						</Text>
+						<TouchableOpacity
+							onPress={() => router.push("communities")}
+							className="center"
+						>
+							<View>
+								<Text className="text-blue-500 text-lg  bg-blue-500/10 px-3 py-1 rounded-md border border-blue-500">
+									Explore Communities
+								</Text>
+							</View>
+						</TouchableOpacity>
+					</View>
 				) : (
+					// Display list of communities the user has joined
 					<ScrollView
 						horizontal
 						showsHorizontalScrollIndicator={false}
@@ -105,7 +125,7 @@ const CommunityUserProfile = () => {
 							<CompactCommunityCard
 								key={community._id}
 								community={community}
-								classname={index === userCommunities.length - 1 ? 'mr-6' : ''}
+								classname={index === userCommunities.length - 1 ? "mr-6" : ""}
 							/>
 						))}
 					</ScrollView>
@@ -113,7 +133,7 @@ const CommunityUserProfile = () => {
 			</View>
 
 			{/* Posts Section Header */}
-			<View className="mt-4">
+			<View className="mt-8">
 				<View className="flex-row items-center ml-4 mb-2">
 					<Feather
 						name="file-text"
@@ -132,19 +152,18 @@ const CommunityUserProfile = () => {
 				keyExtractor={(post) => post._id}
 				renderItem={({ item }) => (
 					<View className="px-4">
-						<Pressable							
-							onPress={() => handleNavigation(item._id, item)}
-						>
+						<Pressable onPress={() => handleNavigation(item._id, item)}>
 							<Post post={item} />
 						</Pressable>
 					</View>
 				)}
 				ListHeaderComponent={renderHeader}
 				contentContainerStyle={{ paddingBottom: 16 }}
+				// Show a message if there are no posts
 				ListEmptyComponent={() => (
-					<View className="flex items-center justify-center mt-4">
-						<Text className="text-gray-500">
-							You have not posted anything yet
+					<View className="flex items-center justify-center mt-8">
+						<Text className="text-gray-500 text-lg">
+							You have not posted anything yet.
 						</Text>
 					</View>
 				)}
