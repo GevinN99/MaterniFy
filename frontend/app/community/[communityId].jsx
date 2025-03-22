@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, RefreshControl } from "react-native"
+import { View, Text, ScrollView, Pressable, RefreshControl, TouchableOpacity } from "react-native"
 import React, { useEffect, useState } from "react"
 import { useLocalSearchParams } from "expo-router"
 import CommunityDetails from "../../components/CommunityDetails"
@@ -11,15 +11,14 @@ import { useRouter } from "expo-router"
 const Community = () => {
 	const router = useRouter()
 	const { communityId } = useLocalSearchParams()
-	const [community, setCommunity] = useState(null)
-	const { posts, handleJoinCommunity, handleLeaveCommunity, selectPost } =
+	const [community, setCommunity] = useState(null)	
+	const { posts, handleJoinCommunity, handleLeaveCommunity, selectPost, loading, refreshData } =
 		useCommunity()
 
 	// Fetch the community details on mount and when communityId or posts change
 	useEffect(() => {
 		const fetchCommunityDetails = async () => {
-			try {
-				console.log("fetching getcd")
+			try {				
 				const fetchedCommunity = await getCommunityById(communityId)
 				setCommunity(fetchedCommunity || {})
 			} catch (error) {
@@ -37,7 +36,15 @@ const Community = () => {
 
 	return (
 		<SafeAreaView className="flex-1 bg-[#E7EDEF]">
-			<ScrollView className="px-4">
+			<ScrollView
+				className="px-4"
+				refreshControl={
+					<RefreshControl
+						refreshing={loading}
+						onRefresh={refreshData}
+					/>
+				}
+			>
 				{community && (
 					<View>
 						{/* Display community details */}
@@ -62,7 +69,7 @@ const Community = () => {
 								))}
 							</View>
 						) : (
-								// If there are no posts in the community, display a message 
+							// If there are no posts in the community, display a message
 							<Text className="text-gray-500 text-center mt-8 leading-relaxed">
 								There are no posts in this community yet.{"\n"}Be the first to
 								share!
@@ -70,7 +77,7 @@ const Community = () => {
 						)}
 					</View>
 				)}
-			</ScrollView>
+			</ScrollView>			
 		</SafeAreaView>
 	)
 }
