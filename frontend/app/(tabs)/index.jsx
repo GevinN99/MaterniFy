@@ -8,6 +8,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ActivityIndicator,
+  Dimensions
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -94,20 +95,20 @@ const Landing = () => {
   };
 
   const CircularProgress = ({ percentage }) => {
-    const radius = 40;
-    const strokeWidth = 10;
+    const radius = 35;
+    const strokeWidth = 8;
     const circumference = 2 * Math.PI * radius;
     const progress = (percentage / 100) * circumference;
 
     return (
       <View style={{ justifyContent: "center", alignItems: "center" }}>
-        <Svg width={100} height={100}>
-          <Circle cx="50" cy="50" r={radius} stroke="#E0E0E0" strokeWidth={strokeWidth} fill="none" />
+        <Svg width={90} height={90}>
+          <Circle cx="45" cy="45" r={radius} stroke="#F7C8E0" strokeWidth={strokeWidth} fill="none" opacity={0.3} />
           <Circle
-            cx="50"
-            cy="50"
+            cx="45"
+            cy="45"
             r={radius}
-            stroke="orange"
+            stroke="#B4E4FF"
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}
@@ -116,104 +117,212 @@ const Landing = () => {
           />
         </Svg>
         <View style={{ position: "absolute", justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontSize: 16, fontWeight: "bold" }}>{percentage}%</Text>
+          <Text style={{ fontSize: 16, fontWeight: "bold", color: "#333333" }}>{percentage}%</Text>
         </View>
       </View>
     );
   };
 
+  const getRiskMessage = (score) => {
+    if (score <= 10) return "Low Risk: Keep maintaining a healthy lifestyle!";
+    if (score <= 20) return "Moderate Risk: Try relaxation exercises & connect with support groups.";
+    return "High Risk: Seek professional help immediately!";
+  };
+  
+
   return (
     <SafeAreaView style={styles.safeContainer}>
-      <ScrollView contentContainerStyle={styles.container}>
-        {profilePic ? (
-          <Image source={{ uri: profilePic }} style={styles.profileImage} />
-        ) : (
-          <Image source={require("../../assets/images/landing.png")} style={styles.profileImage} />
-        )}
-        <Text style={styles.title}>Welcome, {userName ? userName : "Mom"}!</Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
+        {/* Header Section */}
+        <View style={styles.headerSection}>
+          <View style={styles.profileContainer}>
+            {profilePic ? (
+              <Image source={{ uri: profilePic }} style={styles.profileImage} />
+            ) : (
+              <Image source={require("../../assets/images/landing.png")} style={styles.profileImage} />
+            )}
+            <View style={styles.welcomeContainer}>
+              <Text style={styles.welcomeText}>Welcome back,</Text>
+              <Text style={styles.nameText}>{userName ? userName : "Mom"}!</Text>
+            </View>
+          </View>
+        </View>
 
+        {/* Baby Growth Tracker Card */}
         <View style={styles.growthTrackerCard}>
           {conceptionDate ? (
             <BabyGrowthTracker conceptionDate={conceptionDate} />
           ) : (
             <View style={styles.noConceptionContainer}>
-              <ActivityIndicator size="large" color="#0000ff" />
+              <ActivityIndicator size="large" color="#F7C8E0" />
               <Text style={styles.noConceptionText}>
-                Please set your conception date to track Baby's Growth..
+                Please set your conception date to track Baby's Growth
               </Text>
+
+              <TouchableOpacity 
+                style={styles.addDateButton}
+                onPress={() => router.push("/SetConceptionDate")}
+              >
+                <Text style={styles.addDateButtonText}>Set Date</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
 
-        <View style={styles.secContainer}>
+        {/* Quick Access Section */}
+        <Text style={styles.sectionTitle}>Quick Access</Text>
+        <View style={styles.quickAccessContainer}>
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
-              <View style={styles.buttonbox}>
-                <Text style={styles.topic}>Health Plan</Text>
-                <Image source={require("../../assets/images/health_plan.png")} style={styles.sectors} />
+            <TouchableOpacity 
+              style={styles.quickAccessButton}
+              onPress={() => router.push("/HealthPlanScreen")}
+            >
+              <View style={styles.buttonIconContainer}>
+                <Image 
+                  source={require("../../assets/images/health_plan.png")} 
+                  style={styles.buttonIcon} 
+                />
               </View>
+              <Text style={styles.buttonText}>Health Plan</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/epdsstart")}>
-              <View style={styles.buttonbox}>
-                <Text style={styles.topic}>Mental Health</Text>
-                <Image source={require("../../assets/images/mental_health.png")} style={styles.sectors} />
+
+            <TouchableOpacity 
+              style={styles.quickAccessButton}
+              onPress={() => router.push("/epdsstart")}
+            >
+              <View style={styles.buttonIconContainer}>
+                <Image 
+                  source={require("../../assets/images/mental_health.png")} 
+                  style={styles.buttonIcon} 
+                />
               </View>
+              <Text style={styles.buttonText}>Mental Health</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/HealthPlanScreen")}>
-              <View style={styles.buttonbox}>
-                <Text style={styles.topic}>Appointments</Text>
-                <Image source={require("../../assets/images/apoinment.png")} style={styles.sectors} />
+            <TouchableOpacity 
+              style={styles.quickAccessButton}
+              onPress={() => router.push("/appointments")}
+            >
+              <View style={styles.buttonIconContainer}>
+                <Image 
+                  source={require("../../assets/images/apoinment.png")} 
+                  style={styles.buttonIcon} 
+                />
               </View>
+              <Text style={styles.buttonText}>Appointments</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push("/emergency")}>
-              <View style={styles.buttonbox}>
-                <Text style={styles.topic}>Emergency</Text>
-                <Image source={require("../../assets/images/emergency.png")} style={[styles.sectors, { tintColor: "white" }]} />
+
+            <TouchableOpacity 
+              style={[styles.quickAccessButton, styles.emergencyButton]}
+              onPress={() => router.push("/emergency")}
+            >
+              <View style={[styles.buttonIconContainer, styles.emergencyIconContainer]}>
+                <Image 
+                  source={require("../../assets/images/emergency.png")} 
+                  style={[styles.buttonIcon, { tintColor: "white" }]} 
+                />
               </View>
+              <Text style={[styles.buttonText, styles.emergencyText]}>Emergency</Text>
             </TouchableOpacity>
           </View>
         </View>
+
+
+        {/* Calendar Section */}
+        <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
 
         <View style={styles.calendarContainer}>
           <View style={styles.weekHeader}>
             <TouchableOpacity onPress={handlePrevWeek}>
-              <Ionicons name="chevron-back" size={24} color="#64A8F1" />
+              <Ionicons name="chevron-back" size={24} color="#B4E4FF" />
             </TouchableOpacity>
-            <Text style={styles.weekTitle}>{currentWeek.format("  MMMM D  ")}</Text>
+            <Text style={styles.weekTitle}>{currentWeek.format("MMMM YYYY")}</Text>
             <TouchableOpacity onPress={handleNextWeek}>
-              <Ionicons name="chevron-forward" size={24} color="#64A8F1" />
+              <Ionicons name="chevron-forward" size={24} color="#B4E4FF" />
             </TouchableOpacity>
           </View>
+          
           <View style={styles.weekDays}>
-            {getWeekDates().map((date) => (
-              <TouchableOpacity key={date.format("YYYY-MM-DD")} onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}>
-                <Text style={[styles.dayText, selectedDate === date.format("YYYY-MM-DD") && styles.selectedDay]}>
-                  {date.format("dd").charAt(0)}
-                  {"\n"}
-                  {"\n"}
-                  {date.format("D")}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {getWeekDates().map((date) => {
+              const isSelected = selectedDate === date.format("YYYY-MM-DD");
+              const isToday = date.format("YYYY-MM-DD") === moment().format("YYYY-MM-DD");
+              
+              return (
+                <TouchableOpacity 
+                  key={date.format("YYYY-MM-DD")} 
+                  onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}
+                  style={[
+                    styles.dayContainer,
+                    isSelected && styles.selectedDayContainer,
+                    isToday && styles.todayContainer
+                  ]}
+                >
+                  <Text style={[
+                    styles.dayNameText, 
+                    isSelected && styles.selectedDayText
+                  ]}>
+                    {date.format("ddd").toUpperCase()}
+                  </Text>
+                  <Text style={[
+                    styles.dayText, 
+                    isSelected && styles.selectedDayText
+                  ]}>
+                    {date.format("D")}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
+          
           {selectedDate && (
-            <View style={{ alignItems: "center", marginTop: 10 }}>
-              <Text style={styles.dateText}>Doctor Checkup</Text>
-              <Text>{selectedDate}</Text>
+            <View style={styles.appointmentDetail}>
+              <View style={styles.appointmentIcon}>
+                <Ionicons name="md-calendar" size={24} color="#B4E4FF" />
+              </View>
+              <View>
+                <Text style={styles.appointmentTitle}>Doctor Checkup</Text>
+                <Text style={styles.appointmentDate}>{moment(selectedDate).format("dddd, MMMM D, YYYY")}</Text>
+              </View>
             </View>
           )}
         </View>
 
-        <LinearGradient colors={['#E2E0E0', '#64A8F1']} style={styles.healthplan}>
-          <Text style={styles.healthtitle}>Today's Health plan</Text>
-          <Text style={styles.texthealth}>"You need 8 glasses of water today 💧"</Text>
-          <Text style={styles.texthealth}>"Remember to take your iron supplements"</Text>
-          <Text style={styles.texthealth}>"Mild back pain detected? Try 5 mins of stretching."</Text>
-          <CircularProgress percentage={100} />
+
+        {/* Today's Health Plan */}
+        <Text style={styles.sectionTitle}>Today's Health Plan</Text>
+        <LinearGradient 
+          colors={['#B4E4FF', '#9fd9fa']} 
+          start={{x: 0, y: 0}} 
+          end={{x: 1, y: 0}}
+          style={styles.healthPlanCard}
+        >
+          <View style={styles.healthPlanContent}>
+            <View style={styles.healthTasks}>
+              <View style={styles.healthTask}>
+                <View style={styles.taskDot}></View>
+                <Text style={styles.taskText}>Drink 8 glasses of water today 💧</Text>
+              </View>
+              <View style={styles.healthTask}>
+                <View style={styles.taskDot}></View>
+                <Text style={styles.taskText}>Take your iron supplements</Text>
+              </View>
+              <View style={styles.healthTask}>
+                <View style={styles.taskDot}></View>
+                <Text style={styles.taskText}>Try 5 mins of stretching for back pain</Text>
+              </View>
+            </View>
+            
+            <View style={styles.progressContainer}>
+              <CircularProgress percentage={75} />
+              <Text style={styles.progressText}>Daily Progress</Text>
+            </View>
+          </View>
         </LinearGradient>
+
+        {/* Mental Health Summary */}       
+    
 
         <View style={{ alignItems: "center", padding: 20 }}>
           <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Mental Health Summary</Text>
@@ -242,6 +351,7 @@ const Landing = () => {
           ) : (
             <Text style={{ fontSize: 16, textAlign: "center", color: "#64A8F1", marginTop: 20 }}>
               No scores available. Try the EPDS test to track your mental health.
+
             </Text>
           )}
         </View>
@@ -253,131 +363,272 @@ const Landing = () => {
 const styles = StyleSheet.create({
   safeContainer: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FCFCFC",
   },
   container: {
+    paddingHorizontal: 20,
+    paddingVertical: 25,
+  },
+  headerSection: {
+    marginBottom: 25,
+  },
+  profileContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 30,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: "#F7C8E0",
   },
-  title: {
-    textAlign: "center",
-    fontSize: 48,
+  welcomeContainer: {
+    marginLeft: 15,
+  },
+  welcomeText: {
+    fontSize: 16,
+    color: "#555555",
+  },
+  nameText: {
+    fontSize: 36,
     fontWeight: "bold",
-    marginBottom: 25,
+    color: "#333333",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333333",
+    marginTop: 25,
+    marginBottom: 12,
+  },
+  growthTrackerCard: {
+    backgroundColor: "#B4E4FF",
+    padding: 20,
+    borderRadius: 16,
+    width: "100%",
+    alignItems: "center",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  noConceptionContainer: {
+    alignItems: "center",
+    padding: 15,
+  },
+  noConceptionText: {
+    marginTop: 10,
+    fontSize: 16,
+    textAlign: "center",
+    color: "#FFFFFF",
+    marginBottom: 12,
+  },
+  addDateButton: {
+    backgroundColor: "#F7C8E0",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  addDateButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+  },
+  quickAccessContainer: {
+    marginBottom: 10,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 10,
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  sectors: {
+  quickAccessButton: {
+    backgroundColor: "#FFFFFF",
+    width: "48%",
+    borderRadius: 12,
+    padding: 15,
+    alignItems: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+  },
+  buttonIconContainer: {
     width: 50,
     height: 50,
+    backgroundColor: "#F5F0FA",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  emergencyButton: {
+    backgroundColor: "#F7C8E0",
+  },
+  emergencyIconContainer: {
+    backgroundColor: "#f0b7d4",
+  },
+  emergencyText: {
+    color: "#FFFFFF",
+  },
+  buttonIcon: {
+    width: 28,
+    height: 28,
     resizeMode: "contain",
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333333",
     marginTop: 5,
   },
-  secContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  topic: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "white",
-  },
+  
   calendarContainer: {
-    margin: 30,
-    alignItems: "center",
-    backgroundColor: "#9DD2D8",
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    height: 220,
-    width: 350,
-    borderRadius: 20,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 15,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
   },
   weekHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 15,
   },
   weekTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
+    color: "#333333",
   },
   weekDays: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
+    justifyContent: "space-between",
+    marginBottom: 15,
+  },
+  dayContainer: {
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  selectedDayContainer: {
+    backgroundColor: "#B4E4FF",
+  },
+  todayContainer: {
+    borderWidth: 1,
+    borderColor: "#F7C8E0",
+  },
+  dayNameText: {
+    fontSize: 12,
+    color: "#555555",
+    marginBottom: 5,
   },
   dayText: {
-    fontSize: 18,
-    color: "gray",
-    textAlign: "center",
-    padding: 10,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#333333",
   },
-  selectedDay: {
-    fontSize: 19,
-    fontWeight: "bold",
-    color: "#64A8F1",
+  selectedDayText: {
+    color: "#FFFFFF",
   },
-  dateText: {
+  appointmentDetail: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F5FF",
+    borderRadius: 10,
+    padding: 15,
     marginTop: 10,
-    fontSize: 20,
-    textAlign: "center",
-    color: "#005F80",
-    fontWeight: "bold",
   },
-  healthplan: {
-    padding: 15,
-    borderRadius: 20,
-    width: 350,
+  appointmentIcon: {
+    marginRight: 12,
   },
-  healthtitle: {
-    textAlign: "center",
-    fontSize: 20,
-    fontWeight: "bold",
-    padding: 10,
-  },
-  texthealth: {
-    textAlign: "center",
-    paddingVertical: 5,
-  },
-  growthTrackerCard: {
-    backgroundColor: "#FADCE4",
-    padding: 15,
-    borderRadius: 15,
-    width: "90%",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  noConceptionContainer: {
-    alignItems: "center",
-    padding: 10,
-  },
-  noConceptionText: {
-    marginTop: 5,
+  appointmentTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",
-    color: "#FF4500",
+    color: "#333333",
   },
-  buttonbox: {
+  appointmentDate: {
+    fontSize: 14,
+    color: "#555555",
+    marginTop: 2,
+  },
+  healthPlanCard: {
+    borderRadius: 16,
+    padding: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  healthPlanContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
+  },
+  healthTasks: {
+    flex: 1,
+  },
+  healthTask: {
+    flexDirection: "row",
     alignItems: "center",
-    width: 170,
-    height: 100,
-    backgroundColor: "#9DC3E2",
+    marginBottom: 12,
+  },
+  taskDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "#FFFFFF",
+    marginRight: 10,
+  },
+  taskText: {
+    fontSize: 14,
+    color: "#FFFFFF",
+    flexShrink: 1,
+  },
+  progressContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  progressText: {
+    fontSize: 12,
+    color: "#FFFFFF",
+    marginTop: 5,
+    textAlign: "center",
+  },
+  mentalHealthCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 15,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    borderWidth: 1,
+    borderColor: "#F0F0F0",
+  },
+  riskMessageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F8F5FF",
     borderRadius: 10,
-    padding: 10,
+    padding: 12,
+    marginTop: 10,
+  },
+  riskMessage: {
+    fontSize: 14,
+    color: "#555555",
+    marginLeft: 10,
+    flex: 1,
   },
 });
 

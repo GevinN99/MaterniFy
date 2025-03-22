@@ -20,6 +20,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { Picker } from '@react-native-picker/picker'
+
 
 export default function Signup() {
     const router = useRouter();
