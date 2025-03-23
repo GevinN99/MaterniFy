@@ -16,6 +16,7 @@ exports.registerUser = async (req, res) => {
             partnerDetails,
             age,
             parentingDay,
+            weight
         } = req.body;
 
         const existingUser = await User.findOne({ email });
@@ -37,6 +38,7 @@ exports.registerUser = async (req, res) => {
             partnerDetails: partnerDetails || null,
             age: age || null,
             parentingDay: parentingDay ? new Date(parentingDay) : null,
+            weight: weight || null
         });
 
         await newUser.save();

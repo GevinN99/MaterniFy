@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   goBackButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#B4E4FF',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
