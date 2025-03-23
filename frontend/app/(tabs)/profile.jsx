@@ -11,10 +11,11 @@ import {
 } from 'react-native';
 import { Image } from "expo-image"
 import { Feather } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from "expo-image-picker";
 
-import { getProfile, updateProfile } from '../../api/profileAPI';
+import { deleteProfile, getProfile, updateProfile } from '../../api/profileAPI';
 import { AuthContext } from '../../context/AuthContext';
 import { uploadImageToFirebase } from '../../utils/firebaseImage';
 
@@ -133,6 +134,24 @@ export default function ProfileScreen() {
       }
   };
 
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action is irreversible.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete', 
+          style: 'destructive', 
+          onPress: async () => {
+            const response = await deleteProfile();
+            logout();
+          }
+        }
+      ]
+    );
+  };
+
   return (
 <View style={styles.container}>
       {/* Header */}
@@ -226,6 +245,23 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             )}
           </View>
+
+          <TouchableOpacity 
+            onPress={handleDeleteAccount}
+            style={{
+              marginTop: 20,
+              backgroundColor: '#D32F2F', // Material Red
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 10,
+              flexDirection: 'row',
+              alignItems: 'center', // Centers icon & text vertically
+              justifyContent: 'center', // Centers content horizontally
+            }}
+          >
+            <MaterialIcons name="delete" size={20} color="white" style={{ marginRight: 5 }} />
+            <Text style={{ color: 'white', fontSize: 16 }}>Delete Account</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </View>

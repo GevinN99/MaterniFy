@@ -15,3 +15,9 @@ export const updateProfile = async (data) => {
 
 	return response.data
 }
+
+export const deleteProfile = async (data) => {
+	const response = await axiosInstance.delete("/users/profile", data)
+
+	return response.data
+}
