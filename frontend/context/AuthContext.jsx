@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [role, setRole] = useState(null);
     const router = useRouter();
 
@@ -14,12 +15,14 @@ export const AuthProvider = ({ children }) => {
             try {
                 const token = await AsyncStorage.getItem("token");
                 const storedRole = await AsyncStorage.getItem("role");
+                const storedUserId = await AsyncStorage.getItem("userId")
                 console.log("AuthContext - Initial Load - Token:", token);
                 console.log("AuthContext - Initial Load - Role:", storedRole);
 
                 if (token) {
                     setUser(token);
                     setRole(storedRole);
+                    setUserId(storedUserId)
                     const currentPath = router.pathname;
                     if (!currentPath || currentPath === "/auth/Login" || currentPath === "/auth/DoctorLogin") {
                         if (storedRole === "doctor") {
@@ -54,7 +57,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, setUser, role, logout }}>
+        <AuthContext.Provider value={{ user, userId, setUserId, setUser, role, logout }}>
             {children}
         </AuthContext.Provider>
     );
