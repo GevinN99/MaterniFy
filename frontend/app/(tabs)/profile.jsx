@@ -12,9 +12,11 @@ import {
 import { Image } from "expo-image"
 import { Feather } from '@expo/vector-icons'; 
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from "expo-image-picker";
 
 import { getProfile, updateProfile } from '../../api/profileAPI';
 import { AuthContext } from '../../context/AuthContext';
+import { uploadImageToFirebase } from '../../utils/firebaseImage';
 
 export default function ProfileScreen() {
   const { logout } = useContext(AuthContext);
@@ -27,6 +29,7 @@ export default function ProfileScreen() {
     languagePreference: '',
     profileImage: '',
     address: '',
+    weight: '',
     pregnancyDate: '',
     partnerName: '',
     partnerEmail: '',
@@ -38,6 +41,7 @@ export default function ProfileScreen() {
   // Track loading state (for fetching data)
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [image, setImage] = useState(null);
 
   /**
    * On mount, fetch the user's profile from the REST API
@@ -55,7 +59,7 @@ export default function ProfileScreen() {
             fullName: data.fullName || '',
             email: data.email || '',
             languagePreference: data.languagePreference || '',
-            profileImage: data.profileImage || 'https://cdn-icons-png.flaticon.com/512/194/194938.png',
+            profileImage: data.profileImage || 'https://cdn-icons-png.flaticon.com/512/10363/10363647.png',
             address: data.homeLocation?.address || '',
             pregnancyDate: data.pregnancyDate ? data.pregnancyDate.split('T')[0] : '',
             partnerName: data.partnerDetails?.husbandName || '',
@@ -63,7 +67,9 @@ export default function ProfileScreen() {
             partnerPhone: data.partnerDetails?.phoneNumber || '',
             age: data.age || '',
             parentingDay: data.parentingDay ? data.parentingDay.split('T')[0] : '',
+            weight: data.weight || ''
           });
+          setImage(data.profileImage);
       } catch (error) {
           Alert.alert("Error", "Failed to load profile.");
       }
@@ -76,6 +82,14 @@ export default function ProfileScreen() {
   const handleUpdateProfile = async () => {
 
 		try {
+      let imageUrl = 'https://cdn-icons-png.flaticon.com/512/10363/10363647.png';
+
+      if (image) {
+          imageUrl = await uploadImageToFirebase(image, "profile_pics");
+      } else {
+          imageUrl = profile.profileImage;
+      }
+
       setLoading(true);
 			const response = await updateProfile(JSON.stringify({
         fullName: profile.fullName,
@@ -89,6 +103,8 @@ export default function ProfileScreen() {
           phoneNumber: profile.partnerPhone,
         },
         age: profile.age,
+        weight: profile.weight,
+        profileImage: imageUrl,
       }));			
 			setLoading(false);
       setIsEditing(false);
@@ -105,6 +121,18 @@ export default function ProfileScreen() {
     ]);
   };
 
+  // Pick an Image
+  const pickImage = async () => {
+      let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          quality: 1,
+      });
+      if (!result.canceled) {
+          setImage(result.assets[0].uri);
+      }
+  };
+
   return (
 <View style={styles.container}>
       {/* Header */}
@@ -119,12 +147,12 @@ export default function ProfileScreen() {
         {/* Profile Content */}
         <View style={styles.content}>
           {/* PROFILE IMAGE */}
-          <View style={styles.avatarContainer}>
+          <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
             <Image
-              source={profile.profileImage}
+              source={image}
               style={styles.avatar}
             />
-          </View>
+          </TouchableOpacity>
 
           {/* LOADING INDICATOR */}
           {loading && <ActivityIndicator size="large" color="#0078fe" style={{ marginVertical: 10 }} />}
@@ -159,6 +187,7 @@ export default function ProfileScreen() {
     {/* Health & Pregnancy Details */}
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Health & Pregnancy Details</Text>
+      <ProfileField label="Weight (kg)" value={profile.weight} editable={isEditing} onChangeText={(val) => setProfile({ ...profile, weight: val })} />
       <ProfileField label="Pregnancy Date" value={profile.pregnancyDate} editable={isEditing} onChangeText={(val) => setProfile({ ...profile, pregnancyDate: val })} />
       <ProfileField label="Parenting Day" value={profile.parentingDay} editable={isEditing} onChangeText={(val) => setProfile({ ...profile, parentingDay: val })} />
     </View>

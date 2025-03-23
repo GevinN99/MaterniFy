@@ -98,7 +98,7 @@ exports.updateUserProfile = async (req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            { fullName, languagePreference },
+            req.body,
             { new: true }
         );
 
