@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   ScrollView ,
 } from 'react-native';
+import { router } from "expo-router";
 import { Image } from "expo-image"
 import { Feather } from '@expo/vector-icons'; 
 import { MaterialIcons } from '@expo/vector-icons';
@@ -245,6 +246,23 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             )}
           </View>
+
+          <TouchableOpacity 
+            onPress={() => router.push("/changePassword")}
+            style={{
+              marginTop: 20,
+              backgroundColor: '#1976D2', // Material Blue
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              borderRadius: 10,
+              flexDirection: 'row',
+              alignItems: 'center', // Centers icon & text vertically
+              justifyContent: 'center', // Centers content horizontally
+            }}
+          >
+            <MaterialIcons name="lock-reset" size={20} color="white" style={{ marginRight: 5 }} />
+            <Text style={{ color: 'white', fontSize: 16, textAlign: 'center' }}>Change Password</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity 
             onPress={handleDeleteAccount}

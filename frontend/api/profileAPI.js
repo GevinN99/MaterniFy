@@ -20,4 +20,10 @@ export const deleteProfile = async (data) => {
 	const response = await axiosInstance.delete("/users/profile", data)
 
 	return response.data
+
+  
+export const changePassword = async (data) => {
+	const response = await axiosInstance.put("/users/password", data)
+
+	return response.data
 }
