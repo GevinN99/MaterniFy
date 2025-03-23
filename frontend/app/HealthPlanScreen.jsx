@@ -1,5 +1,3 @@
-// app/(tabs)/HealthPlanScreen.jsx
-// app/HealthPlanScreen.jsx
 import React from 'react';
 import { View, Text, Image, StyleSheet, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
