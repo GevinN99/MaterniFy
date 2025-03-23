@@ -38,6 +38,7 @@ function RootLayout() {
                             headerShown: false,
                         }}
                     />
+                    <Stack.Screen name="video-call" options={{ headerShown: false }} />
                 </Stack>
             </CommunityProvider>
         </AuthProvider>

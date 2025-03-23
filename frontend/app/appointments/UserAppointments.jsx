@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
 import { getAvailableDoctors } from "../../api/doctorApi";
+import { useRouter } from "expo-router";
 
 export default function UserAppointments() {
     const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -100,21 +101,30 @@ export default function UserAppointments() {
         </View>
     );
 
-    const renderBookedAppointmentItem = ({ item }) => (
-        <View style={styles.bookedCard}>
-            <Text style={styles.appointmentText}>
-                Date: {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
-            </Text>
-            <Text style={styles.appointmentText}>Doctor: {item.doctorId?.fullName || "N/A"}</Text>
-            <Text style={styles.appointmentText}>
-                Specialization: {item.doctorId?.specialization || "N/A"}
-            </Text>
-            <Text style={styles.appointmentText}>
-                Experience: {item.doctorId?.experienceYears || 0} years
-            </Text>
-            {/* Removed Cancel Button */}
-        </View>
-    );
+    const renderBookedAppointmentItem = ({ item }) => {
+        const router = useRouter();
+
+        return (
+            <View style={styles.bookedCard}>
+                <Text style={styles.appointmentText}>
+                    Date: {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
+                </Text>
+                <Text style={styles.appointmentText}>Doctor: {item.doctorId?.fullName || "N/A"}</Text>
+                <Text style={styles.appointmentText}>
+                    Specialization: {item.doctorId?.specialization || "N/A"}
+                </Text>
+                <Text style={styles.appointmentText}>
+                    Experience: {item.doctorId?.experienceYears || 0} years
+                </Text>
+                <TouchableOpacity
+                    style={styles.callButton}
+                    onPress={() => router.push(`/video-call?appointmentId=${item._id}`)}
+                >
+                    <Text style={styles.callText}>Call Doctor</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -319,5 +329,16 @@ const styles = StyleSheet.create({
     },
     loading: {
         marginVertical: 20,
+    },
+    callButton: {
+        backgroundColor: "#007AFF",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        marginTop: 10,
+    },
+    callText: {
+        color: "white",
+        fontWeight: "bold",
     },
 });

@@ -22,7 +22,6 @@ export default function TabsLayout() {
 
 	console.log("Current role:", role); // Debug log
 
-	// Show a loading indicator while role is being fetched
 	if (role === null) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

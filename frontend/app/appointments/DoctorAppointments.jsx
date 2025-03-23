@@ -19,7 +19,6 @@ export default function DoctorAppointments() {
         setLoading(true);
         try {
             const data = await getDoctorAppointments();
-            // Filter appointments for today only
             const today = new Date(); // Current date: March 21, 2025
             const todayString = today.toISOString().split("T")[0]; // Format as YYYY-MM-DD
             const todayAppointments = data.filter((appointment) => {

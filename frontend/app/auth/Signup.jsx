@@ -44,7 +44,6 @@ export default function Signup() {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
-    // Fetch current location
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
@@ -73,6 +72,22 @@ export default function Signup() {
             }
         })();
     }, []);
+
+    const uploadImage = async (uri, folder = "profile_pics") => {
+        try {
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const fileName = `${Date.now()}-${uri.split("/").pop()}`;
+            const storageRef = ref(storage, `${folder}/${fileName}`);
+            await uploadBytes(storageRef, blob);
+            const downloadURL = await getDownloadURL(storageRef);
+            return downloadURL;
+        } catch (error) {
+            console.error("Error uploading image: ", error);
+            throw error;
+        }
+    };
+
 
     // Pick an Image
     const pickImage = async () => {
@@ -139,11 +154,10 @@ export default function Signup() {
         setLoading(true);
 
         try {
-            let imageUrl = formData.profileImage;
+            let imageUrl = "https://www.w3schools.com/w3images/avatar2.png"; // Default fallback
+
             if (image) {
                 imageUrl = await uploadImage(image, "profile_pics");
-            } else {
-                imageUrl = "https://www.w3schools.com/w3images/avatar2.png";
             }
 
             const signupData = {
@@ -170,7 +184,7 @@ export default function Signup() {
             if (response.token) {
                 await AsyncStorage.setItem("token", response.token);
                 setSuccessMessage("Account created successfully!");
-                setTimeout(() => router.replace("/auth/Login"), 1000); // Slight delay for user to see success
+                setTimeout(() => router.replace("/auth/Login"), 1000);
             } else {
                 setGeneralError(response.message || "Signup failed. Please try again.");
             }
@@ -181,6 +195,7 @@ export default function Signup() {
             setLoading(false);
         }
     };
+
 
     return (
         <KeyboardAvoidingView

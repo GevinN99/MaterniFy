@@ -9,7 +9,7 @@ import {
     ActivityIndicator,
     Modal,
     Switch,
-    ScrollView, // Added ScrollView import
+    ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { getDoctorAppointments, createAppointment } from "../../api/appointmentApi";
@@ -243,11 +243,19 @@ export default function DoctorHome() {
                                             {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
                                         </Text>
                                         {item.motherId ? (
-                                            <TouchableOpacity onPress={() => handleViewHealthHistory(item.motherId)}>
-                                                <Text style={styles.bookedText}>
-                                                    Booked by: {item.motherId.fullName}
-                                                </Text>
-                                            </TouchableOpacity>
+                                            <View style={styles.bookedContainer}>
+                                                <TouchableOpacity onPress={() => handleViewHealthHistory(item.motherId)}>
+                                                    <Text style={styles.bookedText}>
+                                                        Booked by: {item.motherId.fullName}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity
+                                                    style={styles.callButton}
+                                                    onPress={() => router.push(`/video-call?appointmentId=${item._id}`)}
+                                                >
+                                                    <Text style={styles.callText}>Call Mother</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                         ) : (
                                             <Text style={styles.availableText}>Available</Text>
                                         )}
@@ -261,7 +269,7 @@ export default function DoctorHome() {
                                 </View>
                             )}
                             ListEmptyComponent={<Text style={styles.emptyText}>No appointments scheduled</Text>}
-                            scrollEnabled={false} // Disable FlatList scrolling to let ScrollView handle it
+                            scrollEnabled={false}
                         />
                     )}
                 </View>
@@ -291,6 +299,23 @@ export default function DoctorHome() {
 }
 
 const styles = StyleSheet.create({
+    bookedContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 5,
+    },
+    callButton: {
+        backgroundColor: "#007AFF",
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+    },
+    callText: {
+        color: "#fff",
+        fontSize: 14,
+        fontWeight: "bold",
+    },
     container: {
         flex: 1,
         backgroundColor: "#F5F5F5",
