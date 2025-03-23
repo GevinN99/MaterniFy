@@ -55,6 +55,12 @@ app.use('/api/partner', partnerRoutes);
 app.use("/api/doctors", require("./routes/doctorRoutes"));
 app.use('/api/chat', chatRoutes);
 
-const PORT = process.env.PORT || 8070;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Export app for testing
+module.exports = app;
+
+// Start the server only if not in test mode
+if (require.main === module) {
+	const PORT = process.env.PORT || 8070;
+	app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  }
 
