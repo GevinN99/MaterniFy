@@ -64,7 +64,7 @@ export default function AiGeneratedHealthTipsScreen() {
   return (
       <LinearGradient colors={['#FFF', '#FCFCFC']} style={styles.gradientContainer}>
         <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.heading}>✨ Hi, Sarah!</Text>
+          <Text style={styles.heading}>✨ Hi, Mom!</Text>
           <Text style={styles.introText}>
             Let’s take a moment to care for you and your baby today
           </Text>
