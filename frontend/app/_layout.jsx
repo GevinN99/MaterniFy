@@ -26,8 +26,7 @@ function RootLayout() {
 						options={{ headerShown: false }}
 					/>
 					<Stack.Screen
-                        name="communities"
-                        
+						name="communities"
 						options={{
 							header: () => (
 								<Header
@@ -80,9 +79,18 @@ function RootLayout() {
 						}}
 					/>
 					<Stack.Screen
-						name="HealthPlanScreen/post/reply/[postId]"
+						name="HealthPlanScreen"
 						options={{
 							headerShown: false,
+							title: "Health Plan",
+						}}
+					/>
+
+					<Stack.Screen
+						name="AiGeneratedHealthTipsScreen"
+						options={{
+							headerShown: true,
+							title: "Ai Health Plan",
 						}}
 					/>
 				</Stack>
