@@ -127,7 +127,7 @@ exports.getAllUsers = async (req, res) => {
 // Delete user (Admin or self)
 exports.deleteUser = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.id;
 
         const user = await User.findByIdAndDelete(userId);
         if (!user) {
