@@ -21,7 +21,8 @@ import LoadingSpinner from "./LoadingSpinner"
 const CommunityDetails = ({
 	community,
 	handleJoin,
-	handleLeave,	
+	handleLeave,
+	setIsMembersModalVisible,
 }) => {
 	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { userId } = useContext(AuthContext)
@@ -33,6 +34,10 @@ const CommunityDetails = ({
 	const [showMenu, setShowMenu] = useState(false)
 	const { fetchData } = useCommunity()
 	const router = useRouter()
+
+	useEffect(() => {
+		setCommunityDetails(community) 
+	}, [community])
 
 	const isAdmin = admin._id === userId // Check if the current user is the community admin
 
@@ -63,20 +68,19 @@ const CommunityDetails = ({
 		onToggleMenu()
 	}
 
-	const onDelete = async () => {		
+	const onDelete = async () => {
 		try {
 			setLoading(true)
-			
+
 			const response = await deleteCommunityById(communityDetails._id)
-									
-			// Delete community image from Firebase if it's not the default image			
+
+			// Delete community image from Firebase if it's not the default image
 			if (communityDetails.imageUrl !== DEFAULT_COMMUNITY_IMAGE_URL) {
 				await deleteImageFromFirebase(communityDetails.imageUrl, "community")
 			}
 
 			// Delete all post images related to the community
-			const posts = communityDetails.posts
-			for (const post of posts) {
+			for (const post of communityDetails.posts) {
 				if (post.imageUrl) {
 					await deleteImageFromFirebase(post.imageUrl, "post")
 				}
@@ -91,7 +95,7 @@ const CommunityDetails = ({
 	}
 
 	return (
-		<View className="relative flex-1 bg-white rounded-lg p-4">
+		<View className="relative flex-1 bg-white rounded-lg p-4 z-30">
 			<View className="bg-blue-100 pt-6 pb-14 px-4 rounded-lg relative">
 				<Text className="text-2xl font-bold text-center">{name}</Text>
 				<View className="mt-1 flex flex-row justify-center items-center gap-4">
@@ -182,7 +186,20 @@ const CommunityDetails = ({
 									name="edit"
 									size={20}
 								/>
-								<Text>Update Community</Text>
+								<Text>Update community</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								className="p-3 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
+								onPress={() => {
+									setIsMembersModalVisible(true)
+									onToggleMenu()
+								}}
+							>
+								<Feather
+									name="users"
+									size={20}
+								/>
+								<Text>Manage members</Text>
 							</TouchableOpacity>
 							<TouchableOpacity
 								className="p-3 rounded-md flex flex-row gap-2 items-center hover:bg-slate-100"
@@ -191,7 +208,7 @@ const CommunityDetails = ({
 							>
 								{loading ? (
 									// Show a loading indicator if the delete action is in progress
-									<LoadingSpinner/>
+									<LoadingSpinner />
 								) : (
 									// Show the delete icon and text if not loading
 									<>
@@ -200,7 +217,7 @@ const CommunityDetails = ({
 											size={20}
 											color={"#ef4444"}
 										/>
-										<Text className="text-red-500">Delete Community</Text>
+										<Text className="text-red-500">Delete community</Text>
 									</>
 								)}
 							</TouchableOpacity>

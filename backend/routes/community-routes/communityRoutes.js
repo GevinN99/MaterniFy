@@ -45,4 +45,16 @@ router.post(
 	communityController.leaveCommunity
 )
 
+router.get(
+	"/members/:communityId",
+	auth.authenticate,
+	communityController.getCommunityMembers
+)
+
+router.delete(
+	"/community/:communityId/members/:memberId",
+	auth.authenticate,
+	communityController.removeMember
+)
+
 module.exports = router

@@ -8,27 +8,29 @@ import { useCommunity } from "../../context/communityContext"
 import { SafeAreaView } from "react-native-safe-area-context"
 import { useRouter } from "expo-router"
 import LoadingSpinner from "../../components/LoadingSpinner"
+import MembersList from "../../components/MembersList"
 
 const Community = () => {
 	const router = useRouter()
 	const { communityId } = useLocalSearchParams()
+	const [isModalVisible, setIsModalVisible] = useState(false)
 	const [community, setCommunity] = useState(null)	
 	const { posts, handleJoinCommunity, handleLeaveCommunity, selectPost, loading, refreshData } =
 		useCommunity()
 
 	// Fetch the community details on mount and when communityId or posts change
-	useEffect(() => {
-		const fetchCommunityDetails = async () => {
-			try {											
-				const fetchedCommunity = await getCommunityById(communityId)
-				setCommunity(fetchedCommunity)
-			} catch (error) {
-				console.log(error)
-			}
-		}
-
+	useEffect(() => {		
 		fetchCommunityDetails()
-	}, [communityId, posts])
+	}, [posts])
+
+	const fetchCommunityDetails = async () => {
+		try {			
+			const fetchedCommunity = await getCommunityById(communityId)			
+			setCommunity(fetchedCommunity)
+		} catch (error) {
+			console.log(error)
+		}
+	}
 
 	const handleNavigation = (postId, post) => {
 		selectPost(post)
@@ -63,6 +65,7 @@ const Community = () => {
 							community={community}
 							handleJoin={handleJoinCommunity}
 							handleLeave={handleLeaveCommunity}
+							setIsMembersModalVisible={setIsModalVisible}
 						/>
 						{community.posts.length > 0 ? (
 							<View>
@@ -88,6 +91,10 @@ const Community = () => {
 						)}
 					</View>
 				)}
+				<MembersList visible={isModalVisible} onClose={() => {
+					setIsModalVisible(false) 
+					fetchCommunityDetails()
+				}} community={community} />
 			</ScrollView>			
 		</SafeAreaView>
 	)
