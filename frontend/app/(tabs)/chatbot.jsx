@@ -35,23 +35,13 @@ export default function ChatBotScreen() {
           { role: 'user', content: chat.userMessage },
           { role: 'assistant', content: chat.botResponse }
         ]);
-  
-        setMessages(formattedMessages);
+
+        const updatedMessages = [...messages, ...formattedMessages];
+        setMessages(updatedMessages);
       }
     } catch (error) {
       console.error("Error fetching chat history", error);
     }
-  };
-
-  // We define our system message:
-  const systemMessage = {
-    role: 'system',
-    content: `
-      You are a helpful assistant specialized in maternal health. 
-      You should only answer questions related to maternal health. 
-      If the user asks a question outside of maternal health, 
-      politely decline to answer.
-    `,
   };
 
   // Cycle "typingDots" between ".", "..", "..." every 500ms when typing == true
@@ -92,9 +82,6 @@ export default function ChatBotScreen() {
       // Show typing indicator
       setTyping(true);
 
-      // Construct final message list: system message + conversation messages
-      const requestMessages = [systemMessage, ...inputText];
-
       const response = await sendMessage(JSON.stringify({message: inputText}));
       
       const assistantMessage = await response.botResponse;
@@ -127,7 +114,7 @@ export default function ChatBotScreen() {
     setTypewriter(true);
 
     let i = 0;
-    const speed = 20; // ms per character (adjust as desired)
+    const speed = 10; // ms per character (adjust as desired)
     const intervalId = setInterval(() => {
       i++;
       const partial = fullText.slice(0, i);
