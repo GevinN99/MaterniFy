@@ -20,6 +20,22 @@ export const getCommunityById = async (communityId) => {
 	return response.data
 }
 
+export const getCommunityMembers = async (communityId) => {
+	const response = await axiosInstance.get(
+		`/communities/members/${communityId}`
+	)
+	// console.log(response)
+	return response.data
+}
+
+export const removeMemberFromCommunity = async (communityId, memberId) => {
+	const response = await axiosInstance.delete(
+		`/communities/community/${communityId}/members/${memberId}`
+	)
+	// console.log(response)
+	return response.data
+}
+
 export const deleteCommunityById = async (communityId) => {
 	const response = await axiosInstance.delete(
 		`/communities/delete/${communityId}`

@@ -96,17 +96,17 @@ export const CommunityProvider = ({ children }) => {
 		try {
 			await joinCommunity(communityId)
 
-			setUserCommunities((prevCommunities) => [
-				...prevCommunities,
-				...nonUserCommunities.filter(
-					(community) => community._id === communityId
-				),
-			])
-			setNonUserCommunities((prevCommunities) =>
-				prevCommunities.filter((community) => community._id !== communityId)
-			)
+			// setUserCommunities((prevCommunities) => [
+			// 	...prevCommunities,
+			// 	...nonUserCommunities.filter(
+			// 		(community) => community._id === communityId
+			// 	),
+			// ])
+			// setNonUserCommunities((prevCommunities) =>
+			// 	prevCommunities.filter((community) => community._id !== communityId)
+			// )
 
-			fetchData("posts")
+			fetchData()
 		} catch (error) {
 			console.error(error)
 		}
@@ -116,15 +116,15 @@ export const CommunityProvider = ({ children }) => {
 		try {
 			await leaveCommunity(communityId)
 
-			setUserCommunities((prevCommunities) =>
-				prevCommunities.filter((community) => community._id !== communityId)
-			)
-			setNonUserCommunities((prevCommunities) => [
-				...prevCommunities,
-				...userCommunities.filter((community) => community._id === communityId),
-			])
+			// setUserCommunities((prevCommunities) =>
+			// 	prevCommunities.filter((community) => community._id !== communityId)
+			// )
+			// setNonUserCommunities((prevCommunities) => [
+			// 	...prevCommunities,
+			// 	...userCommunities.filter((community) => community._id === communityId),
+			// ])
 
-			fetchData("posts")
+			fetchData()
 		} catch (error) {
 			console.error(error)
 		}

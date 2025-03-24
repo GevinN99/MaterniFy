@@ -58,8 +58,9 @@ const Communities = () => {
 	}
 
 	// Show button on component mount
-	useEffect(() => {
+	useEffect(() => {		
 		showButton()
+		fetchData()		
 
 		// Clean up timeout on unmount
 		return () => {
