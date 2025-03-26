@@ -74,7 +74,7 @@ export default function AiGeneratedHealthTipsScreen() {
               onPress={generateAndFetchHealthPlan}
               disabled={loading}
           >
-            <Text style={styles.conditionsTitle}>Your AI-Generated Health Plan</Text>
+            <Text style={styles.conditionsTitle}>Click here to generate your health plan</Text>
           </TouchableOpacity>
 
           {loading ? (

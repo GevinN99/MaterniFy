@@ -29,13 +29,12 @@ exports.generateHealthPlan = async (req, res) => {
         }
 
         const age = user.age;
-        const weight = user.weight;
         const medicalHistory = user.healthHistory ? [user.healthHistory] : ['No medical history provided'];
         const pregnancyStage = calculatePregnancyStage(user.pregnancyDate);
 
-        console.log('Extracted data:', { age, weight, medicalHistory, pregnancyStage });
+        console.log('Extracted data:', { age, medicalHistory, pregnancyStage });
 
-        if (age === null || age === undefined || weight === null || weight === undefined) {
+        if (age === null || age === undefined ) {
             return res.status(400).json({
                 message: 'Missing required health data. Please ensure age and weight are set in your profile.'
             });
@@ -48,7 +47,7 @@ exports.generateHealthPlan = async (req, res) => {
                 messages: [
                     {
                         role: "user",
-                        content: `Generate a structured pregnancy health plan for a ${age}-year-old woman weighing ${weight}kg, with medical history: "${medicalHistory.join(', ')}", currently in the ${pregnancyStage} stage. Return the response as a clean JSON object (no markdown or extra formatting) with sections for "diet", "exercise", and "medical_recommendations".`
+                        content: `Generate a structured pregnancy health plan for a ${age}, with medical history: "${medicalHistory.join(', ')}", currently in the ${pregnancyStage} stage. Return the response as a clean JSON object (no markdown or extra formatting) with sections for "diet", "exercise", and "medical_recommendations".`
                     }
                 ],
                 max_tokens: 1024
@@ -74,7 +73,6 @@ exports.generateHealthPlan = async (req, res) => {
         const newHealthPlan = new HealthPlan({
             userId,
             age,
-            weight,
             medicalHistory,
             pregnancyStage,
             planDetails: aiGeneratedPlan
