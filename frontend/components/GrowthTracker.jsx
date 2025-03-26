@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ProgressBar } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialIcons } from "@expo/vector-icons";
+import { getConceptionDate } from "../api/conceptionApi";
 
 // Shortened growth stages array - just keeping a few key stages
 const growthStages = [
@@ -55,12 +56,15 @@ const GrowthTracker = () => {
   const [conceptionDate, setConceptionDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [dueDate, setDueDate] = useState(null);
+  const [error, setError] = useState(null);
+  
 
   // Load saved date on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         const dateStr = await AsyncStorage.getItem("conceptionDate");
+        console.log('growth tracker',dateStr)
         if (dateStr) {
           const dateObj = new Date(dateStr);
           setConceptionDate(dateObj);
@@ -213,24 +217,7 @@ const GrowthTracker = () => {
             </View>
           </View>
         </View>
-
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={() => setShowPicker(true)}
-        >
-          <MaterialIcons name="edit" size={20} color="white" />
-          <Text style={styles.buttonText}>Update Date</Text>
-        </TouchableOpacity>
-
-        {showPicker && (
-          <DateTimePicker
-            value={conceptionDate}
-            mode="date"
-            display="default"
-            onChange={onChangeDate}
-            maximumDate={new Date()}
-          />
-        )}
+      
       </ScrollView>
     </SafeAreaView>
   );
@@ -366,23 +353,6 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 14,
     color: "#555555",
-  },
-  button: {
-    backgroundColor: "#F7C8E0",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 30,
-    marginVertical: 8,
-    alignSelf: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 8,
   },
   secondaryText: {
     fontSize: 16,

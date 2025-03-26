@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,38 +8,55 @@ import {
   StyleSheet,
   SafeAreaView,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  TextInput,
 } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
-import { Dimensions } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BabyGrowthTracker from "../../components/GrowthTracker";
 import axiosInstance from "../../api/axiosInstance";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+
 
 const Landing = () => {
   const [selectedDate, setSelectedDate] = useState(moment().format("YYYY-MM-DD"));
   const [currentWeek, setCurrentWeek] = useState(moment());
   const [scores, setScores] = useState([]);
   const [conceptionDate, setConceptionDate] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
+  const [profilePic, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userName, setUserName] = useState("");
+  const [username, setUsername] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false); // State for showing Date Picker
+  const [manualDate, setManualDate] = useState(""); // State for manual input
+  const [showManualInput, setShowManualInput] = useState(false); // Show manual input form
+ 
+
+  const handleSaveDate = async () => {
+    try {
+      const response = await axiosInstance.put('/conception', {
+        pregnancyDate: date,
+      });
+
+      // On success, update the conceptionDate state and show the tracker
+      setConceptionDate(response.data.pregnancyDate);
+      alert('Conception Date saved successfully!');
+    } catch (error) {
+      console.error("Error saving conception date:", error);
+      alert('Failed to save Conception Date');
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user name
-        const storedName = await AsyncStorage.getItem("userName");
-        if (storedName) {
-          setUserName(storedName);
-        }
-
         // Fetch scores
         const response = await axiosInstance.get("/quizzes/get-response");
         const thisWeekScores = response.data.filter((item) => {
@@ -51,17 +68,6 @@ const Landing = () => {
 
         setScores(thisWeekScores);
 
-        // Fetch conception date
-        const storedDate = await AsyncStorage.getItem("conceptionDate");
-        if (storedDate) {
-          setConceptionDate(storedDate);
-        }
-
-        // Fetch profile picture
-        const storedPic = await AsyncStorage.getItem("profilePic");
-        if (storedPic) {
-          setProfilePic(storedPic);
-        }
       } catch (err) {
         console.log("Error fetching data:", err);
         setError(err.message);
@@ -72,6 +78,44 @@ const Landing = () => {
 
     fetchData();
   }, []);
+
+  // useEffect(() => {
+	// 	const fetchUser = async () => {
+	// 		try {
+	// 			const response = await axiosInstance.get("/users/profile")
+  //       console.log("fetching user data for index:",response.data)
+	// 			setProfileImage(response.data.profileImage)
+  //       setUsername(response.data.fullName)
+  //       setConceptionDate(response.data.pregnancyDate)
+  //       await AsyncStorage.setItem("conceptionDate", response.data.pregnancyDate);
+	// 		} catch (error) {
+	// 			console.log(error)
+	// 		}
+	// 	}
+
+	// 	fetchUser()
+	//  }, [date])
+
+  useFocusEffect(
+    useCallback(() => {
+        const fetchUser = async () => {
+            try {
+                const response = await axiosInstance.get("/users/profile");
+                console.log("Fetching user data for index:", response.data);
+
+                setProfileImage(response.data.profileImage);
+                setUsername(response.data.fullName);
+                setConceptionDate(response.data.pregnancyDate);
+
+                await AsyncStorage.setItem("conceptionDate", response.data.pregnancyDate);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchUser();
+    }, [date]) 
+)
 
   if (loading) return <ActivityIndicator size="large" color="#A3C8E8" />;
 
@@ -143,31 +187,48 @@ const Landing = () => {
             )}
             <View style={styles.welcomeContainer}>
               <Text style={styles.welcomeText}>Welcome back,</Text>
-              <Text style={styles.nameText}>{userName ? userName : "Mom"}!</Text>
+              <Text style={styles.nameText}>{username ? username : "Mom"}!</Text>
             </View>
           </View>
         </View>
 
         {/* Baby Growth Tracker Card */}
         <View style={styles.growthTrackerCard}>
-          {conceptionDate ? (
-            <BabyGrowthTracker conceptionDate={conceptionDate} />
-          ) : (
-            <View style={styles.noConceptionContainer}>
-              <ActivityIndicator size="large" color="#F7C8E0" />
-              <Text style={styles.noConceptionText}>
-                Please set your conception date to track Baby's Growth
-              </Text>
+      {conceptionDate ? (
+        <BabyGrowthTracker conceptionDate={conceptionDate} />
+      ) : (
+        <View style={styles.noConceptionContainer}>
+          <ActivityIndicator size="large" color="#F7C8E0" />
+          <Text style={styles.noConceptionText}>
+            Please set your conception date to track Baby's Growth
+          </Text>
 
-              <TouchableOpacity 
-                style={styles.addDateButton}
-                onPress={() => router.push("/SetConceptionDate")}
-              >
-                <Text style={styles.addDateButtonText}>Set Date</Text>
-              </TouchableOpacity>
-            </View>
+          <TouchableOpacity 
+            style={styles.addDateButton}
+            onPress={() => setShowPicker(true)} 
+          >
+            <Text style={styles.addDateButtonText}>Set Date</Text>
+          </TouchableOpacity>
+
+          {showPicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                setShowPicker(false);
+                if (selectedDate) setDate(selectedDate);
+              }}
+            />
           )}
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveDate}>
+              <Text style={styles.saveButtonText}>Save Date</Text>
+            </TouchableOpacity>
+  
         </View>
+      )}
+    </View>
 
         {/* Quick Access Section */}
         <Text style={styles.sectionTitle}>Quick Access</Text>
@@ -215,16 +276,16 @@ const Landing = () => {
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={[styles.quickAccessButton, styles.emergencyButton]}
+              style={styles.quickAccessButton}
               onPress={() => router.push("/emergency")}
             >
-              <View style={[styles.buttonIconContainer, styles.emergencyIconContainer]}>
+              <View style={styles.buttonIconContainer}>
                 <Image 
-                  source={require("../../assets/images/emergency.png")} 
-                  style={[styles.buttonIcon, { tintColor: "white" }]} 
+                  source={require("../../assets/images/Emergency (2).png")} 
+                  style={styles.buttonIcon} 
                 />
               </View>
-              <Text style={[styles.buttonText, styles.emergencyText]}>Emergency</Text>
+              <Text style={styles.buttonText}>Emergency</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -416,23 +477,55 @@ const styles = StyleSheet.create({
   },
   noConceptionContainer: {
     alignItems: "center",
-    padding: 15,
+    justifyContent: "center",
   },
   noConceptionText: {
-    marginTop: 10,
     fontSize: 16,
-    textAlign: "center",
-    color: "#FFFFFF",
-    marginBottom: 12,
+    color: "#555555",
+    marginTop: 20,
   },
   addDateButton: {
-    backgroundColor: "#F7C8E0",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
+    backgroundColor: "#E1AFD1",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
   },
   addDateButtonText: {
-    color: "#FFFFFF",
+    fontSize: 16,
+    color: "#fff",
+  },
+  setManualButton: {
+    backgroundColor: "#7469B6",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  setManualButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  inputContainer: {
+    marginTop: 20,
+  },
+  input: {
+    width: 250,
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    textAlign: "center",
+  },
+  saveButton: {
+    backgroundColor: "#7469B6",
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
   },
   quickAccessContainer: {
@@ -444,7 +537,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   quickAccessButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#F7C8E0",
     width: "48%",
     borderRadius: 12,
     padding: 15,
@@ -460,7 +553,7 @@ const styles = StyleSheet.create({
   buttonIconContainer: {
     width: 50,
     height: 50,
-    backgroundColor: "#F5F0FA",
+    backgroundColor: "#F7E0EB",
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
