@@ -16,6 +16,7 @@ const replyRoutes = require("./routes/community-routes/replyRoutes")
 const locationRoutes = require('./routes/locationRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const conceptionRoutes = require('./routes/conceptionRoutes');
 
 const app = express()
 
@@ -54,6 +55,7 @@ app.use('/api/location', locationRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use("/api/doctors", require("./routes/doctorRoutes"));
 app.use('/api/chat', chatRoutes);
+app.use('/api/conception', conceptionRoutes);
 
 // Export app for testing
 module.exports = app;
