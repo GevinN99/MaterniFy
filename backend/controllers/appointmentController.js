@@ -123,7 +123,7 @@ exports.bookAppointment = async (req, res) => {
 // User fetches their booked appointments
 exports.getUserBookedAppointments = async (req, res) => {
     try {
-        const userId = req.user.id; // Use 'id' consistently with token
+        const userId = req.user.id;
         console.log("Fetching confirmed appointments for userId:", userId);
         const appointments = await Appointment.find({
             motherId: userId,

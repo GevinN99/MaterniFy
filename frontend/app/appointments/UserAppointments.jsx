@@ -8,6 +8,7 @@ import {
     StyleSheet,
     Alert,
     ScrollView,
+    Linking,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
@@ -74,9 +75,19 @@ export default function UserAppointments() {
         setLoading(false);
     };
 
-    const handleJoinMeeting = (meetUrl) => {
-        console.log("Navigating with meetUrl:", meetUrl);
-        router.push({ pathname: "meeting", params: { meetUrl } }); // Ensure this targets "meeting"
+    const handleJoinMeeting = async (meetUrl) => {
+        console.log("Opening meeting URL externally:", meetUrl);
+        try {
+            const supported = await Linking.canOpenURL(meetUrl);
+            if (supported) {
+                await Linking.openURL(meetUrl);
+            } else {
+                Alert.alert("Error", "Unable to open the meeting URL.");
+            }
+        } catch (error) {
+            console.error("Error opening URL:", error);
+            Alert.alert("Error", "Failed to open the meeting link.");
+        }
     };
 
     useEffect(() => {
