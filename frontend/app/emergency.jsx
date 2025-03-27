@@ -1,9 +1,8 @@
 import { useRouter } from "expo-router";
-import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView } from "react-native";
 import { Checkbox } from "react-native-paper"; 
 import { useState } from "react";
 
-// Risk categories
 const lowRiskSymptoms = ["Nausea/Vomiting", "Mild headache"];
 const mediumRiskSymptoms = ["Swelling in hands/feet", "Abdominal pain", "Dizziness or fainting"];
 const highRiskSymptoms = ["Severe headache", "Blurred vision", "Shortness of breath", "Bleeding or spotting", "Baby movement reduced"];
@@ -14,18 +13,17 @@ const symptomsList = [
   ...highRiskSymptoms
 ];
 
-const MyComponent = () => {
+const SymptomsChecker = () => {
   const router = useRouter();
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
+  const themeColor = "#7469B6";
 
-  // ✅ Toggle symptom selection
   const toggleSymptom = (symptom) => {
     setSelectedSymptoms((prev) =>
       prev.includes(symptom) ? prev.filter((item) => item !== symptom) : [...prev, symptom]
     );
   };
 
-  // ✅ Determine risk level
   const determineRiskLevel = () => {
     const hasHighRisk = selectedSymptoms.some((symptom) => highRiskSymptoms.includes(symptom));
     const hasMediumRisk = selectedSymptoms.some((symptom) => mediumRiskSymptoms.includes(symptom));
@@ -39,88 +37,141 @@ const MyComponent = () => {
     }
   };
 
-  // ✅ Handle navigation based on risk level
   const handleNext = () => {
     const riskLevel = determineRiskLevel();
     if (riskLevel === "high") {
-      router.push("/highrisk"); // Navigate to high risk page
+      router.push("/highrisk"); 
     } else if (riskLevel === "medium") {
-      router.push("/mediumrisk"); // Navigate to medium risk page
+      router.push("/mediumrisk"); 
     } else {
-      router.push("/lowrisk"); // Navigate to low risk page
+      router.push("/lowrisk"); 
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Let Us Know</Text>
-      <Text style={styles.question}>Do you have any of these symptoms today? (Select multiple)</Text>
+      <Text style={styles.question}>Do you have any of these symptoms today?</Text>
+      <Text style={styles.subQuestion}>(Select multiple)</Text>
 
-      <View style={styles.checkboxGroup}>
+      <ScrollView 
+        style={styles.symptomsContainer}
+        contentContainerStyle={styles.symptomsContent}
+        showsVerticalScrollIndicator={false}
+      >
         {symptomsList.map((symptom) => (
-          <View key={symptom} style={styles.checkboxContainer}>
+          <TouchableOpacity
+            key={symptom}
+            style={[
+              styles.symptomItem,
+              selectedSymptoms.includes(symptom) && {
+                backgroundColor: `${themeColor}15`,
+                borderColor: themeColor
+              }
+            ]}
+            onPress={() => toggleSymptom(symptom)}
+          >
             <Checkbox
               status={selectedSymptoms.includes(symptom) ? "checked" : "unchecked"}
               onPress={() => toggleSymptom(symptom)}
-              color="#64A8F1"
+              color={themeColor}
             />
-            <Text style={styles.label}>{symptom}</Text>
-          </View>
+            <Text style={styles.symptomText}>{symptom}</Text>
+          </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
-      {/* ✅ Next Button Navigates to the Risk Page */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={handleNext}
-        disabled={selectedSymptoms.length === 0}
-      >
-        <Text style={styles.buttonText}>Next</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomContainer}>
+        <Text style={styles.selectedCount}>
+          {selectedSymptoms.length} selected
+        </Text>
+        
+        <TouchableOpacity
+          style={[
+            styles.button,
+            selectedSymptoms.length === 0 ? styles.buttonDisabled : styles.buttonEnabled
+          ]}
+          onPress={handleNext}
+          disabled={selectedSymptoms.length === 0}
+        >
+          <Text style={styles.buttonText}>Next</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
-    alignItems: "center",
-    paddingVertical: 20,
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    padding: 20,
   },
   title: {
-    fontSize: 40,
+    fontSize: 32,
     fontWeight: "bold",
+    color: "#333333",
+    marginBottom: 8,
   },
   question: {
-    margin: 20,
     fontSize: 22,
-    textAlign: "center",
+    color: "#333333",
+    marginBottom: 4,
   },
-  checkboxGroup: {
-    alignItems: "flex-start",
-    width: "80%",
-    marginVertical: 20,
+  subQuestion: {
+    fontSize: 16,
+    color: "#666666",
+    marginBottom: 24,
   },
-  checkboxContainer: {
+  symptomsContainer: {
+    flex: 1,
+  },
+  symptomsContent: {
+    paddingBottom: 20,
+  },
+  symptomItem: {
     flexDirection: "row",
     alignItems: "center",
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    borderRadius: 10,
     marginBottom: 10,
+    backgroundColor: "#FAFAFA",
   },
-  label: {
+  symptomText: {
     fontSize: 18,
     marginLeft: 10,
+    color: "#333333",
+  },
+  bottomContainer: {
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#EEEEEE",
+  },
+  selectedCount: {
+    fontSize: 14,
+    color: "#666666",
+    textAlign: "center",
+    marginBottom: 12,
   },
   button: {
-    backgroundColor: "#64A8F1",
     borderRadius: 10,
-    paddingHorizontal: 40,
     paddingVertical: 15,
-    opacity: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonEnabled: {
+    backgroundColor: "#E1AFD1",
+  },
+  buttonDisabled: {
+    backgroundColor: "#CCCCCC",
   },
   buttonText: {
-    fontSize: 25,
-    color: "#FFF",
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "600",
   },
 });
 
-export default MyComponent;
+export default SymptomsChecker;

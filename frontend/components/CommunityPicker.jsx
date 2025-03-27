@@ -10,44 +10,56 @@ const CommunityPicker = ({ items, selectedValue, onValueChange }) => {
 		setDropdownVisible(!dropdownVisible)
 	}
 
+	// Function to handle selection of an item
 	const handleSelect = (value) => {
 		onValueChange(value)
 		setDropdownVisible(false)
 	}
 
+	// Find the selected item from the list
 	const selectedItem = items.find((item) => item.value === selectedValue)
 
 	return (
 		<View>
-			<TouchableOpacity
-				className="flex flex-row items-center justify-between border border-gray-200 rounded-lg p-2 bg-white"
-				onPress={toggleDropdown}
-			>
-				{selectedItem ? (
-					<View className="flex flex-row gap-4 items-center">
-						<Image
-							source={{ uri: selectedItem.imageUrl }}
-							style={styles.communityImage}
+			{items.length > 0 && (
+				<TouchableOpacity
+					className="flex flex-row items-center justify-between border border-gray-200 rounded-lg p-2 bg-white"
+					onPress={toggleDropdown}
+				>
+					{/* Display selected community image and label */}
+					{selectedItem ? (
+						<View className="flex flex-row gap-4 items-center">
+							<Image
+								source={{ uri: selectedItem.imageUrl }}
+								style={styles.communityImage}
+							/>
+							<Text>{selectedItem.label}</Text>
+						</View>
+					) : (
+						<Text>Select community</Text>
+					)}
+					{dropdownVisible ? (
+						<Feather
+							name="chevron-up"
+							size={20}
+							color="black"
 						/>
-						<Text>{selectedItem.label}</Text>
-					</View>
-				) : (
-					<Text>Select community</Text>
-				)}
-				{dropdownVisible ? (
-					<Feather
-						name="chevron-up"
-						size={20}
-						color="black"
-					/>
-				) : (
-					<Feather
-						name="chevron-down"
-						size={20}
-						color="black"
-					/>
-				)}
-			</TouchableOpacity>
+					) : (
+						<Feather
+							name="chevron-down"
+							size={20}
+							color="black"
+						/>
+					)}
+				</TouchableOpacity>
+			)}
+
+			{/* Show message when no communities are available */}
+			{items.length === 0 && (
+				<Text className="text-center text-red-500">
+					Join a community to start creating posts.
+				</Text>
+			)}
 
 			{dropdownVisible && (
 				<View className="mt-2 rounded-md">

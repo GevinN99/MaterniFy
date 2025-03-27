@@ -16,6 +16,7 @@ exports.registerUser = async (req, res) => {
             partnerDetails,
             age,
             parentingDay,
+            weight
         } = req.body;
 
         const existingUser = await User.findOne({ email });
@@ -37,6 +38,7 @@ exports.registerUser = async (req, res) => {
             partnerDetails: partnerDetails || null,
             age: age || null,
             parentingDay: parentingDay ? new Date(parentingDay) : null,
+            weight: weight || null
         });
 
         await newUser.save();
@@ -110,7 +112,7 @@ exports.updateUserProfile = async (req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            { fullName, languagePreference },
+            req.body,
             { new: true }
         );
 
@@ -139,7 +141,7 @@ exports.getAllUsers = async (req, res) => {
 // Delete user (Admin or self)
 exports.deleteUser = async (req, res) => {
     try {
-        const { userId } = req.params;
+        const userId = req.user.id;
 
         const user = await User.findByIdAndDelete(userId);
         if (!user) {

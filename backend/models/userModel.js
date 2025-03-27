@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
 	fullName: { type: String, required: true },
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
-	role: { type: String, default: "mother" }, // Fixed as "mother"
+	role: { type: String, default: "mother" },
 	healthHistory: { type: String, default: "" },
 	languagePreference: {
 		type: String,
@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
 		type: {
 			latitude: { type: Number },
 			longitude: { type: Number },
-			address: { type: String }, // Optional: human-readable address
+			address: { type: String },
 		},
 		default: null,
 	},
@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema({
 	age: { type: Number, min: [0, "Age cannot be negative"], default: null },
 	parentingDay: { type: Date, default: null },
 	createdAt: { type: Date, default: Date.now },
+	weight: { type: Number, default: null }
 });
 
 const UserModel = mongoose.model("User", userSchema);

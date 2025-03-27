@@ -1,33 +1,5 @@
 const CommunityModel = require("../../models/community-models/communityModel")
 
-// Get all communities
-// const getAllCommunities = async (req, res) => {
-// 	try {
-//         // Find all communities
-// 		const communities = await CommunityModel.find()
-// 		res.status(200).json(communities)
-// 	} catch (error) {
-// 		console.error(error)
-// 		res.status(500).json({ error: 'Faild to fetch communities' })
-// 	}
-// }
-
-// Get user communities
-// const getUserCommunities = async (req, res) => {
-// 	try {
-// 		const { userId } = req.params
-// 		if (!userId) return res.status(400).json({ error: "User ID is required" })
-// 		console.log(`Fetching communities for user ID: ${userId}`)
-
-// 		const userCommunities = await CommunityModel.find({ members: userId })
-
-// 		res.status(200).json(userCommunities)
-// 	} catch (error) {
-// 		console.error(error)
-// 		res.status(500).json({ error: "Failed to fetch user's communities" })
-// 	}
-// }
-
 // Get both user communities and non-user communities
 const getAllCommunities = async (req, res) => {	
 	try {
@@ -36,7 +8,7 @@ const getAllCommunities = async (req, res) => {
 
 		const userCommunities = await CommunityModel.find({ members: userId })
 		const nonUserCommunities = await CommunityModel.find({
-			members: { $ne: userId },
+			members: { $ne: userId }, // $ne means "not equal"
 		})
 
 		res.status(200).json({ userCommunities, nonUserCommunities })
@@ -143,10 +115,17 @@ const getCommunityById = async (req, res) => {
 			.populate("admin", "fullName profileImage")
 			.populate({
 				path: "posts", // Populates the posts array
-				populate: {
-					path: "userId", // Further populates the user inside each post
-					select: "fullName profileImage email", // Fetches only these fields from the user
-				},
+				options: { sort: { createdAt: -1 } }, // Sort posts by createdAt in descending order
+				populate: [
+					{
+						path: "userId", // Further populates the user inside each post
+						select: "fullName profileImage email", // Fetches only these fields from the user
+					},
+					{
+						path: "communityId", // Populate community details inside each post
+						select: "name", // Include only the community name
+					},
+				],
 			})
 
 		if (!community) {
@@ -202,6 +181,7 @@ const joinCommunity = async (req, res) => {
 	}
 }
 
+// Leave community
 const leaveCommunity = async (req, res) => {
 	try {
 		const { communityId } = req.params
@@ -218,9 +198,81 @@ const leaveCommunity = async (req, res) => {
 		community.members = community.members.filter(
 			(member) => member.toString() !== userId.toString()
 		)
+		
 		await community.save()
 		res.status(200).json({ message: "Left community successfully" })
 	} catch (error) {
+		res.status(500).json({ message: "Server error", error })
+	}
+}
+
+// Controller to get the members list of a community
+const getCommunityMembers = async (req, res) => { 
+	try {
+		const { communityId } = req.params
+
+		// Find the community by ID and populate the members' details
+		const community = await CommunityModel.findById(communityId).populate(
+			"members",
+			"_id fullName profileImage"
+		)
+
+		if (!community) {
+			return res.status(404).json({ error: "Community not found" })
+		}
+
+		// Extract members' details and exclude the admin
+		const members = community.members
+			.filter((member) => member._id.toString() !== community.admin.toString())
+			.map((member) => ({
+				id: member._id,
+				fullName: member.fullName,
+				profileImage: member.profileImage,
+			}))
+
+		// Send the extracted members' details as response
+		res.status(200).json({ members })
+	} catch (error) {
+		console.error(error)
+		res.status(500).json({ error: "Failed to get community members" })
+	}
+}
+
+// Remove member from community
+const removeMember = async (req, res) => {
+	try {
+		const { communityId, memberId } = req.params
+		const userId = req.user.id
+
+		// Find the community by ID
+		const community = await CommunityModel.findById(communityId)
+		if (!community) {
+			return res.status(404).json({ message: "Community not found" })
+		}
+
+		// Check if the requesting user is the admin of the community
+		if (community.admin.toString() !== userId.toString()) {
+			return res
+				.status(403)
+				.json({ message: "Only the admin can remove members" })
+		}
+
+		// Check if the member to be removed is part of the community
+		if (!community.members.includes(memberId)) {
+			return res
+				.status(400)
+				.json({ message: "User is not a member of the community" })
+		}
+
+		// Remove the member from the community
+		community.members = community.members.filter(
+			(member) => member.toString() !== memberId.toString()
+		)
+
+		await community.save()
+		res.status(200).json({ message: "Member removed successfully" })
+	} catch (error) {
+		console.error(error)
 		res.status(500).json({ message: "Server error", error })
 	}
 }
@@ -233,4 +285,6 @@ module.exports = {
 	deleteCommunity,
 	joinCommunity,
 	leaveCommunity,
+	getCommunityMembers,
+	removeMember,
 }

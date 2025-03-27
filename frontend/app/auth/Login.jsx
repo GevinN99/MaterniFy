@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
     View,
     Text,
@@ -16,8 +16,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { AuthContext } from "../../context/AuthContext"
 
 export default function Login() {
+     const { setUserId } = useContext(AuthContext)
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -95,6 +97,7 @@ export default function Login() {
                 await AsyncStorage.setItem("token", response.token);
                 await AsyncStorage.setItem("userId", response.userId);
                 await AsyncStorage.setItem("role", response.role || "mother");
+                setUserId(response.userId)
                 router.replace("/");
             } else {
                 setGeneralError("Invalid response from server. Please try again.");

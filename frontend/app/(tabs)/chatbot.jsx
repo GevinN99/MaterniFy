@@ -9,6 +9,7 @@ import {
   Image,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
+import { getChatHistory, sendMessage } from '../../api/chatAPI';
 
 export default function ChatBotScreen() {
   const [messages, setMessages] = useState([
@@ -20,21 +21,27 @@ export default function ChatBotScreen() {
   const [inputText, setInputText] = useState('');
   const [typing, setTyping] = useState(false);       // Are we waiting for GPT?
   const [typingDots, setTypingDots] = useState('');  // Cycles ".", "..", "..."
-  const [typewriter, setTypewriter] = useState(false);           // "currently animating the text"
+  const [typewriter, setTypewriter] = useState(false);  // "currently animating the text"
 
-  // Replace with your own OpenAI API key
-  const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
+  useEffect(() => {
+    fetchChatHistory();
+  }, []);
 
+  const fetchChatHistory = async () => {
+    try {
+      const response = await getChatHistory();
+      if (response) {
+        const formattedMessages = response.flatMap(chat => [
+          { role: 'user', content: chat.userMessage },
+          { role: 'assistant', content: chat.botResponse }
+        ]);
 
-  // We define our system message:
-  const systemMessage = {
-    role: 'system',
-    content: `
-      You are a helpful assistant specialized in maternal health. 
-      You should only answer questions related to maternal health. 
-      If the user asks a question outside of maternal health, 
-      politely decline to answer.
-    `,
+        const updatedMessages = [...messages, ...formattedMessages];
+        setMessages(updatedMessages);
+      }
+    } catch (error) {
+      console.error("Error fetching chat history", error);
+    }
   };
 
   // Cycle "typingDots" between ".", "..", "..." every 500ms when typing == true
@@ -75,29 +82,15 @@ export default function ChatBotScreen() {
       // Show typing indicator
       setTyping(true);
 
-      // Construct final message list: system message + conversation messages
-      const requestMessages = [systemMessage, ...updatedMessages];
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: requestMessages,
-        }),
-      });
-
-      const data = await response.json();
-      const assistantMessage = data?.choices?.[0]?.message;
+      const response = await sendMessage(JSON.stringify({message: inputText}));
+      
+      const assistantMessage = await response.botResponse;
 
       // Hide typing indicator
       setTyping(false);
 
       if (assistantMessage) {
-        startTypewriter(assistantMessage.content);
+        startTypewriter(assistantMessage);
       }
     } catch (error) {
       console.error('Error calling OpenAI API:', error);
@@ -121,7 +114,7 @@ export default function ChatBotScreen() {
     setTypewriter(true);
 
     let i = 0;
-    const speed = 20; // ms per character (adjust as desired)
+    const speed = 10; // ms per character (adjust as desired)
     const intervalId = setInterval(() => {
       i++;
       const partial = fullText.slice(0, i);
