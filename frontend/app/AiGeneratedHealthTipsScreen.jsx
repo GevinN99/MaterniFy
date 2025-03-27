@@ -64,7 +64,7 @@ export default function AiGeneratedHealthTipsScreen() {
   return (
       <LinearGradient colors={['#FFF', '#FCFCFC']} style={styles.gradientContainer}>
         <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.heading}>✨ Hi, Sarah!</Text>
+          <Text style={styles.heading}>✨ Hi, Mom!</Text>
           <Text style={styles.introText}>
             Let’s take a moment to care for you and your baby today
           </Text>
@@ -74,7 +74,7 @@ export default function AiGeneratedHealthTipsScreen() {
               onPress={generateAndFetchHealthPlan}
               disabled={loading}
           >
-            <Text style={styles.conditionsTitle}>Your AI-Generated Health Plan</Text>
+            <Text style={styles.conditionsTitle}>Click here to generate your health plan</Text>
           </TouchableOpacity>
 
           {loading ? (
