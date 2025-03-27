@@ -9,6 +9,7 @@ import {
     Alert,
     ScrollView,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
 import { getAvailableDoctors } from "../../api/doctorApi";
 
@@ -17,7 +18,8 @@ export default function UserAppointments() {
     const [bookedAppointments, setBookedAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("booked"); // Default to "Booked Appointments"
+    const [activeTab, setActiveTab] = useState("booked");
+    const router = useRouter();
 
     const loadPendingAppointments = async () => {
         setLoading(true);
@@ -72,6 +74,11 @@ export default function UserAppointments() {
         setLoading(false);
     };
 
+    const handleJoinMeeting = (meetUrl) => {
+        console.log("Navigating with meetUrl:", meetUrl);
+        router.push({ pathname: "meeting", params: { meetUrl } }); // Ensure this targets "meeting"
+    };
+
     useEffect(() => {
         loadPendingAppointments();
         loadBookedAppointments();
@@ -112,7 +119,17 @@ export default function UserAppointments() {
             <Text style={styles.appointmentText}>
                 Experience: {item.doctorId?.experienceYears || 0} years
             </Text>
-            {/* Removed Cancel Button */}
+            {item.status === "confirmed" && item.url && (
+                <TouchableOpacity
+                    style={styles.joinButton}
+                    onPress={() => {
+                        console.log("Join button clicked, URL:", item.url);
+                        handleJoinMeeting(item.url);
+                    }}
+                >
+                    <Text style={styles.joinButtonText}>Join Meeting</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 
@@ -120,8 +137,6 @@ export default function UserAppointments() {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>My Appointments</Text>
-
-                {/* Tab Navigation */}
                 <View style={styles.tabContainer}>
                     <TouchableOpacity
                         style={[styles.tabButton, activeTab === "booked" && styles.activeTab]}
@@ -151,7 +166,6 @@ export default function UserAppointments() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Tab Content */}
                 {loading ? (
                     <ActivityIndicator size="large" color="#007AFF" style={styles.loading} />
                 ) : (
@@ -182,7 +196,6 @@ export default function UserAppointments() {
                     </View>
                 )}
 
-                {/* Online Doctors Section */}
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Online Doctors</Text>
                     <FlatList
@@ -211,6 +224,7 @@ export default function UserAppointments() {
     );
 }
 
+// Styles remain unchanged
 const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
@@ -293,6 +307,18 @@ const styles = StyleSheet.create({
     bookText: {
         color: "white",
         fontWeight: "bold",
+    },
+    joinButton: {
+        backgroundColor: "#4CAF50",
+        padding: 10,
+        borderRadius: 5,
+        alignItems: "center",
+        marginTop: 10,
+    },
+    joinButtonText: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 16,
     },
     doctorCard: {
         padding: 15,

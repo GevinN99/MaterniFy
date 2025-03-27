@@ -6,7 +6,7 @@ const { SECRET_KEY } = process.env;
 
 exports.registerDoctor = async (req, res) => {
     try {
-        const { fullName, email, password, experienceYears, specialization, profileImage, isOnline } = req.body;
+        const { fullName, email, password, experienceYears, specialization, profileImage, isOnline, googleMeetUrl } = req.body;
         const existingDoctor = await Doctor.findOne({ email });
         if (existingDoctor) {
             return res.status(400).json({ message: 'Email already exists' });
@@ -20,6 +20,7 @@ exports.registerDoctor = async (req, res) => {
             specialization,
             profileImage,
             isOnline: isOnline || false,
+            googleMeetUrl: googleMeetUrl || `https://meet.google.com/${generateUniqueCode()}`,
         });
         await newDoctor.save();
         res.status(201).json({ message: 'Doctor registered successfully', doctor: newDoctor });
@@ -28,6 +29,11 @@ exports.registerDoctor = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+// unique code generation (not used with Google Meet directly)
+function generateUniqueCode() {
+    return Math.random().toString(36).substring(2, 10); // eg: "abc123xy"
+}
 
 exports.loginDoctor = async (req, res) => {
     const { email, password } = req.body;

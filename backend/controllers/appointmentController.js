@@ -89,7 +89,7 @@ exports.getAvailableAppointments = async (req, res) => {
 // User books an appointment (Generate Agora token here)
 exports.bookAppointment = async (req, res) => {
     try {
-        const userId = req.user.id; // Mother ID from authenticated token
+        const userId = req.user.id;
         const { appointmentId } = req.body;
 
         const user = await User.findById(userId);
@@ -102,14 +102,14 @@ exports.bookAppointment = async (req, res) => {
             return res.status(404).json({ message: "Appointment not found or already booked" });
         }
 
-        // Generate Agora token and channel name
-        const { token, channelName } = await generateAgoraToken(appointment.doctorId, userId);
+        const doctor = await Doctor.findById(appointment.doctorId);
+        if (!doctor) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
 
-        // Update appointment with user details and Agora info
         appointment.motherId = user._id;
         appointment.status = "confirmed";
-        appointment.agoraToken = token;
-        appointment.channelName = channelName;
+        appointment.url = doctor.googleMeetUrl; // Assign Google Meet URL to appointment
 
         await appointment.save();
 
@@ -123,9 +123,14 @@ exports.bookAppointment = async (req, res) => {
 // User fetches their booked appointments
 exports.getUserBookedAppointments = async (req, res) => {
     try {
-        const userId = req.user._id;
-        const appointments = await Appointment.find({ motherId: userId })
-            .populate("doctorId", "fullName specialization experienceYears"); // Populate doctorId with specific fields
+        const userId = req.user.id; // Use 'id' consistently with token
+        console.log("Fetching confirmed appointments for userId:", userId);
+        const appointments = await Appointment.find({
+            motherId: userId,
+            status: "confirmed"
+        })
+            .populate("doctorId", "fullName specialization experienceYears");
+        console.log("Found appointments:", appointments);
         res.status(200).json(appointments);
     } catch (error) {
         console.error(error);

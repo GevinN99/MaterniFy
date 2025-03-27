@@ -60,3 +60,15 @@ export const cancelAppointment = async (appointmentId) => {
     }
 };
 
+const loadBookedAppointments = async () => {
+    setLoading(true);
+    try {
+        const data = await getUserBookedAppointments();
+        console.log("Booked Appointments Data:", data);
+        setBookedAppointments(Array.isArray(data) ? data : [data]);
+    } catch (error) {
+        Alert.alert("Error", "Failed to load booked appointments.");
+    }
+    setLoading(false);
+};
+

@@ -7,8 +7,9 @@ const doctorSchema = new mongoose.Schema({
     experienceYears: { type: Number },
     specialization: { type: String },
     profileImage: { type: String },
-    isOnline: { type: Boolean, default: false }, // Must be 'isOnline', not 'online'
+    isOnline: { type: Boolean, default: false },
     role: { type: String, default: 'doctor' },
+    googleMeetUrl: { type: String },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Doctor', doctorSchema);
