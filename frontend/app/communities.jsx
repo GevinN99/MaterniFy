@@ -11,8 +11,8 @@ import {
 import { Image } from "expo-image"
 import { Ionicons } from "@expo/vector-icons"
 import { SafeAreaView } from "react-native-safe-area-context"
-import React, { useEffect, useState, useRef } from "react"
-import { useRouter } from "expo-router"
+import React, { useEffect, useState, useRef, useCallback } from "react"
+import { useFocusEffect, useRouter } from "expo-router"
 import CommunityCard from "../components/CommunityCard"
 import CreateCommunity from "../components/CreateCommunity"
 import { useCommunity } from "../context/communityContext"
@@ -42,6 +42,12 @@ const Communities = () => {
 	const router = useRouter()
 	const allCommunities = userCommunities.concat(nonUserCommunities)
 
+	useFocusEffect(
+		useCallback(() => {			
+			fetchData()
+		}, [])
+	)
+
 	// Function to show the button and hide it after 3 seconds of inactivity
 	const showButton = () => {
 		// Clear any existing timeout
@@ -59,9 +65,7 @@ const Communities = () => {
 
 	// Show button on component mount
 	useEffect(() => {		
-		showButton()
-		fetchData()		
-
+		showButton()				
 		// Clean up timeout on unmount
 		return () => {
 			if (hideTimeout.current) {
@@ -86,7 +90,8 @@ const Communities = () => {
 
 	// Fetch data when search is active
 	useEffect(() => {
-		if (searching) {
+		console.log('search')
+		if (searching) {			
 			fetchData()
 		}
 	}, [searching])
@@ -202,7 +207,7 @@ const Communities = () => {
 							userCommunities.map((community, index) => (
 								<Pressable
 									key={index}
-									onPress={() => handleNavigateToCommunity(community._id, true)}
+									onPress={() => handleNavigateToCommunity(community._id)}
 								>
 									<CommunityCard
 										community={community}
@@ -214,7 +219,7 @@ const Communities = () => {
 							))
 						) : (
 							<View className="flex-1 justify-center items-center my-4">
-								<Text className="text-gray-500 text-lg text-center">
+								<Text className="text-gray-500 text-base text-center">
 									Explore and find communities to join or create your own!
 								</Text>
 							</View>
@@ -237,7 +242,7 @@ const Communities = () => {
 								<Pressable
 									key={index}
 									onPress={() =>
-										handleNavigateToCommunity(community._id, false)
+										handleNavigateToCommunity(community._id)
 									}
 								>
 									<CommunityCard
@@ -250,8 +255,9 @@ const Communities = () => {
 							))
 						) : (
 							<View className="flex-1 justify-center items-center mt-4 mb-12">
-								<Text className="text-gray-500 text-lg text-center">
-									There are currently no new communities available. Check back later.
+								<Text className="text-gray-500 text-base text-center">
+									There are currently no new communities available. Check back
+									later.
 								</Text>
 							</View>
 						)}
@@ -266,10 +272,10 @@ const Communities = () => {
 						setIsModalVisible(true)
 						showButton()
 					}}
-					className="absolute right-4 bottom-5 z-10 bg-blue-200/70 text-blue-500 border border-blue-500 w-20 h-20 pl-1 pb-.5 flex justify-center items-center rounded-full"
-				>
+					className="absolute right-4 bottom-5 z-10 bg-blue-200/70 text-blue-500 border border-blue-500 w-20 h-20 pb-.5 flex justify-center items-center rounded-full"
+				>					
 					<Ionicons
-						name="create-outline"
+						name="duplicate-outline"
 						size={28}
 						color="#3b82f6"
 					/>

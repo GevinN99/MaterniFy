@@ -34,6 +34,7 @@ function RootLayout() {
 									title="Communities"
 								/>
 							),
+							animation: "fade",
 						}}
 					/>
 					<Stack.Screen
@@ -42,19 +43,36 @@ function RootLayout() {
 					/>
 					<Stack.Screen
 						name="community/[communityId]"
-						options={{ header: () => <Header title="Community Details" /> }}
+						options={{
+							header: () => (
+								<Header
+									title="Community"
+									backLink={"communities"}
+								/>
+							),
+							animation: "fade",
+						}}
 					/>
 					<Stack.Screen
 						name="communityUser/[userId]"
-						options={{ header: () => <Header title="User Profile" /> }}
+						options={{
+							header: () => <Header title="" />,
+							animation: "fade",
+						}}
 					/>
 					<Stack.Screen
 						name="community/post/[postId]"
-						options={{ header: () => <Header title="Post" /> }}
+						options={{
+							header: () => <Header title="Post" />,
+							animation: "fade",
+						}}
 					/>
 					<Stack.Screen
 						name="community/post/reply/[postId]"
-						options={{ header: () => <Header title="Reply" /> }}
+						options={{
+							header: () => <Header title="Reply" />,
+							animation: "fade",
+						}}
 					/>
 					<Stack.Screen
 						name="appointments/UserAppointments"

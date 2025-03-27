@@ -7,8 +7,8 @@ const Header = ({ backLink, title }) => {
 	const router = useRouter()
 
 	const handleBackPress = () => {
-		if (backLink) {
-			router.push(backLink) 
+		if (backLink) {						
+			router.push(backLink) 			
 		} else {
 			router.back() 
 		}

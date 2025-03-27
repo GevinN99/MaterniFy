@@ -84,7 +84,7 @@ const Community = () => {
 							</View>
 						) : (
 							// If there are no posts in the community, display a message
-							<Text className="text-gray-500 text-center mt-8 leading-relaxed">
+							<Text className="text-gray-500 text-base text-center mt-8 leading-relaxed">
 								There are no posts in this community yet.{"\n"}Be the first to
 								share!
 							</Text>

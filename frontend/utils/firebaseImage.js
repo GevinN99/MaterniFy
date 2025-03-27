@@ -22,9 +22,11 @@ export const uploadImageToFirebase = async (uri, folder = "profile_pics") => {
 		// Upload the file
 		await uploadBytes(storageRef, blob)
 
-		// Get the download URL
+		// Get the download URL and add a timestamp to prevent caching
 		const downloadURL = await getDownloadURL(storageRef)
-		return downloadURL
+		const downloadURLWithTimestamp = `${downloadURL}?timestamp=${new Date().getTime()}`
+
+		return downloadURLWithTimestamp
 	} catch (error) {
 		console.error("Error uploading image: ", error)
 		throw error

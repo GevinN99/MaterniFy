@@ -82,7 +82,7 @@ const reply = () => {
 					post={selectedPost}
 					replying={true}
 				/>
-				<Text className="text-lg text-blue-500 py-2">
+				<Text className="text-base text-blue-500 py-2">
 					Replying to {replyingUser?.fullName}
 				</Text>
 				<View className="bg-white p-4 my-2 rounded-2xl">
