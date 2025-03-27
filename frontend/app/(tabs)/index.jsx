@@ -9,7 +9,6 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Dimensions,
-  TextInput,
 } from "react-native";
 import { useFocusEffect, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,7 +16,6 @@ import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import BabyGrowthTracker from "../../components/GrowthTracker";
 import axiosInstance from "../../api/axiosInstance";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -34,18 +32,26 @@ const Landing = () => {
   const [error, setError] = useState(null);
   const [username, setUsername] = useState("");
   const [date, setDate] = useState(new Date());
-  const [showPicker, setShowPicker] = useState(false); // State for showing Date Picker
-  const [manualDate, setManualDate] = useState(""); // State for manual input
-  const [showManualInput, setShowManualInput] = useState(false); // Show manual input form
- 
+  const [showPicker, setShowPicker] = useState(false); 
 
+  // Add states for health checklist
+    const [healthTasks, setHealthTasks] = useState({
+      hydration: false,
+      physicalActivity: false,
+      prenatalCare: false,
+      balancedDiet: false,
+      kegel: false,
+      mindfulSleep: false,
+    })
+    const [progressPercent, setProgressPercent] = useState(0)
+  
   const handleSaveDate = async () => {
     try {
       const response = await axiosInstance.put('/conception', {
         pregnancyDate: date,
       });
 
-      // On success, update the conceptionDate state and show the tracker
+     
       setConceptionDate(response.data.pregnancyDate);
       alert('Conception Date saved successfully!');
     } catch (error) {
@@ -54,36 +60,57 @@ const Landing = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       // Fetch scores
-  //       const response = await axiosInstance.get("/quizzes/get-response");
-  //       const thisWeekScores = response.data.filter((item) => {
-  //         const itemDate = new Date(item.createdAt);
-  //         const now = new Date();
-  //         const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
-  //         return itemDate >= startOfWeek;
-  //       });
-
-  //       setScores(thisWeekScores);
-
-  //     } catch (err) {
-  //       console.log("Error fetching data:", err);
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, []);
+  // Fetch health checklist data from AsyncStorage
+    const fetchHealthChecklistData = async () => {
+      try {
+        const [storedTasks, storedProgress, storedResetDate] = await Promise.all([
+          AsyncStorage.getItem("healthChecklist"),
+          AsyncStorage.getItem("progressPercent"),
+          AsyncStorage.getItem("lastResetDate"),
+        ])
+  
+        const today = new Date().toDateString()
+  
+        // Reset if it's a new day
+        if (storedResetDate && JSON.parse(storedResetDate) !== today) {
+          const resetTasks = {
+            hydration: false,
+            physicalActivity: false,
+            prenatalCare: false,
+            balancedDiet: false,
+            kegel: false,
+            mindfulSleep: false,
+          }
+          setHealthTasks(resetTasks)
+          setProgressPercent(0)
+          await AsyncStorage.setItem(
+            "healthChecklist",
+            JSON.stringify(resetTasks)
+          )
+          await AsyncStorage.setItem("progressPercent", JSON.stringify(0))
+          await AsyncStorage.setItem("lastResetDate", JSON.stringify(today))
+        } else {
+          // Load existing data
+          if (storedTasks) {
+            setHealthTasks(JSON.parse(storedTasks))
+          }
+          if (storedProgress) {
+            setProgressPercent(JSON.parse(storedProgress) || 0)
+          }
+          if (!storedResetDate) {
+            await AsyncStorage.setItem("lastResetDate", JSON.stringify(today))
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching health checklist data:", error)
+      }
+    }
 
   useFocusEffect(
     useCallback(() => {
         const fetchData = async () => {
           try {
-            // Fetch scores
+          
             const response = await axiosInstance.get("/quizzes/get-response");
             const thisWeekScores = response.data.filter((item) => {
               const itemDate = new Date(item.createdAt);
@@ -119,6 +146,7 @@ const Landing = () => {
         
         fetchData();
         fetchUser();
+        fetchHealthChecklistData()
     }, []) 
 )
 
@@ -142,6 +170,16 @@ const Landing = () => {
   const handleNextWeek = () => {
     setCurrentWeek((prev) => prev.clone().add(1, "week"));
   };
+
+  // Map health tasks to display text
+	const taskDisplay = {
+		hydration: "Drink 8 glasses of water today 💧",
+		physicalActivity: "Walk for 15 minutes 🚶",
+		prenatalCare: "Take prenatal vitamins 💊",
+		balancedDiet: "Eat fruits, veggies & protein 🥗",
+		kegel: "Do Kegel exercises 🩺",
+		mindfulSleep: "Get 8 hours of sleep 😴",
+	}
 
   const CircularProgress = ({ percentage }) => {
     const radius = 35;
@@ -182,7 +220,7 @@ const Landing = () => {
   return (
     <SafeAreaView style={styles.safeContainer}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-        {/* Header Section */}
+    
         <View style={styles.headerSection}>
           <View style={styles.profileContainer}>
             {profilePic ? (
@@ -197,7 +235,6 @@ const Landing = () => {
           </View>
         </View>
 
-        {/* Baby Growth Tracker Card */}
         <View style={styles.growthTrackerCard}>
       {conceptionDate ? (
         <BabyGrowthTracker conceptionDate={conceptionDate} />
@@ -205,9 +242,10 @@ const Landing = () => {
         <View style={styles.noConceptionContainer}>
           <ActivityIndicator size="large" color="#F7C8E0" />
           <Text style={styles.noConceptionText}>
-            Please set your conception date to track Baby's Growth
+            Please set and save your conception date to track Baby's Growth
           </Text>
 
+          <View style={styles.growthButtons}>
           <TouchableOpacity 
             style={styles.addDateButton}
             onPress={() => setShowPicker(true)} 
@@ -230,12 +268,12 @@ const Landing = () => {
             <TouchableOpacity style={styles.saveButton} onPress={handleSaveDate}>
               <Text style={styles.saveButtonText}>Save Date</Text>
             </TouchableOpacity>
-  
+          </View>
         </View>
       )}
     </View>
 
-        {/* Quick Access Section */}
+        
         <Text style={styles.sectionTitle}>Quick Access</Text>
         <View style={styles.quickAccessContainer}>
           <View style={styles.row}>
@@ -296,7 +334,6 @@ const Landing = () => {
         </View>
 
 
-        {/* Calendar Section */}
         <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
 
         <View style={styles.calendarContainer}>
@@ -357,41 +394,44 @@ const Landing = () => {
 
 
         {/* Today's Health Plan */}
-        <Text style={styles.sectionTitle}>Today's Health Plan</Text>
-        <LinearGradient 
-          colors={['#B4E4FF', '#9fd9fa']} 
-          start={{x: 0, y: 0}} 
-          end={{x: 1, y: 0}}
-          style={styles.healthPlanCard}
-        >
-          <View style={styles.healthPlanContent}>
-            <View style={styles.healthTasks}>
-              <View style={styles.healthTask}>
-                <View style={styles.taskDot}></View>
-                <Text style={styles.taskText}>Drink 8 glasses of water today 💧</Text>
-              </View>
-              <View style={styles.healthTask}>
-                <View style={styles.taskDot}></View>
-                <Text style={styles.taskText}>Take your iron supplements</Text>
-              </View>
-              <View style={styles.healthTask}>
-                <View style={styles.taskDot}></View>
-                <Text style={styles.taskText}>Try 5 mins of stretching for back pain</Text>
-              </View>
-            </View>
-            
-            <View style={styles.progressContainer}>
-              <CircularProgress percentage={75} />
-              <Text style={styles.progressText}>Daily Progress</Text>
-            </View>
-          </View>
-        </LinearGradient>
+				<Text style={styles.sectionTitle}>Today's Health Checklist</Text>
+				<LinearGradient
+					colors={["#B4E4FF", "#9fd9fa"]}
+					start={{ x: 0, y: 0 }}
+					end={{ x: 1, y: 0 }}
+					style={styles.healthPlanCard}
+				>
+					<View style={styles.healthPlanContent}>
+						<View style={styles.healthTasks}>
+							{Object.entries(healthTasks).map(([task, completed]) => (
+								<View
+									key={task}
+									style={styles.healthTask}
+								>
+									<View
+										style={[
+											styles.taskDot,
+											{ backgroundColor: completed ? "black" : "white" },
+										]}
+									></View>
+									<Text
+										style={[styles.taskText, { opacity: completed ? 1 : 0.7 }]}
+									>
+										{taskDisplay[task]}
+									</Text>
+								</View>
+							))}
+						</View>
+						<View style={styles.progressContainer}>
+							<CircularProgress percentage={progressPercent} />
+							<Text style={styles.progressText}>Daily Progress</Text>
+						</View>
+					</View>
+				</LinearGradient>
 
-        {/* Mental Health Summary */}       
-    
-
+   
         <View style={{ alignItems: "center", padding: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>Mental Health Summary</Text>
+          <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10, textAlign:"left"}}>Mental Health Summary</Text>
           {scores.length > 0 ? (
             <View>
               {scores.length === 0 ? (<Text>No users scores found for now</Text>) : (
@@ -491,47 +531,35 @@ const styles = StyleSheet.create({
   },
   addDateButton: {
     backgroundColor: "#E1AFD1",
-    padding: 15,
     borderRadius: 10,
     marginTop: 20,
+    marginRight:10,
+    width:120,
+   padding:15
   },
   addDateButtonText: {
     fontSize: 16,
     color: "#fff",
-  },
-  setManualButton: {
-    backgroundColor: "#7469B6",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  setManualButtonText: {
-    color: "#fff",
-    fontSize: 16,
     fontWeight: "bold",
-  },
-  inputContainer: {
-    marginTop: 20,
-  },
-  input: {
-    width: 250,
-    padding: 10,
-    borderRadius: 5,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    textAlign: "center",
+    textAlign:"center"
   },
   saveButton: {
-    backgroundColor: "#7469B6",
+    backgroundColor: "#E1AFD1",
     padding: 15,
     borderRadius: 10,
-    marginTop: 20,
+    marginTop:20,
+    marginLeft:10,
+    width:120
   },
   saveButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+    textAlign:"center"
+  },
+  growthButtons:{
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   quickAccessContainer: {
     marginBottom: 10,
