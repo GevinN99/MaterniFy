@@ -107,14 +107,14 @@ const Landing = () => {
                 setUsername(response.data.fullName);
                 setConceptionDate(response.data.pregnancyDate);
 
-                await AsyncStorage.setItem("conceptionDate", response.data.pregnancyDate);
+            
             } catch (error) {
                 console.log(error);
             }
         };
 
         fetchUser();
-    }, [date]) 
+    }, []) 
 )
 
   if (loading) return <ActivityIndicator size="large" color="#A3C8E8" />;

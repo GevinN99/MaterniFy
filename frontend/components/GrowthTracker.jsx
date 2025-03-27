@@ -50,10 +50,9 @@ const growthStages = [
   { week: 40, fruit: "Cabbage", image: require("../assets/images/fruits/Cabbage.png") },
 ];
 
-const GrowthTracker = () => {
+const GrowthTracker = ({conceptionDate}) => {
   const [gestationalAge, setGestationalAge] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [conceptionDate, setConceptionDate] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
   const [dueDate, setDueDate] = useState(null);
   const [error, setError] = useState(null);
@@ -61,22 +60,10 @@ const GrowthTracker = () => {
 
   // Load saved date on component mount
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const dateStr = await AsyncStorage.getItem("conceptionDate");
-        console.log('growth tracker',dateStr)
-        if (dateStr) {
-          const dateObj = new Date(dateStr);
-          setConceptionDate(dateObj);
-          calculateDates(dateObj);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+		if (conceptionDate) {
+			calculateDates(new Date(conceptionDate))
+		}
+	}, [conceptionDate])
 
   // Calculate gestational age and due date
   const calculateDates = (date) => {
@@ -87,13 +74,13 @@ const GrowthTracker = () => {
     const due = new Date(date);
     due.setDate(due.getDate() + 280); // 40 weeks
     setDueDate(due);
+    setLoading(false)
   };
 
   // Handle date selection
   const onChangeDate = async (event, selectedDate) => {
     if (selectedDate) {
       setShowPicker(Platform.OS === "ios");
-      setConceptionDate(selectedDate);
       await AsyncStorage.setItem("conceptionDate", selectedDate.toISOString());
       calculateDates(selectedDate);
     } else {
@@ -104,7 +91,8 @@ const GrowthTracker = () => {
   // Format date for display
   const formatDate = (date) => {
     if (!date) return "";
-    return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    const parsedDate = date instanceof Date ? date : new Date(date)
+    return parsedDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   // Loading state
