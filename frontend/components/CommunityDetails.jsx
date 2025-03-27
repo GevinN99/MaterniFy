@@ -208,7 +208,7 @@ const CommunityDetails = ({
 							>
 								{loading ? (
 									// Show a loading indicator if the delete action is in progress
-									<LoadingSpinner />
+									<LoadingSpinner color="#ef4444" />
 								) : (
 									// Show the delete icon and text if not loading
 									<>
@@ -252,8 +252,7 @@ const CommunityDetails = ({
 				visible={isModalVisible}
 				onClose={() => setIsModalVisible(false)}
 				onCommunityCreated={(updatedCommunity) => {
-					setCommunityDetails((prev) => ({ ...prev, ...updatedCommunity })) // Update community state
-					fetchData("communities")
+					setCommunityDetails((prev) => ({ ...prev, ...updatedCommunity })) // Update community state					
 				}}
 			/>
 		</View>

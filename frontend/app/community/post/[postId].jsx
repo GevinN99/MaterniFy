@@ -76,7 +76,7 @@ const Post = ({ community }) => {
 		)
 	}
 
-	const admin = user === post.userId._id	
+	const admin = user === post.userId._id
 
 	// Destructure post data
 	const {
@@ -136,12 +136,16 @@ const Post = ({ community }) => {
 					/>
 					<View className="ml-4 flex ">
 						<Text className="font-bold text-xl">{userId.fullName}</Text>
-						<Text className="text-gray-500 text-base">
-							@
-							{(communityId.name || community.name)
-								.replace(/\s+/g, "")
-								.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
-						</Text>
+						<Pressable
+							onPress={() => router.push(`/community/${communityId._id}`)}
+						>
+							<Text className="text-gray-500 text-base">
+								@
+								{(communityId.name || community.name)
+									.replace(/\s+/g, "")
+									.replace(/(?:^|\s)\S/g, (match) => match.toUpperCase())}
+							</Text>
+						</Pressable>
 					</View>
 				</View>
 				<Text className="mt-4 text-lg">{content}</Text>
@@ -187,7 +191,7 @@ const Post = ({ community }) => {
 						replies.map((reply, index) => (
 							<ReplyCard
 								key={index}
-								reply={reply}								
+								reply={reply}
 							/>
 						))
 					)}

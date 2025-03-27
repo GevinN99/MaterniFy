@@ -100,7 +100,7 @@ const CreatePost = ({ visible, onClose }) => {
 
 			const response = await createPost({ ...postDetails, imageUrl })
 			setLoading(false)			
-			fetchData()
+			fetchData('posts')
 			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
@@ -145,7 +145,7 @@ const CreatePost = ({ visible, onClose }) => {
 											uri: profileImage,
 										}}
 										style={styles.profileImage}
-										contentFit="contain"
+										contentFit="cover"
 										placeholder={{ blurhash }}
 									/>
 									<Text className="font-semibold">Ellyse Perry</Text>
@@ -187,8 +187,7 @@ const CreatePost = ({ visible, onClose }) => {
 										<View>
 											<Image
 												source={{ uri: image }}
-												style={[styles.postImage]}
-												contentFit="contain"
+												style={[styles.postImage]}												
 												transition={1000}
 											/>
 											<TouchableOpacity

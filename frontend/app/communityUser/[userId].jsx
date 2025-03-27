@@ -56,39 +56,42 @@ const CommunityUserProfile = () => {
 	}
 
 	const renderHeader = () => (
-		<View className="relative rounded-xl">
-			<View className="bg-white p-4 rounded-xl mx-4">
-				<View className="bg-blue-100 pt-6 pb-16 px-4 rounded-lg relative mx-4">
-					<Text className="text-2xl font-bold text-center">{user?.fullName}</Text>
-				</View>
+		<View className="relative">			
 
-				{/* Community Image */}
-				<View className="flex justify-center items-center -mt-10 mb-4 ">
-					<View className="rounded-full overflow-hidden border-4 border-white shadow-md">
-						<Image
-							source={{
-								uri: user?.profileImage,
-							}}
-							style={styles.profileImage}
-							placeholder={{ blurhash }}
-							contentFit="cover"
-							transition={300}
-						/>
-					</View>
-					<View className="flex-row justify-center gap-6 mt-4">
-						<View className="flex items-center">
-							<Text className="text-xl font-semibold">
-								{userCommunities.length}
-							</Text>
-							<Text className="text-lg text-gray-500">Communities</Text>
-						</View>
-						<View className="flex items-center">
-							<Text className="text-xl font-semibold">{userPosts.length}</Text>
-							<Text className="text-lg text-gray-500">Posts</Text>
+			<View className="bg-white p-4 rounded-2xl mx-4 shadow-sm">				
+				<View className="flex-row items-center">
+					
+					<Image
+						source={{ uri: user?.profileImage }}
+						style={styles.profileImage}
+						placeholder={{ blurhash }}
+						contentFit="cover"
+						transition={300}
+					/>
+
+					<View className="flex-1 ml-4">
+						<Text className="text-2xl font-bold  mb-1 text-center">
+							{user?.fullName}							
+						</Text>
+
+						<View className="flex-row bg-blue-50 px-3 py-2 rounded-lg gap-4 justify-center">
+							<View className="items-center">
+								<Text className="text-lg font-semibold text-blue-500">
+									{userCommunities.length}
+								</Text>
+								<Text className="text-sm text-gray-600">Communities</Text>
+							</View>
+							<View className="items-center">
+								<Text className="text-lg font-semibold text-blue-500">
+									{userPosts.length}
+								</Text>
+								<Text className="text-sm text-gray-600">Posts</Text>
+							</View>
 						</View>
 					</View>
 				</View>
 			</View>
+
 			{/* Communities Section */}
 			<View className="mt-8">
 				<View className=" flex-row items-center ml-4 mb-2">
@@ -100,7 +103,7 @@ const CommunityUserProfile = () => {
 				</View>
 				{userCommunities.length === 0 ? (
 					<View className="flex items-center my-8 gap-4">
-						<Text className="text-gray-500 text-lg  ">
+						<Text className="text-gray-500 text-base  ">
 							You have not joined any community yet.
 						</Text>
 						<TouchableOpacity
@@ -132,7 +135,7 @@ const CommunityUserProfile = () => {
 				)}
 			</View>
 
-			{/* Posts Section Header */}
+			{/* Posts Section */}
 			<View className="mt-8">
 				<View className="flex-row items-center ml-4 mb-2">
 					<Feather
@@ -162,7 +165,7 @@ const CommunityUserProfile = () => {
 				// Show a message if there are no posts
 				ListEmptyComponent={() => (
 					<View className="flex items-center justify-center mt-8">
-						<Text className="text-gray-500 text-lg">
+						<Text className="text-gray-500 text-base">
 							You have not posted anything yet.
 						</Text>
 					</View>
