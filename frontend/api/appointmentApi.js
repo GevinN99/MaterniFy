@@ -15,8 +15,8 @@ export const getAvailableAppointments = async () => {
         const response = await axiosInstance.get("/appointments/available");
         return response.data;
     } catch (error) {
-        console.error("Error fetching available appointments:", error);
-        return [];
+        console.error("Error fetching available appointments:", error.response?.data || error.message);
+        throw error;
     }
 };
 
@@ -25,8 +25,8 @@ export const getUserBookedAppointments = async () => {
         const response = await axiosInstance.get("/appointments/my-booked");
         return response.data;
     } catch (error) {
-        console.error("Error fetching user booked appointments:", error);
-        return [];
+        console.error("Error fetching booked appointments:", error.response?.data || error.message);
+        throw error;
     }
 };
 
@@ -59,3 +59,16 @@ export const cancelAppointment = async (appointmentId) => {
         return { error: error.response?.data || "Failed to cancel appointment" };
     }
 };
+
+const loadBookedAppointments = async () => {
+    setLoading(true);
+    try {
+        const data = await getUserBookedAppointments();
+        console.log("Booked Appointments Data:", data);
+        setBookedAppointments(Array.isArray(data) ? data : [data]);
+    } catch (error) {
+        Alert.alert("Error", "Failed to load booked appointments.");
+    }
+    setLoading(false);
+};
+

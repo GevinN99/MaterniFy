@@ -15,6 +15,7 @@ const quizRoutes = require('./routes/quizRoutes');
 const replyRoutes = require("./routes/community-routes/replyRoutes")
 const locationRoutes = require('./routes/locationRoutes');
 const partnerRoutes = require('./routes/partnerRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const conceptionRoutes = require('./routes/conceptionRoutes');
 
@@ -54,6 +55,7 @@ app.use("/api/community-replies", replyRoutes)
 app.use('/api/location', locationRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use("/api/doctors", require("./routes/doctorRoutes"));
+app.use("/api/appointments", appointmentRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/conception', conceptionRoutes);
 
