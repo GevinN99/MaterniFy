@@ -24,7 +24,6 @@ export default function DoctorAppointments() {
                 const appointmentDate = new Date(appointment.appointmentDate).toISOString().split("T")[0];
                 return appointmentDate === todayString;
             });
-            console.log("Today's Appointments:", todayAppointments); // Log to inspect data
             setAppointments(todayAppointments);
         } catch (error) {
             console.error("Load Appointments Error:", error);
@@ -48,14 +47,6 @@ export default function DoctorAppointments() {
         }
     };
 
-    const handleJoinAppointment = (appointment) => {
-        if (appointment.url) {
-            Alert.alert("Joining", `Opening appointment URL: ${appointment.url}`);
-        } else {
-            Alert.alert("Error", "No meeting URL available for this appointment.");
-        }
-    };
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Your Appointments (Today)</Text>
@@ -72,19 +63,8 @@ export default function DoctorAppointments() {
                                 {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
                             </Text>
                             <Text>Patient: {item.motherId?.fullName || "Not Assigned"}</Text>
-                            <Text>Status: {item.status || "Unknown"}</Text>
+                            <Text>Status: {item.status}</Text>
                             <View style={styles.buttonContainer}>
-                                {item.status === "confirmed" && item.url && (
-                                    <TouchableOpacity
-                                        style={styles.joinButton}
-                                        onPress={() => {
-                                            console.log("Join button clicked, URL:", item.url);
-                                            handleJoinMeeting(item.url);
-                                        }}
-                                    >
-                                        <Text style={styles.joinButtonText}>Join Meeting</Text>
-                                    </TouchableOpacity>
-                                )}
                                 {item.status !== 'cancelled' && item.status !== 'completed' && (
                                     <TouchableOpacity
                                         style={styles.cancelButton}
@@ -116,7 +96,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         marginTop: 5,
-        gap: 10,
+        gap: 10, // Adds space between buttons
     },
     joinButton: {
         backgroundColor: "#007AFF",

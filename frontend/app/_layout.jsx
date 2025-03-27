@@ -21,7 +21,6 @@ function RootLayout() {
                     <Stack.Screen name="community/post/reply/[postId]" options={{ header: () => <Header title="Reply" /> }} />
                     <Stack.Screen name="appointments/UserAppointments" options={{ header: () => <Header backLink="/" title="My Appointments" /> }} />
                     <Stack.Screen name="appointments/DoctorAppointments" options={{ header: () => <Header backLink="/" title="Doctor Appointments" /> }} />
-                    {/* Removed: <Stack.Screen name="meeting" options={{ title: "Video Call" }} /> */}
                 </Stack>
             </CommunityProvider>
         </AuthProvider>

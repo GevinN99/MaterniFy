@@ -5,356 +5,280 @@ import {
     FlatList,
     TouchableOpacity,
     ActivityIndicator,
-    StyleSheet,
     Alert,
-    ScrollView,
     Linking,
+    ScrollView,
+    RefreshControl,
+    SafeAreaView
 } from "react-native";
 import { useRouter } from "expo-router";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
 import { getAvailableDoctors } from "../../api/doctorApi";
+import { MaterialIcons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function UserAppointments() {
     const [pendingAppointments, setPendingAppointments] = useState([]);
     const [bookedAppointments, setBookedAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
     const [activeTab, setActiveTab] = useState("booked");
     const router = useRouter();
 
-    const loadPendingAppointments = async () => {
-        setLoading(true);
+    const loadData = async () => {
         try {
-            const data = await getAvailableAppointments();
-            console.log("Pending Appointments Data:", data);
-            setPendingAppointments(data);
+            setLoading(true);
+            const [pending, booked, docs] = await Promise.all([
+                getAvailableAppointments(),
+                getUserBookedAppointments(),
+                getAvailableDoctors()
+            ]);
+            setPendingAppointments(pending);
+            setBookedAppointments(booked);
+            setDoctors(docs);
         } catch (error) {
-            console.error("Error loading pending appointments:", error.response?.data || error.message);
-            Alert.alert("Error", "Failed to load pending appointments.");
+            Alert.alert("Error", "Failed to load data");
+            console.error(error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
         }
-        setLoading(false);
     };
 
-    const loadBookedAppointments = async () => {
-        setLoading(true);
-        try {
-            const data = await getUserBookedAppointments();
-            console.log("Booked Appointments Data:", data);
-            setBookedAppointments(data);
-        } catch (error) {
-            Alert.alert("Error", "Failed to load booked appointments.");
-        }
-        setLoading(false);
+    const onRefresh = () => {
+        setRefreshing(true);
+        loadData();
     };
 
-    const loadDoctors = async () => {
-        setLoading(true);
-        try {
-            const data = await getAvailableDoctors();
-            setDoctors(data);
-        } catch (error) {
-            Alert.alert("Error", "Failed to load doctors.");
-        }
-        setLoading(false);
-    };
+    useEffect(() => {
+        loadData();
+    }, []);
 
     const handleBookAppointment = async (appointmentId) => {
-        setLoading(true);
         try {
+            setLoading(true);
             const response = await bookAppointment(appointmentId);
             if (response.error) {
                 Alert.alert("Error", response.error);
             } else {
                 Alert.alert("Success", "Appointment booked successfully!");
-                loadPendingAppointments();
-                loadBookedAppointments();
+                loadData();
             }
         } catch (error) {
-            Alert.alert("Error", "Failed to book appointment.");
+            Alert.alert("Error", "Failed to book appointment");
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     const handleJoinMeeting = async (meetUrl) => {
-        console.log("Opening meeting URL externally:", meetUrl);
         try {
             const supported = await Linking.canOpenURL(meetUrl);
             if (supported) {
                 await Linking.openURL(meetUrl);
             } else {
-                Alert.alert("Error", "Unable to open the meeting URL.");
+                Alert.alert("Error", "Unable to open the meeting URL");
             }
         } catch (error) {
-            console.error("Error opening URL:", error);
-            Alert.alert("Error", "Failed to open the meeting link.");
+            Alert.alert("Error", "Failed to open the meeting link");
         }
     };
 
-    useEffect(() => {
-        loadPendingAppointments();
-        loadBookedAppointments();
-        loadDoctors();
-    }, []);
-
     const renderPendingAppointmentItem = ({ item }) => (
-        <View style={styles.appointmentCard}>
-            <Text style={styles.appointmentText}>
-                Date: {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
-            </Text>
-            <Text style={styles.appointmentText}>Doctor: {item.doctorId?.fullName || "N/A"}</Text>
-            <Text style={styles.appointmentText}>
-                Specialization: {item.doctorId?.specialization || "N/A"}
-            </Text>
-            <Text style={styles.appointmentText}>
-                Experience: {item.doctorId?.experienceYears || 0} years
-            </Text>
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
+            <View className="flex-row items-center mb-2">
+                <MaterialIcons name="event-available" size={20} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">
+                    {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
+                </Text>
+            </View>
+
+            <View className="flex-row items-center mb-2">
+                <MaterialCommunityIcons name="doctor" size={20} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-800 font-medium">{item.doctorId?.fullName || "N/A"}</Text>
+            </View>
+
+            <View className="flex-row items-center mb-4">
+                <MaterialIcons name="medical-services" size={20} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">{item.doctorId?.specialization || "N/A"}</Text>
+            </View>
+
             <TouchableOpacity
-                style={styles.bookButton}
+                className="py-3 rounded-lg flex-row justify-center items-center"
                 onPress={() => handleBookAppointment(item._id)}
                 disabled={loading}
+                style={{ backgroundColor: '#B4E4FF' }}
             >
-                <Text style={styles.bookText}>Book</Text>
+                <FontAwesome name="calendar-plus-o" size={16} color="white" className="mr-2" />
+                <Text className="text-white font-semibold">Book Appointment</Text>
             </TouchableOpacity>
         </View>
     );
 
     const renderBookedAppointmentItem = ({ item }) => (
-        <View style={styles.bookedCard}>
-            <Text style={styles.appointmentText}>
-                Date: {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
-            </Text>
-            <Text style={styles.appointmentText}>Doctor: {item.doctorId?.fullName || "N/A"}</Text>
-            <Text style={styles.appointmentText}>
-                Specialization: {item.doctorId?.specialization || "N/A"}
-            </Text>
-            <Text style={styles.appointmentText}>
-                Experience: {item.doctorId?.experienceYears || 0} years
-            </Text>
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
+            <View className="flex-row justify-between items-start mb-3">
+                <View>
+                    <View className="flex-row items-center mb-1">
+                        <MaterialIcons name="event" size={20} color="#F7C8E0" className="mr-2" />
+                        <Text className="text-gray-800 font-medium">
+                            {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
+                        </Text>
+                    </View>
+
+                    <View className="flex-row items-center mb-1">
+                        <MaterialCommunityIcons name="doctor" size={20} color="#F7C8E0" className="mr-2" />
+                        <Text className="text-gray-500">{item.doctorId?.fullName || "N/A"}</Text>
+                    </View>
+
+                    <View className="flex-row items-center">
+                        <MaterialIcons name="medical-services" size={20} color="#F7C8E0" className="mr-2" />
+                        <Text className="text-gray-500">{item.doctorId?.specialization || "N/A"}</Text>
+                    </View>
+                </View>
+
+                <View className="bg-F7C8E0 px-2 py-1 rounded-full">
+                    <Text className="text-xs text-gray-800">Confirmed</Text>
+                </View>
+            </View>
+
             {item.status === "confirmed" && item.url && (
                 <TouchableOpacity
-                    style={styles.joinButton}
-                    onPress={() => {
-                        console.log("Join button clicked, URL:", item.url);
-                        handleJoinMeeting(item.url);
-                    }}
+                    className="py-3 rounded-lg flex-row justify-center items-center mt-2"
+                    onPress={() => handleJoinMeeting(item.url)}
+                    style={{ backgroundColor: '#F7C8E0' }}
                 >
-                    <Text style={styles.joinButtonText}>Join Meeting</Text>
+                    <MaterialCommunityIcons name="video" size={18} color="white" className="mr-2" />
+                    <Text className="text-white font-semibold">Join Video Consultation</Text>
                 </TouchableOpacity>
             )}
         </View>
     );
 
-    return (
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <View style={styles.container}>
-                <Text style={styles.title}>My Appointments</Text>
-                <View style={styles.tabContainer}>
-                    <TouchableOpacity
-                        style={[styles.tabButton, activeTab === "booked" && styles.activeTab]}
-                        onPress={() => setActiveTab("booked")}
-                    >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                activeTab === "booked" && styles.activeTabText,
-                            ]}
-                        >
-                            Booked Appointments
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.tabButton, activeTab === "pending" && styles.activeTab]}
-                        onPress={() => setActiveTab("pending")}
-                    >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                activeTab === "pending" && styles.activeTabText,
-                            ]}
-                        >
-                            Pending Appointments
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {loading ? (
-                    <ActivityIndicator size="large" color="#007AFF" style={styles.loading} />
-                ) : (
-                    <View style={styles.contentContainer}>
-                        {activeTab === "booked" ? (
-                            <FlatList
-                                data={bookedAppointments}
-                                keyExtractor={(item) => item._id}
-                                renderItem={renderBookedAppointmentItem}
-                                ListEmptyComponent={
-                                    <Text style={styles.emptyText}>No booked appointments.</Text>
-                                }
-                                scrollEnabled={false}
-                            />
-                        ) : (
-                            <FlatList
-                                data={pendingAppointments}
-                                keyExtractor={(item) => item._id}
-                                renderItem={renderPendingAppointmentItem}
-                                ListEmptyComponent={
-                                    <Text style={styles.emptyText}>
-                                        No pending appointments available.
-                                    </Text>
-                                }
-                                scrollEnabled={false}
-                            />
-                        )}
-                    </View>
-                )}
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Online Doctors</Text>
-                    <FlatList
-                        data={doctors}
-                        keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
-                            <View style={styles.doctorCard}>
-                                <Text style={styles.doctorName}>{item.fullName}</Text>
-                                <Text style={styles.doctorText}>
-                                    Specialization: {item.specialization}
-                                </Text>
-                                <Text style={styles.doctorText}>
-                                    Experience: {item.experienceYears} years
-                                </Text>
-                                <Text style={styles.doctorText}>Status: Online</Text>
-                            </View>
-                        )}
-                        ListEmptyComponent={
-                            <Text style={styles.emptyText}>No online doctors available.</Text>
-                        }
-                        scrollEnabled={false}
-                    />
+    const renderDoctorItem = ({ item }) => (
+        <View className="bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100">
+            <View className="flex-row justify-between items-center mb-2">
+                <Text className="text-lg font-semibold text-gray-800">{item.fullName}</Text>
+                <View className="flex-row items-center">
+                    <View className="w-2 h-2 bg-green-500 rounded-full mr-1" />
+                    <Text className="text-xs text-gray-500">Online</Text>
                 </View>
             </View>
-        </ScrollView>
+
+            <View className="flex-row items-center mb-1">
+                <MaterialIcons name="medical-services" size={16} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">{item.specialization}</Text>
+            </View>
+
+            <View className="flex-row items-center">
+                <MaterialIcons name="work" size={16} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">{item.experienceYears} years experience</Text>
+            </View>
+        </View>
+    );
+
+    return (
+        <SafeAreaView className="flex-1 bg-FCFCFC">
+            {/* Header */}
+            <View className="p-4">
+                <View className="h-1 w-16 bg-B4E4FF rounded-full" />
+            </View>
+
+            {/* Tabs */}
+            <View className="flex-row bg-gray-100 rounded-lg mx-4 p-1 mb-4">
+                <TouchableOpacity
+                    className={`flex-1 py-2 rounded-md ${activeTab === "booked" ? "bg-white shadow-sm" : ""}`}
+                    onPress={() => setActiveTab("booked")}
+                >
+                    <Text className={`text-center font-medium ${activeTab === "booked" ? "text-gray-800" : "text-gray-500"}`}>
+                        Booked
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    className={`flex-1 py-2 rounded-md ${activeTab === "pending" ? "bg-white shadow-sm" : ""}`}
+                    onPress={() => setActiveTab("pending")}
+                >
+                    <Text className={`text-center font-medium ${activeTab === "pending" ? "text-gray-800" : "text-gray-500"}`}>
+                        Available
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            {/* Content */}
+            {loading && !refreshing ? (
+                <View className="flex-1 justify-center items-center">
+                    <ActivityIndicator size="large" color="#B4E4FF" />
+                </View>
+            ) : (
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={['#B4E4FF']}
+                            tintColor="#B4E4FF"
+                        />
+                    }
+                >
+                    <View className="px-4">
+                        {activeTab === "booked" ? (
+                            bookedAppointments.length > 0 ? (
+                                <FlatList
+                                    data={bookedAppointments}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={renderBookedAppointmentItem}
+                                    scrollEnabled={false}
+                                    ListFooterComponent={<View className="pb-4" />}
+                                />
+                            ) : (
+                                <View className="bg-white p-6 rounded-xl items-center mb-4">
+                                    <MaterialIcons name="event-busy" size={40} color="#B4E4FF" />
+                                    <Text className="text-gray-500 mt-3">No booked appointments yet</Text>
+                                </View>
+                            )
+                        ) : (
+                            pendingAppointments.length > 0 ? (
+                                <FlatList
+                                    data={pendingAppointments}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={renderPendingAppointmentItem}
+                                    scrollEnabled={false}
+                                    ListFooterComponent={<View className="pb-4" />}
+                                />
+                            ) : (
+                                <View className="bg-white p-6 rounded-xl items-center mb-4">
+                                    <MaterialIcons name="schedule" size={40} color="#B4E4FF" />
+                                    <Text className="text-gray-500 mt-3">No available appointments</Text>
+                                </View>
+                            )
+                        )}
+
+                        {/* Online Doctors Section */}
+                        <View className="mt-6 mb-8">
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-xl font-bold text-gray-800 mr-3">Available Doctors</Text>
+                                <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
+                            </View>
+
+                            {doctors.length > 0 ? (
+                                <FlatList
+                                    data={doctors}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={renderDoctorItem}
+                                    scrollEnabled={false}
+                                />
+                            ) : (
+                                <View className="bg-white p-6 rounded-xl items-center">
+                                    <MaterialCommunityIcons name="doctor" size={40} color="#B4E4FF" />
+                                    <Text className="text-gray-500 mt-3">No doctors available</Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                </ScrollView>
+            )}
+        </SafeAreaView>
     );
 }
-
-// Styles remain unchanged
-const styles = StyleSheet.create({
-    scrollContainer: {
-        flexGrow: 1,
-        paddingBottom: 20,
-    },
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: "#F5F5F5",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
-        textAlign: "center",
-        color: "#333",
-    },
-    tabContainer: {
-        flexDirection: "row",
-        justifyContent: "space-around",
-        marginBottom: 20,
-    },
-    tabButton: {
-        flex: 1,
-        paddingVertical: 10,
-        alignItems: "center",
-        backgroundColor: "#E0E0E0",
-        borderRadius: 10,
-        marginHorizontal: 5,
-    },
-    activeTab: {
-        backgroundColor: "#007AFF",
-    },
-    tabText: {
-        fontSize: 16,
-        color: "#333",
-        fontWeight: "bold",
-    },
-    activeTabText: {
-        color: "#FFF",
-    },
-    contentContainer: {
-        flex: 1,
-    },
-    section: {
-        marginBottom: 20,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 10,
-        color: "#007AFF",
-    },
-    appointmentCard: {
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 3,
-        backgroundColor: "#E5FFE5",
-    },
-    bookedCard: {
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 3,
-        backgroundColor: "#FFE5E5",
-    },
-    appointmentText: {
-        fontSize: 16,
-        color: "#333",
-        marginBottom: 5,
-    },
-    bookButton: {
-        backgroundColor: "#007AFF",
-        padding: 10,
-        borderRadius: 5,
-        alignItems: "center",
-        marginTop: 5,
-    },
-    bookText: {
-        color: "white",
-        fontWeight: "bold",
-    },
-    joinButton: {
-        backgroundColor: "#4CAF50",
-        padding: 10,
-        borderRadius: 5,
-        alignItems: "center",
-        marginTop: 10,
-    },
-    joinButtonText: {
-        color: "white",
-        fontWeight: "bold",
-        fontSize: 16,
-    },
-    doctorCard: {
-        padding: 15,
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 3,
-    },
-    doctorName: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: 5,
-    },
-    doctorText: {
-        fontSize: 14,
-        color: "#666",
-        marginBottom: 3,
-    },
-    emptyText: {
-        fontSize: 16,
-        color: "#666",
-        textAlign: "center",
-    },
-    loading: {
-        marginVertical: 20,
-    },
-});

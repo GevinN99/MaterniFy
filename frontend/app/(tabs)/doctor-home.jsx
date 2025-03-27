@@ -4,12 +4,12 @@ import {
     Text,
     TouchableOpacity,
     FlatList,
-    StyleSheet,
     Alert,
     ActivityIndicator,
     Modal,
     Switch,
-    ScrollView, // Added ScrollView import
+    ScrollView,
+    Linking,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { getDoctorAppointments, createAppointment } from "../../api/appointmentApi";
@@ -50,7 +50,6 @@ export default function DoctorHome() {
         setLoading(true);
         try {
             const response = await axiosInstance.get('/doctors/me');
-            console.log("Doctor Profile Response:", JSON.stringify(response.data, null, 2));
             setIsOnline(response.data.isOnline || false);
         } catch (error) {
             console.error("Load Doctor Status Error:", error.response?.data || error.message);
@@ -124,12 +123,10 @@ export default function DoctorHome() {
     };
 
     const handleToggleOnlineStatus = async () => {
-        console.log("Toggle Online Status Triggered, Current Status:", isOnline);
         setLoading(true);
         try {
             const newStatus = !isOnline;
             const response = await updateDoctorOnlineStatus(newStatus);
-            console.log("Update Online Status Response:", JSON.stringify(response, null, 2));
             setIsOnline(newStatus);
             Alert.alert("Success", `Online status updated to ${newStatus ? "Online" : "Offline"}`);
             await loadDoctorStatus();
@@ -158,28 +155,51 @@ export default function DoctorHome() {
         setAppointmentForm({ ...appointmentForm, appointmentTime: currentTime });
     };
 
-    return (
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <Text style={styles.title}>Doctor Dashboard</Text>
+    const handleJoinMeeting = async (meetUrl) => {
+        try {
+            const supported = await Linking.canOpenURL(meetUrl);
+            if (supported) {
+                await Linking.openURL(meetUrl);
+            } else {
+                Alert.alert("Error", "Unable to open the meeting URL.");
+            }
+        } catch (error) {
+            console.error("Error opening URL:", error);
+            Alert.alert("Error", "Failed to open the meeting link.");
+        }
+    };
 
-                <View style={styles.statusContainer}>
-                    <Text style={styles.statusText}>Online Status: {isOnline ? "Online" : "Offline"}</Text>
-                    <Switch
-                        value={isOnline}
-                        onValueChange={handleToggleOnlineStatus}
-                        disabled={loading}
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={isOnline ? "#007AFF" : "#f4f3f4"}
-                    />
+    return (
+        <View className="flex-1 bg-[#FCFCFC]">
+            <ScrollView className="px-5 py-6" showsVerticalScrollIndicator={false}>
+                {/* Header Section */}
+                <View className="mb-8">
+                    <Text className="text-3xl font-bold text-[#333333] mb-2 text-center">Doctor Dashboard</Text>
+                    <View className="flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm">
+                        <Text className="text-lg text-[#555555]">
+                            Status: <Text className="font-semibold">{isOnline ? "Online" : "Offline"}</Text>
+                        </Text>
+                        <Switch
+                            value={isOnline}
+                            onValueChange={handleToggleOnlineStatus}
+                            disabled={loading}
+                            trackColor={{ false: "#E5E7EB", true: "#B4E4FF" }}
+                            thumbColor={isOnline ? "#FFFFFF" : "#F3F4F6"}
+                        />
+                    </View>
                 </View>
 
-                <LinearGradient colors={["#A2C9F3", "#FFFFFF"]} style={styles.createSection}>
-                    <Text style={styles.sectionTitle}>Create New Appointment</Text>
-                    <View style={styles.pickerContainer}>
-                        <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
-                            <Ionicons name="calendar" size={24} color="#007AFF" />
-                            <Text style={styles.dateText}>
+                {/* Create Appointment Section */}
+                <View className="mb-8 bg-gradient-to-b from-[#B4E4FF] to-white p-6 rounded-2xl shadow-sm">
+                    <Text className="text-xl font-bold text-[#333333] mb-4">Schedule New Appointment</Text>
+
+                    <View className="mb-4">
+                        <TouchableOpacity
+                            className="flex-row items-center bg-white p-4 rounded-xl"
+                            onPress={() => setShowDatePicker(true)}
+                        >
+                            <Ionicons name="calendar" size={24} color="#B4E4FF" />
+                            <Text className="ml-3 text-[#555555]">
                                 {appointmentForm.appointmentDate.toLocaleDateString()}
                             </Text>
                         </TouchableOpacity>
@@ -193,10 +213,14 @@ export default function DoctorHome() {
                             />
                         )}
                     </View>
-                    <View style={styles.pickerContainer}>
-                        <TouchableOpacity style={styles.dateButton} onPress={() => setShowTimePicker(true)}>
-                            <Ionicons name="time" size={24} color="#007AFF" />
-                            <Text style={styles.dateText}>
+
+                    <View className="mb-6">
+                        <TouchableOpacity
+                            className="flex-row items-center bg-white p-4 rounded-xl"
+                            onPress={() => setShowTimePicker(true)}
+                        >
+                            <Ionicons name="time" size={24} color="#B4E4FF" />
+                            <Text className="ml-3 text-[#555555]">
                                 {appointmentForm.appointmentTime.toLocaleTimeString([], {
                                     hour: "2-digit",
                                     minute: "2-digit",
@@ -212,236 +236,107 @@ export default function DoctorHome() {
                             />
                         )}
                     </View>
+
                     <TouchableOpacity
-                        style={[styles.createButton, loading && styles.disabledButton]}
+                        className={`bg-[#B4E4FF] p-4 rounded-xl items-center ${loading ? "opacity-70" : ""}`}
                         onPress={handleCreateAppointment}
                         disabled={loading}
                     >
                         {loading ? (
-                            <ActivityIndicator color="#fff" />
+                            <ActivityIndicator color="#FFFFFF" />
                         ) : (
-                            <Text style={styles.buttonText}>Create Appointment</Text>
+                            <Text className="text-white font-bold text-lg">Create Appointment</Text>
                         )}
                     </TouchableOpacity>
-                </LinearGradient>
+                </View>
 
-                <View style={styles.appointmentsSection}>
-                    <Text style={styles.sectionTitle}>My Appointments</Text>
+                {/* Appointments List Section */}
+                <View>
+                    <Text className="text-xl font-bold text-[#333333] mb-4">Your Appointments</Text>
+
                     {loading ? (
-                        <ActivityIndicator size="large" color="#007AFF" />
+                        <ActivityIndicator size="large" color="#B4E4FF" />
                     ) : (
                         <FlatList
                             data={appointments}
                             keyExtractor={(item) => item._id}
+                            scrollEnabled={false}
+                            ListEmptyComponent={
+                                <View className="bg-white p-6 rounded-xl items-center">
+                                    <Text className="text-[#555555]">No appointments scheduled</Text>
+                                </View>
+                            }
                             renderItem={({ item }) => (
-                                <View style={[
-                                    styles.appointmentCard,
-                                    item.motherId ? styles.bookedCard : styles.availableCard
-                                ]}>
-                                    <View style={styles.appointmentInfo}>
-                                        <Text style={styles.appointmentTime}>
-                                            {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
-                                        </Text>
-                                        {item.motherId ? (
-                                            <TouchableOpacity onPress={() => handleViewHealthHistory(item.motherId)}>
-                                                <Text style={styles.bookedText}>
-                                                    Booked by: {item.motherId.fullName}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ) : (
-                                            <Text style={styles.availableText}>Available</Text>
-                                        )}
+                                <View className={`mb-4 p-5 rounded-xl ${item.motherId ? "bg-[#FFE5F1]" : "bg-[#E5F9FF]"}`}>
+                                    <View className="flex-row justify-between items-start">
+                                        <View className="flex-1">
+                                            <Text className="text-lg font-semibold text-[#333333]">
+                                                {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
+                                            </Text>
+
+                                            {item.motherId ? (
+                                                <TouchableOpacity
+                                                    className="mt-2"
+                                                    onPress={() => handleViewHealthHistory(item.motherId)}
+                                                >
+                                                    <View className="flex-row items-center">
+                                                        <Ionicons name="person-circle-outline" size={20} color="#F7C8E0" />
+                                                        <Text className="ml-2 text-[#555555]">
+                                                            Booked by: <Text className="font-semibold">{item.motherId.fullName}</Text>
+                                                        </Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                            ) : (
+                                                <View className="mt-2 flex-row items-center">
+                                                    <Ionicons name="time-outline" size={20} color="#B4E4FF" />
+                                                    <Text className="ml-2 text-[#555555]">Available</Text>
+                                                </View>
+                                            )}
+                                        </View>
+
+                                        <TouchableOpacity
+                                            onPress={() => handleCancelAppointment(item._id)}
+                                            className="p-2"
+                                        >
+                                            <Ionicons name="trash-outline" size={24} color="#FF6B6B" />
+                                        </TouchableOpacity>
                                     </View>
+
                                     <TouchableOpacity
-                                        style={styles.cancelIconButton}
-                                        onPress={() => handleCancelAppointment(item._id)}
+                                        className="bg-[#F7C8E0] p-3 rounded-lg mt-3 items-center"
+                                        onPress={() => handleJoinMeeting(item.url)}
                                     >
-                                        <Ionicons name="trash-outline" size={24} color="#FF4444" />
+                                        <Text className="text-white font-semibold">Join Meeting</Text>
                                     </TouchableOpacity>
                                 </View>
                             )}
-                            ListEmptyComponent={<Text style={styles.emptyText}>No appointments scheduled</Text>}
-                            scrollEnabled={false} // Disable FlatList scrolling to let ScrollView handle it
                         />
                     )}
                 </View>
-
-                <Modal
-                    visible={!!selectedHealthHistory}
-                    transparent={true}
-                    animationType="slide"
-                    onRequestClose={() => setSelectedHealthHistory(null)}
-                >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Health History</Text>
-                            <Text style={styles.modalText}>{selectedHealthHistory}</Text>
-                            <TouchableOpacity
-                                style={styles.closeButton}
-                                onPress={() => setSelectedHealthHistory(null)}
-                            >
-                                <Text style={styles.closeButtonText}>Close</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </Modal>
             </ScrollView>
+
+            {/* Health History Modal */}
+            <Modal
+                visible={!!selectedHealthHistory}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setSelectedHealthHistory(null)}
+            >
+                <View className="flex-1 justify-center items-center bg-black/50">
+                    <View className="bg-white w-5/6 p-6 rounded-2xl">
+                        <Text className="text-xl font-bold text-[#333333] mb-4 text-center">Health History</Text>
+                        <ScrollView className="max-h-64 mb-6">
+                            <Text className="text-[#555555]">{selectedHealthHistory}</Text>
+                        </ScrollView>
+                        <TouchableOpacity
+                            className="bg-[#B4E4FF] p-3 rounded-lg items-center"
+                            onPress={() => setSelectedHealthHistory(null)}
+                        >
+                            <Text className="text-white font-semibold">Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#F5F5F5",
-    },
-    scrollContent: {
-        padding: 20,
-        paddingBottom: 30, // Extra padding at the bottom for scroll
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
-        textAlign: "center",
-        color: "#333",
-    },
-    statusContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 20,
-        backgroundColor: "#fff",
-        padding: 10,
-        borderRadius: 10,
-        elevation: 3,
-    },
-    statusText: {
-        fontSize: 16,
-        color: "#333",
-    },
-    createSection: {
-        padding: 20,
-        borderRadius: 15,
-        marginBottom: 20,
-        elevation: 5,
-    },
-    sectionTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginBottom: 15,
-        color: "#333",
-    },
-    pickerContainer: {
-        marginBottom: 15,
-    },
-    dateButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#fff",
-        padding: 12,
-        borderRadius: 10,
-        elevation: 2,
-    },
-    dateText: {
-        marginLeft: 10,
-        fontSize: 16,
-        color: "#333",
-    },
-    createButton: {
-        backgroundColor: "#007AFF",
-        padding: 15,
-        borderRadius: 10,
-        alignItems: "center",
-        marginTop: 10,
-    },
-    disabledButton: {
-        opacity: 0.6,
-    },
-    buttonText: {
-        color: "#fff",
-        fontWeight: "bold",
-        fontSize: 16,
-    },
-    appointmentsSection: {
-        flex: 1,
-    },
-    appointmentCard: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 3,
-    },
-    bookedCard: {
-        backgroundColor: "#FFE5E5",
-    },
-    availableCard: {
-        backgroundColor: "#E5FFE5",
-    },
-    appointmentInfo: {
-        flex: 1,
-    },
-    appointmentTime: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#333",
-    },
-    bookedText: {
-        color: "#FF4444",
-        fontSize: 14,
-        marginTop: 5,
-        fontWeight: "bold",
-    },
-    availableText: {
-        color: "#44AA44",
-        fontSize: 14,
-        marginTop: 5,
-        fontWeight: "bold",
-    },
-    cancelIconButton: {
-        padding: 5,
-    },
-    emptyText: {
-        textAlign: "center",
-        color: "#666",
-        fontSize: 16,
-        marginTop: 20,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0,0,0,0.5)",
-    },
-    modalContent: {
-        backgroundColor: "#fff",
-        padding: 20,
-        borderRadius: 10,
-        width: "80%",
-        maxHeight: "50%",
-    },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginBottom: 15,
-        textAlign: "center",
-    },
-    modalText: {
-        fontSize: 16,
-        color: "#333",
-        marginBottom: 20,
-    },
-    closeButton: {
-        backgroundColor: "#007AFF",
-        padding: 10,
-        borderRadius: 8,
-        alignItems: "center",
-    },
-    closeButtonText: {
-        color: "#fff",
-        fontWeight: "bold",
-    },
-});

@@ -9,6 +9,7 @@ import {
     ActivityIndicator,
     Image,
     ScrollView,
+    Modal,
 } from "react-native";
 import { useRouter } from "expo-router";
 import axiosInstance from "../../api/axiosInstance";
@@ -19,6 +20,7 @@ export default function DoctorProfile() {
     const { logout } = useContext(AuthContext);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [profile, setProfile] = useState({
         fullName: "",
         email: "",
@@ -70,43 +72,25 @@ export default function DoctorProfile() {
     };
 
     const handleDeleteProfile = async () => {
-        Alert.alert(
-            "Confirm Deletion",
-            "Are you sure you want to delete your profile? This action cannot be undone.",
-            [
-                { text: "Cancel", style: "cancel" },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: async () => {
-                        setLoading(true);
-                        try {
-                            await axiosInstance.delete("/doctors/me");
-                            Alert.alert("Success", "Profile deleted successfully");
-                            await logout();
-                            router.replace("/auth/DoctorLogin");
-                        } catch (error) {
-                            console.error("Delete Profile Error:", error.response?.data || error.message);
-                            Alert.alert("Error", "Failed to delete profile.");
-                        } finally {
-                            setLoading(false);
-                        }
-                    },
-                },
-            ]
-        );
+        setLoading(true);
+        try {
+            await axiosInstance.delete("/doctors/me");
+            Alert.alert("Success", "Profile deleted successfully");
+            await logout();
+            router.replace("/auth/DoctorLogin");
+        } catch (error) {
+            console.error("Delete Profile Error:", error.response?.data || error.message);
+            Alert.alert("Error", "Failed to delete profile.");
+        } finally {
+            setLoading(false);
+            setDeleteModalVisible(false);
+        }
     };
 
     const handleLogout = () => {
-        console.log("Logout button clicked, loading state:", loading);
-        if (loading) {
-            console.log("Logout blocked due to loading state");
-            return;
-        }
-        console.log("Executing logout directly...");
+        if (loading) return;
         logout()
             .then(() => {
-                console.log("Logout successful, navigating to DoctorLogin");
                 router.replace("/auth/DoctorLogin");
             })
             .catch((error) => {
@@ -130,7 +114,6 @@ export default function DoctorProfile() {
                         )}
                     </View>
 
-                    {/* Display Full Name with Title */}
                     <Text style={styles.nameWithTitle}>Dr. {profile.fullName}</Text>
 
                     <TextInput
@@ -176,7 +159,7 @@ export default function DoctorProfile() {
 
                         <TouchableOpacity
                             style={[styles.button, styles.deleteButton, loading && styles.disabledButton]}
-                            onPress={handleDeleteProfile}
+                            onPress={() => setDeleteModalVisible(true)}
                             disabled={loading}
                         >
                             <Text style={styles.buttonText}>Delete Profile</Text>
@@ -184,10 +167,7 @@ export default function DoctorProfile() {
 
                         <TouchableOpacity
                             style={[styles.button, styles.logoutButton]}
-                            onPress={() => {
-                                console.log("Logout button pressed");
-                                handleLogout();
-                            }}
+                            onPress={handleLogout}
                             disabled={loading}
                         >
                             <Ionicons name="log-out-outline" size={20} color="#fff" style={styles.icon} />
@@ -196,6 +176,42 @@ export default function DoctorProfile() {
                     </View>
                 </ScrollView>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={deleteModalVisible}
+                onRequestClose={() => setDeleteModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Confirm Deletion</Text>
+                        <Text style={styles.modalText}>
+                            Are you sure you want to delete your profile? This action cannot be undone.
+                        </Text>
+                        <View style={styles.modalButtonContainer}>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.cancelButton]}
+                                onPress={() => setDeleteModalVisible(false)}
+                            >
+                                <Text style={styles.modalButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.modalButton, styles.confirmDeleteButton]}
+                                onPress={handleDeleteProfile}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={styles.modalButtonText}>Delete</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -276,5 +292,49 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 10,
+    },
+    // Modal styles
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        padding: 20,
+        width: "80%",
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    modalText: {
+        fontSize: 16,
+        marginBottom: 20,
+        textAlign: "center",
+    },
+    modalButtonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    modalButton: {
+        padding: 12,
+        borderRadius: 5,
+        width: "48%",
+        alignItems: "center",
+    },
+    cancelButton: {
+        backgroundColor: "#ccc",
+    },
+    confirmDeleteButton: {
+        backgroundColor: "#FF4444",
+    },
+    modalButtonText: {
+        color: "#fff",
+        fontWeight: "bold",
     },
 });
