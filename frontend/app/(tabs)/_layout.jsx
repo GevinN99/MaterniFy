@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native"; // Add imports for loading UI
+import { ActivityIndicator, View } from "react-native";
 import TabBar from "../../components/TabBar";
 import { AuthContext } from "../../context/AuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,13 +14,13 @@ export default function TabsLayout() {
 	useEffect(() => {
 		const fetchRole = async () => {
 			const storedRole = await AsyncStorage.getItem("role");
-			console.log("Fetched role from AsyncStorage:", storedRole); // Debug log
+			console.log("Fetched role from AsyncStorage:", storedRole);
 			setRole(storedRole);
 		};
 		fetchRole();
 	}, [user]);
 
-	console.log("Current role:", role); // Debug log
+	console.log("Current role:", role);
 
 	// Show a loading indicator while role is being fetched
 	if (role === null) {
@@ -31,112 +31,92 @@ export default function TabsLayout() {
 		);
 	}
 
-	if (role === "doctor") {
-		return (
-			<Tabs tabBar={(props) => <TabBar {...props} />}>
-				<Tabs.Screen
-					name="doctor-home"
-					options={{
-						headerTitle: "Doctor Dashboard",
-						headerShown: false,
-						tabBarLabel: "Home",
-						tabBarIcon: ({ color }) => (
-							<Feather name="home" size={24} color={color} />
-						),
-					}}
-				/>
-				<Tabs.Screen
-					name="chatbot"
-					options={{
-						headerTitle: "Chatbot",
-						headerShown: false,
-						tabBarLabel: "Chatbot",
-						tabBarIcon: ({ color }) => (
-							<Octicons name="dependabot" size={24} color={color} />
-						),
-					}}
-				/>
-				<Tabs.Screen
-					name="community"
-					options={{
-						headerTitle: "Community",
-						headerShown: false,
-						tabBarLabel: "Community",
-						tabBarIcon: ({ color }) => (
-							<Feather name="users" size={24} color={color} />
-						),
-					}}
-				/>
-				<Tabs.Screen
-					name="doctor-profile"
-					options={{
-						headerTitle: "Doctor Profile",
-						headerShown: false,
-						tabBarLabel: "Profile",
-						tabBarIcon: ({ color }) => (
-							<Feather name="user" size={24} color={color} />
-						),
-					}}
-				/>
-			</Tabs>
-		);
-	}
+	// Tabs for mother role
+	const motherTabs = [
+		{
+			name: "index",
+			options: {
+				headerTitle: "Home",
+				headerShown: false,
+				tabBarLabel: "Home",
+				tabBarIcon: ({ color }) => (
+					<Feather name="home" size={24} color={color} />
+				),
+			},
+		},
+		{
+			name: "chatbot",
+			options: {
+				headerTitle: "Chatbot",
+				headerShown: false,
+				tabBarLabel: "Chatbot",
+				tabBarIcon: ({ color }) => (
+					<Octicons name="dependabot" size={24} color={color} />
+				),
+			},
+		},
+		{
+			name: "community",
+			options: {
+				headerTitle: "Community",
+				headerShown: false,
+				tabBarLabel: "Community",
+				tabBarIcon: ({ color }) => (
+					<Feather name="users" size={24} color={color} />
+				),
+			},
+		},
+		{
+			name: "profile",
+			options: {
+				headerTitle: "Profile",
+				headerShown: false,
+				tabBarLabel: "Profile",
+				tabBarIcon: ({ color }) => (
+					<Feather name="user" size={24} color={color} />
+				),
+			},
+		},
+	];
 
-	// Default tabs for non-doctor roles (e.g., mothers)
+	// Tabs for doctor role
+	const doctorTabs = [
+		{
+			name: "doctor-home",
+			options: {
+				headerTitle: "Doctor Dashboard",
+				headerShown: false,
+				tabBarLabel: "Home",
+				tabBarIcon: ({ color }) => (
+					<Feather name="home" size={24} color={color} />
+				),
+			},
+		},
+		{
+			name: "doctor-profile",
+			options: {
+				headerTitle: "Doctor Profile",
+				headerShown: false,
+				tabBarLabel: "Profile",
+				tabBarIcon: ({ color }) => (
+					<Feather name="user" size={24} color={color} />
+				),
+			},
+		},
+	];
+
+	// Select tabs based on role
+	const tabsToRender = role === "doctor" ? doctorTabs : motherTabs;
+
 	return (
 		<Tabs tabBar={(props) => <TabBar {...props} />}>
-			<Tabs.Screen
-				name="index"
-				options={{
-					headerTitle: "Home",
-					headerShown: false,
-					tabBarLabel: "Home",
-					tabBarIcon: ({ color }) => (
-						<Feather name="home" size={24} color={color} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="chatbot"
-				options={{
-					headerTitle: "Chatbot",
-					headerShown: false,
-					tabBarLabel: "Chatbot",
-					tabBarIcon: ({ color }) => (
-						<Octicons name="dependabot" size={24} color={color} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="community"
-				options={{
-					headerTitle: "Community",
-					headerShown: false,
-					tabBarLabel: "Community",
-					tabBarIcon: ({ color }) => (
-						<Feather name="users" size={24} color={color} />
-					),
-				}}
-			/>
-			<Tabs.Screen
-				name="profile"
-				options={{
-					headerTitle: "Profile",
-					headerShown: false,
-					tabBarLabel: "Profile",
-					tabBarIcon: ({ color }) => (
-						// <UsersRound
-						// 	className={`text-${focused ? "blue-500" : "gray-500"}`}
-						// 	size={26}
-						// />
-						<Feather 
-							name="user" 
-							size={24} 
-							color={color}
-						/>
-					),
-				}}
-			/>
+			{tabsToRender.map((tab) => (
+				<Tabs.Screen
+					key={tab.name}
+					name={tab.name}
+					options={tab.options}
+				/>
+			))}
 		</Tabs>
 	);
 }

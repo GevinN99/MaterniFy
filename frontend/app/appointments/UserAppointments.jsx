@@ -9,7 +9,7 @@ import {
     Linking,
     ScrollView,
     RefreshControl,
-    SafeAreaView
+    SafeAreaView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
@@ -22,7 +22,6 @@ export default function UserAppointments() {
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
-    const [activeTab, setActiveTab] = useState("booked");
     const router = useRouter();
 
     const loadData = async () => {
@@ -31,7 +30,7 @@ export default function UserAppointments() {
             const [pending, booked, docs] = await Promise.all([
                 getAvailableAppointments(),
                 getUserBookedAppointments(),
-                getAvailableDoctors()
+                getAvailableDoctors(),
             ]);
             setPendingAppointments(pending);
             setBookedAppointments(booked);
@@ -51,7 +50,13 @@ export default function UserAppointments() {
     };
 
     useEffect(() => {
+        let mounted = true; // Prevent updates on unmounted component
+
         loadData();
+
+        return () => {
+            mounted = false; // Cleanup to avoid state updates after unmount
+        };
     }, []);
 
     const handleBookAppointment = async (appointmentId) => {
@@ -92,22 +97,19 @@ export default function UserAppointments() {
                     {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
                 </Text>
             </View>
-
             <View className="flex-row items-center mb-2">
                 <MaterialCommunityIcons name="doctor" size={20} color="#B4E4FF" className="mr-2" />
                 <Text className="text-gray-800 font-medium">{item.doctorId?.fullName || "N/A"}</Text>
             </View>
-
             <View className="flex-row items-center mb-4">
                 <MaterialIcons name="medical-services" size={20} color="#B4E4FF" className="mr-2" />
                 <Text className="text-gray-500">{item.doctorId?.specialization || "N/A"}</Text>
             </View>
-
             <TouchableOpacity
                 className="py-3 rounded-lg flex-row justify-center items-center"
                 onPress={() => handleBookAppointment(item._id)}
                 disabled={loading}
-                style={{ backgroundColor: '#B4E4FF' }}
+                style={{ backgroundColor: "#B4E4FF" }}
             >
                 <FontAwesome name="calendar-plus-o" size={16} color="white" className="mr-2" />
                 <Text className="text-white font-semibold">Book Appointment</Text>
@@ -125,28 +127,24 @@ export default function UserAppointments() {
                             {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
                         </Text>
                     </View>
-
                     <View className="flex-row items-center mb-1">
                         <MaterialCommunityIcons name="doctor" size={20} color="#F7C8E0" className="mr-2" />
                         <Text className="text-gray-500">{item.doctorId?.fullName || "N/A"}</Text>
                     </View>
-
                     <View className="flex-row items-center">
                         <MaterialIcons name="medical-services" size={20} color="#F7C8E0" className="mr-2" />
                         <Text className="text-gray-500">{item.doctorId?.specialization || "N/A"}</Text>
                     </View>
                 </View>
-
                 <View className="bg-F7C8E0 px-2 py-1 rounded-full">
                     <Text className="text-xs text-gray-800">Confirmed</Text>
                 </View>
             </View>
-
             {item.status === "confirmed" && item.url && (
                 <TouchableOpacity
                     className="py-3 rounded-lg flex-row justify-center items-center mt-2"
                     onPress={() => handleJoinMeeting(item.url)}
-                    style={{ backgroundColor: '#F7C8E0' }}
+                    style={{ backgroundColor: "#F7C8E0" }}
                 >
                     <MaterialCommunityIcons name="video" size={18} color="white" className="mr-2" />
                     <Text className="text-white font-semibold">Join Video Consultation</Text>
@@ -164,12 +162,10 @@ export default function UserAppointments() {
                     <Text className="text-xs text-gray-500">Online</Text>
                 </View>
             </View>
-
             <View className="flex-row items-center mb-1">
                 <MaterialIcons name="medical-services" size={16} color="#B4E4FF" className="mr-2" />
                 <Text className="text-gray-500">{item.specialization}</Text>
             </View>
-
             <View className="flex-row items-center">
                 <MaterialIcons name="work" size={16} color="#B4E4FF" className="mr-2" />
                 <Text className="text-gray-500">{item.experienceYears} years experience</Text>
@@ -179,33 +175,10 @@ export default function UserAppointments() {
 
     return (
         <SafeAreaView className="flex-1 bg-FCFCFC">
-            {/* Header */}
             <View className="p-4">
                 <View className="h-1 w-16 bg-B4E4FF rounded-full" />
             </View>
 
-            {/* Tabs */}
-            <View className="flex-row bg-gray-100 rounded-lg mx-4 p-1 mb-4">
-                <TouchableOpacity
-                    className={`flex-1 py-2 rounded-md ${activeTab === "booked" ? "bg-white shadow-sm" : ""}`}
-                    onPress={() => setActiveTab("booked")}
-                >
-                    <Text className={`text-center font-medium ${activeTab === "booked" ? "text-gray-800" : "text-gray-500"}`}>
-                        Booked
-                    </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    className={`flex-1 py-2 rounded-md ${activeTab === "pending" ? "bg-white shadow-sm" : ""}`}
-                    onPress={() => setActiveTab("pending")}
-                >
-                    <Text className={`text-center font-medium ${activeTab === "pending" ? "text-gray-800" : "text-gray-500"}`}>
-                        Available
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            {/* Content */}
             {loading && !refreshing ? (
                 <View className="flex-1 justify-center items-center">
                     <ActivityIndicator size="large" color="#B4E4FF" />
@@ -214,17 +187,17 @@ export default function UserAppointments() {
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}
                     refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            colors={['#B4E4FF']}
-                            tintColor="#B4E4FF"
-                        />
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#B4E4FF"]} tintColor="#B4E4FF" />
                     }
                 >
                     <View className="px-4">
-                        {activeTab === "booked" ? (
-                            bookedAppointments.length > 0 ? (
+                        {/* Booked Appointments Section */}
+                        <View className="mb-8">
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-xl font-bold text-gray-800 mr-3">Your Appointments</Text>
+                                <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
+                            </View>
+                            {bookedAppointments.length > 0 ? (
                                 <FlatList
                                     data={bookedAppointments}
                                     keyExtractor={(item) => item._id}
@@ -237,9 +210,16 @@ export default function UserAppointments() {
                                     <MaterialIcons name="event-busy" size={40} color="#B4E4FF" />
                                     <Text className="text-gray-500 mt-3">No booked appointments yet</Text>
                                 </View>
-                            )
-                        ) : (
-                            pendingAppointments.length > 0 ? (
+                            )}
+                        </View>
+
+                        {/* Available Appointments Section */}
+                        <View className="mb-8">
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-xl font-bold text-gray-800 mr-3">Available Appointments</Text>
+                                <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
+                            </View>
+                            {pendingAppointments.length > 0 ? (
                                 <FlatList
                                     data={pendingAppointments}
                                     keyExtractor={(item) => item._id}
@@ -252,16 +232,15 @@ export default function UserAppointments() {
                                     <MaterialIcons name="schedule" size={40} color="#B4E4FF" />
                                     <Text className="text-gray-500 mt-3">No available appointments</Text>
                                 </View>
-                            )
-                        )}
+                            )}
+                        </View>
 
-                        {/* Online Doctors Section */}
-                        <View className="mt-6 mb-8">
+                        {/* Doctors Section */}
+                        <View className="mb-8">
                             <View className="flex-row items-center mb-3">
                                 <Text className="text-xl font-bold text-gray-800 mr-3">Available Doctors</Text>
                                 <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
                             </View>
-
                             {doctors.length > 0 ? (
                                 <FlatList
                                     data={doctors}

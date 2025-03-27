@@ -307,11 +307,17 @@ const Landing = () => {
           </View>
 
           <View style={styles.row}>
-            <TouchableOpacity onPress={() => router.push("/appointments/UserAppointments")}>
-              <View style={styles.buttonbox}>
-                <Text style={styles.topic}>Appointments</Text>
-                <Image source={require("../../assets/images/apoinment.png")} style={styles.sectors}/>
+            <TouchableOpacity
+                style={styles.quickAccessButton}
+                onPress={() => router.push("/appointments/UserAppointments")}
+            >
+              <View style={styles.buttonIconContainer}>
+                <Image
+                    source={require("../../assets/images/apoinment.png")}
+                    style={styles.buttonIcon}
+                />
               </View>
+              <Text style={styles.buttonText}>Appointments</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 

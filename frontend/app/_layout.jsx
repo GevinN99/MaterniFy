@@ -1,8 +1,8 @@
-import "../global.css"
-import { Stack } from "expo-router"
-import { AuthProvider } from "../context/AuthContext"
-import { CommunityProvider } from "../context/communityContext"
-import Header from "../components/Header"
+import "../global.css";
+import { Stack } from "expo-router";
+import { AuthProvider } from "../context/AuthContext";
+import { CommunityProvider } from "../context/communityContext";
+import Header from "../components/Header";
 
 function RootLayout() {
 	return (
@@ -28,12 +28,7 @@ function RootLayout() {
 					<Stack.Screen
 						name="communities"
 						options={{
-							header: () => (
-								<Header
-									backLink={"community"}
-									title="Communities"
-								/>
-							),
+							header: () => <Header backLink={"community"} title="Communities" />,
 							animation: "fade",
 						}}
 					/>
@@ -44,12 +39,7 @@ function RootLayout() {
 					<Stack.Screen
 						name="community/[communityId]"
 						options={{
-							header: () => (
-								<Header
-									title="Community"
-									backLink={"communities"}
-								/>
-							),
+							header: () => <Header title="Community" backLink={"communities"} />,
 							animation: "fade",
 						}}
 					/>
@@ -77,23 +67,13 @@ function RootLayout() {
 					<Stack.Screen
 						name="appointments/UserAppointments"
 						options={{
-							header: () => (
-								<Header
-									backLink="/"
-									title="My Appointments"
-								/>
-							),
+							header: () => <Header backLink="/" title="My Appointments" />,
 						}}
 					/>
 					<Stack.Screen
 						name="appointments/DoctorAppointments"
 						options={{
-							header: () => (
-								<Header
-									backLink="/"
-									title="Doctor Appointments"
-								/>
-							),
+							header: () => <Header backLink="/" title="Doctor Appointments" />,
 						}}
 					/>
 					<Stack.Screen
@@ -103,7 +83,6 @@ function RootLayout() {
 							title: "Health Plan",
 						}}
 					/>
-
 					<Stack.Screen
 						name="AiGeneratedHealthTipsScreen"
 						options={{
@@ -114,7 +93,7 @@ function RootLayout() {
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>
-	)
+	);
 }
 
-export default RootLayout
+export default RootLayout;

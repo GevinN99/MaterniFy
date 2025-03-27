@@ -4,49 +4,49 @@ import { AuthContext } from "../context/AuthContext";
 import Feather from "@expo/vector-icons/Feather";
 
 const TabBar = ({ state, descriptors, navigation }) => {
-	const { logout } = useContext(AuthContext);
+	const { logout, user } = useContext(AuthContext);
+	const role = user?.role; // Get the user's role from the auth context
 
 	return (
 		<View className="flex flex-row justify-between items-center bg-white py-2 px-5 shadow-lg">
 			{state.routes.map((route, index) => {
-				const { options } = descriptors[route.key]
+				const { options } = descriptors[route.key];
 				const label =
 					options.tabBarLabel !== undefined
 						? options.tabBarLabel
 						: options.title !== undefined
-						? options.title
-						: route.name
+							? options.title
+							: route.name;
 
-				if (["_sitemap", "+not-found"].includes(route.name)) return null
+				// Skip these routes
+				if (["_sitemap", "+not-found"].includes(route.name)) return null;
 
-				const isFocused = state.index === index
+				// Conditionally hide profile tabs based on role
+				if (role === "doctor" && route.name === "profile") return null;
+				if (role !== "doctor" && route.name === "doctor-profile") return null;
 
-				// Function to handle tab press
+				const isFocused = state.index === index;
+
 				const onPress = () => {
 					const event = navigation.emit({
 						type: "tabPress",
 						target: route.key,
 						canPreventDefault: true,
-					})
+					});
 
 					if (!isFocused && !event.defaultPrevented) {
-						navigation.navigate(route.name, route.params)
+						navigation.navigate(route.name, route.params);
 					}
-				}
+				};
 
-				const color = isFocused ? "#3b82f6" : "#6b7280"
+				const color = isFocused ? "#3b82f6" : "#6b7280";
 
-				// Check if the tab has a custom icon, otherwise use a fallback
 				const icon =
 					typeof options.tabBarIcon === "function" ? (
 						options.tabBarIcon({ color })
 					) : (
-						<Feather
-							name="alert-circle"
-							size={24}
-							color={color}
-						/>
-					)
+						<Feather name="alert-circle" size={24} color={color} />
+					);
 
 				return (
 					<TouchableOpacity
@@ -67,17 +67,8 @@ const TabBar = ({ state, descriptors, navigation }) => {
 							{label}
 						</Text>
 					</TouchableOpacity>
-				)
+				);
 			})}
-
-			{/* Logout Button */}
-			{/* <TouchableOpacity
-				onPress={logout}
-				className="flex items-center px-4 py-2 bg-red-500 rounded-full"
-			>
-				<Feather name="log-out" size={20} color="white" />
-				<Text className="text-white text-xs mt-1">Logout</Text>
-			</TouchableOpacity> */}
 		</View>
 	);
 };
