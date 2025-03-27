@@ -11,7 +11,7 @@ import {
   Dimensions,
   TextInput,
 } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
@@ -54,50 +54,54 @@ const Landing = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch scores
-        const response = await axiosInstance.get("/quizzes/get-response");
-        const thisWeekScores = response.data.filter((item) => {
-          const itemDate = new Date(item.createdAt);
-          const now = new Date();
-          const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
-          return itemDate >= startOfWeek;
-        });
-
-        setScores(thisWeekScores);
-
-      } catch (err) {
-        console.log("Error fetching data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   // useEffect(() => {
-	// 	const fetchUser = async () => {
-	// 		try {
-	// 			const response = await axiosInstance.get("/users/profile")
-  //       console.log("fetching user data for index:",response.data)
-	// 			setProfileImage(response.data.profileImage)
-  //       setUsername(response.data.fullName)
-  //       setConceptionDate(response.data.pregnancyDate)
-  //       await AsyncStorage.setItem("conceptionDate", response.data.pregnancyDate);
-	// 		} catch (error) {
-	// 			console.log(error)
-	// 		}
-	// 	}
+  //   const fetchData = async () => {
+  //     try {
+  //       // Fetch scores
+  //       const response = await axiosInstance.get("/quizzes/get-response");
+  //       const thisWeekScores = response.data.filter((item) => {
+  //         const itemDate = new Date(item.createdAt);
+  //         const now = new Date();
+  //         const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+  //         return itemDate >= startOfWeek;
+  //       });
 
-	// 	fetchUser()
-	//  }, [date])
+  //       setScores(thisWeekScores);
+
+  //     } catch (err) {
+  //       console.log("Error fetching data:", err);
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
 
   useFocusEffect(
     useCallback(() => {
+        const fetchData = async () => {
+          try {
+            // Fetch scores
+            const response = await axiosInstance.get("/quizzes/get-response");
+            const thisWeekScores = response.data.filter((item) => {
+              const itemDate = new Date(item.createdAt);
+              const now = new Date();
+              const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+              return itemDate >= startOfWeek;
+            });
+    
+            setScores(thisWeekScores);
+    
+          } catch (err) {
+            console.log("Error fetching data:", err);
+            setError(err.message);
+          } finally {
+            setLoading(false);
+          }
+        };
+
         const fetchUser = async () => {
             try {
                 const response = await axiosInstance.get("/users/profile");
@@ -112,7 +116,8 @@ const Landing = () => {
                 console.log(error);
             }
         };
-
+        
+        fetchData();
         fetchUser();
     }, []) 
 )
