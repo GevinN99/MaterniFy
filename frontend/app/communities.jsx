@@ -125,7 +125,7 @@ const Communities = () => {
 				/>
 			</View>
 
-			{/* Display search results */}
+			
 			{searching ? (
 				<ScrollView
 					className=" mx-4 bg-white rounded-xl mb-4 "
@@ -265,7 +265,7 @@ const Communities = () => {
 				</ScrollView>
 			)}
 
-			{/* Only render the button when visible */}
+			
 			{isButtonVisible && (
 				<TouchableOpacity
 					onPress={() => {
@@ -282,7 +282,7 @@ const Communities = () => {
 				</TouchableOpacity>
 			)}
 
-			{/* Modal for creating community */}
+			
 			<CreateCommunity
 				visible={isModalVisible}
 				onClose={() => setIsModalVisible(false)}

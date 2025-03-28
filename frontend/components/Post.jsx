@@ -57,7 +57,7 @@ const Post = ({ post, community, replying }) => {
 
 	return (
 		<View className="bg-white p-4 my-2 rounded-2xl">
-			{/* User info section */}
+			
 			<View className="flex flex-row items-center">
 				<Image
 					source={{ uri: userId.profileImage }}
@@ -66,7 +66,7 @@ const Post = ({ post, community, replying }) => {
 					placeholder={{ blurhash }}									
 				/>
 				<View className="ml-4 flex">
-					{/* Display user's name and post timestamp */}
+					
 					<View className="flex flex-row items-center ">
 						<Text className="font-bold text-xl mr-2">{userId.fullName}</Text>
 						<Text className="mt-1">•</Text>
@@ -75,7 +75,7 @@ const Post = ({ post, community, replying }) => {
 						</Text>
 					</View>
 
-					{/* Display community name */}
+					
 					<Text className="text-gray-500 text-base">
 						@
 						{(communityId.name || community.name)
@@ -85,10 +85,10 @@ const Post = ({ post, community, replying }) => {
 				</View>
 			</View>
 
-			{/* Post content */}
+			
 			<Text className="mt-4 text-lg">{content}</Text>
 
-			{/* Display post image if available */}
+			
 			{imageUrl && (
 				<View className="flex my-4 items-center w-full overflow-hidden rounded-2xl">
 					<Image
@@ -100,7 +100,7 @@ const Post = ({ post, community, replying }) => {
 				</View>
 			)}
 
-			{/* Post actions (like, reply, delete) */}
+			
 			{!replying && (
 				<PostActionSection
 					liked={liked}
