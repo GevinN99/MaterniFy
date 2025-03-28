@@ -3,7 +3,7 @@ import {
 	View,
 	Text,
 	TextInput,
-	TouchableOpacity,	
+	TouchableOpacity,
 	Modal,
 	StyleSheet,
 	ScrollView,
@@ -35,12 +35,15 @@ const CreatePost = ({ visible, onClose }) => {
 	})
 	const [image, setImage] = useState(null)
 	const [profileImage, setProfileImage] = useState()
+	const [name, setName] = useState()
 
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
 				const response = await axiosInstance.get("/users/profile")
+				console.log(response.data)
 				setProfileImage(response.data.profileImage)
+				setName(response.data.fullName)
 			} catch (error) {
 				console.log(error)
 			}
@@ -99,8 +102,8 @@ const CreatePost = ({ visible, onClose }) => {
 			}
 
 			const response = await createPost({ ...postDetails, imageUrl })
-			setLoading(false)			
-			fetchData('posts')
+			setLoading(false)
+			fetchData("posts")
 			handleClose()
 		} catch (error) {
 			setErrors({ ...errors, server: "Something went wrong! Try again later." })
@@ -148,7 +151,7 @@ const CreatePost = ({ visible, onClose }) => {
 										contentFit="cover"
 										placeholder={{ blurhash }}
 									/>
-									<Text className="font-semibold">Ellyse Perry</Text>
+									<Text className="font-bold">{name}</Text>
 								</View>
 
 								{/* Display content error if present */}
@@ -187,7 +190,7 @@ const CreatePost = ({ visible, onClose }) => {
 										<View>
 											<Image
 												source={{ uri: image }}
-												style={[styles.postImage]}												
+												style={[styles.postImage]}
 												transition={1000}
 											/>
 											<TouchableOpacity

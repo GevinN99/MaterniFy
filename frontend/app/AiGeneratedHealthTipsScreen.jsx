@@ -98,12 +98,7 @@ export default function AiGeneratedHealthTipsScreen() {
               <Text style={styles.noPlanText}>Click above to generate your health plan.</Text>
           )}
 
-          <TouchableOpacity
-              style={styles.button}
-              onPress={() => router.push('/HealthPlanScreen')}
-          >
-            <Text style={styles.buttonText}>GO BACK</Text>
-          </TouchableOpacity>
+          
         </ScrollView>
       </LinearGradient>
   );

@@ -28,10 +28,7 @@ export default function HealthPlanScreen() {
         {/* "GET STARTED" -> AiGeneratedHealthTipsScreen */}
         <Pressable
           onPress={() => router.push('/AiGeneratedHealthTipsScreen')}
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
+          style={styles.button}
         >
           <Text style={styles.buttonText}>
             GET STARTED <Ionicons name="arrow-forward" size={16} color="#fff" />
@@ -41,11 +38,7 @@ export default function HealthPlanScreen() {
         {/* "Daily Health Check" -> navigate to DailyHealthChecklistScreen */}
         <Pressable
           onPress={() => router.push('/DailyHealthChecklistScreen')}
-          style={({ pressed }) => [
-            styles.button,
-            styles.dailyButton,
-            pressed && styles.buttonPressed,
-          ]}
+          style={styles.button}
         >
           <Text style={styles.buttonText}>Daily Health Check</Text>
         </Pressable>

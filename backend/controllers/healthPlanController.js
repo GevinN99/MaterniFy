@@ -47,7 +47,7 @@ exports.generateHealthPlan = async (req, res) => {
                 messages: [
                     {
                         role: "user",
-                        content: `Generate a structured pregnancy health plan for a ${age}, with medical history: "${medicalHistory.join(', ')}", currently in the ${pregnancyStage} stage. Return the response as a clean JSON object (no markdown or extra formatting) with sections for "diet", "exercise", and "medical_recommendations".`
+                        content: `Generate a structured pregnancy health plan for a ${age}, with medical history: "${medicalHistory.join(', ')}", currently in the ${pregnancyStage} stage. Return the response as a clean JSON object (no markdown or extra formatting) with sections for "diet", "exercise", and "medical_recommendations". Do not inlcude lists or bullet points.`
                     }
                 ],
                 max_tokens: 1024

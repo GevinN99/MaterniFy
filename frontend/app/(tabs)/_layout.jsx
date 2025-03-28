@@ -92,13 +92,9 @@ export default function TabsLayout() {
 			},
 		},
 		{
-			name: "doctor-profile",
+			name: "doctorProfile",
 			options: {
-				headerShown: false,
-				tabBarLabel: "Profile",
-				tabBarIcon: ({ color }) => (
-					<Feather name="user" size={24} color={color} />
-				),
+				headerShown: false,								
 			},
 		},
 	];

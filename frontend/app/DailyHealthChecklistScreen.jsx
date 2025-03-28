@@ -231,9 +231,7 @@ export default function DailyHealthChecklistScreen() {
 	}
 
 	return (
-		<ScrollView contentContainerStyle={styles.container}>
-			<Text style={styles.title}>Your Daily Health Checklist</Text>
-
+		<ScrollView contentContainerStyle={styles.container}>			
 			<View style={styles.imageContainer}>
 				<Image
 					source={require("../assets/images/checklist.png")}
@@ -341,13 +339,7 @@ export default function DailyHealthChecklistScreen() {
 					</View>
 				</View>
 			</View>
-
-			<TouchableOpacity
-				style={styles.goBackButton}
-				onPress={() => router.push("/HealthPlanScreen")}
-			>
-				<Text style={styles.goBackButtonText}>GO BACK</Text>
-			</TouchableOpacity>
+			
 		</ScrollView>
 	)
 }
@@ -447,17 +439,5 @@ const styles = StyleSheet.create({
 		color: "#555",
 		fontStyle: "italic",
 	},
-	goBackButton: {
-		backgroundColor: "#B4E4FF",
-		paddingVertical: 12,
-		paddingHorizontal: 30,
-		borderRadius: 25,
-		marginTop: 20,
-		alignSelf: "center",
-	},
-	goBackButtonText: {
-		color: "#fff",
-		fontSize: 16,
-		fontWeight: "600",
-	},
+	
 })

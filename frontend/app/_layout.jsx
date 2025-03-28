@@ -28,7 +28,12 @@ function RootLayout() {
 					<Stack.Screen
 						name="communities"
 						options={{
-							header: () => <Header backLink={"community"} title="Communities" />,
+							header: () => (
+								<Header
+									backLink={"community"}
+									title="Communities"
+								/>
+							),
 							animation: "fade",
 						}}
 					/>
@@ -39,7 +44,12 @@ function RootLayout() {
 					<Stack.Screen
 						name="community/[communityId]"
 						options={{
-							header: () => <Header title="Community" backLink={"communities"} />,
+							header: () => (
+								<Header
+									title="Community"
+									backLink={"communities"}
+								/>
+							),
 							animation: "fade",
 						}}
 					/>
@@ -67,41 +77,81 @@ function RootLayout() {
 					<Stack.Screen
 						name="appointments/UserAppointments"
 						options={{
-							header: () => <Header backLink="/" title="My Appointments" />,
+							header: () => (
+								<Header
+									backLink="/"
+									title="My Appointments"
+								/>
+							),
 						}}
 					/>
 					<Stack.Screen
 						name="appointments/DoctorAppointments"
 						options={{
-							header: () => <Header backLink="/" title="Doctor Appointments" />,
+							header: () => (
+								<Header
+									backLink="/"
+									title="Doctor Appointments"
+								/>
+							),
 							presentation: "modal",
 						}}
 					/>
 					<Stack.Screen
 						name="(tabs)/doctorProfile"
 						options={{
-							header: () => <Header backLink="/" title=" " />,
+							header: () => (
+								<Header
+									backLink="/"
+									title=" "
+								/>
+							),
 							presentation: "modal",
 						}}
 					/>
 					<Stack.Screen
 						name="HealthPlanScreen"
 						options={{
-							headerShown: false,
+							headerShown: true,
 							title: "Health Plan",
+							headerTransparent: true,
 						}}
 					/>
 					<Stack.Screen
 						name="AiGeneratedHealthTipsScreen"
 						options={{
 							headerShown: true,
-							title: "Ai Health Plan",
+							title: "AI Health Plan",
+						}}
+					/>
+
+					<Stack.Screen
+						name="DailyHealthChecklistScreen"
+						options={{
+							headerShown: true,
+							title: "Daily Health Checklist",
+						}}
+					/>
+
+					<Stack.Screen
+						name="epdsResults"
+						options={{
+							headerShown: true,
+							title: "EPDS Results",
+						}}
+					/>
+
+					<Stack.Screen
+						name="emergency"
+						options={{
+							headerShown: true,
+							title: "Emergency",
 						}}
 					/>
 				</Stack>
 			</CommunityProvider>
 		</AuthProvider>
-	);
+	)
 }
 
 export default RootLayout;
