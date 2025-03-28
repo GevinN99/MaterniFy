@@ -4,7 +4,6 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    StyleSheet,
     Alert,
     ActivityIndicator,
     Image,
@@ -100,112 +99,165 @@ export default function DoctorProfile() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Doctor Profile</Text>
+        <View className="flex-1 bg-[#FCFCFC] p-6">
+            {/* Header with accent line */}
+            <View className="mb-6">
+                <Text className="text-3xl font-bold text-[#333333] text-center">Doctor Profile</Text>
+                <View className="h-1 w-20 bg-[#B4E4FF] rounded-full self-center mt-2"></View>
+            </View>
+
             {loading ? (
-                <ActivityIndicator size="large" color="#007AFF" style={styles.loading} />
+                <ActivityIndicator size="large" color="#4E9AF6" className="flex-1" />
             ) : (
-                <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.profileImageContainer}>
-                        {profile.profileImage ? (
-                            <Image source={{ uri: profile.profileImage }} style={styles.profileImage} />
-                        ) : (
-                            <Ionicons name="person-circle-outline" size={100} color="#ccc" />
-                        )}
+                <ScrollView showsVerticalScrollIndicator={false} className="pb-10">
+                    {/* Profile Image with futuristic ring */}
+                    <View className="items-center mb-8">
+                        <View className="w-36 h-36 rounded-full border-4 border-[#B4E4FF] flex items-center justify-center shadow-lg shadow-[#B4E4FF]/30 bg-white">
+                            {profile.profileImage ? (
+                                <Image
+                                    source={{ uri: profile.profileImage }}
+                                    className="w-32 h-32 rounded-full"
+                                />
+                            ) : (
+                                <Ionicons name="person-circle-outline" size={90} color="#B4E4FF" />
+                            )}
+                        </View>
                     </View>
 
-                    <Text style={styles.nameWithTitle}>Dr. {profile.fullName}</Text>
+                    {/* Doctor Title */}
+                    <Text className="text-2xl font-bold text-[#333333] text-center mb-8">
+                        Dr. {profile.fullName}
+                    </Text>
 
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Full Name (without title)"
-                        value={profile.fullName}
-                        onChangeText={(text) => setProfile({ ...profile, fullName: text })}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Email (cannot be changed)"
-                        value={profile.email}
-                        editable={false}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Years of Experience"
-                        value={profile.experienceYears}
-                        onChangeText={(text) => setProfile({ ...profile, experienceYears: text })}
-                        keyboardType="numeric"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Specialization"
-                        value={profile.specialization}
-                        onChangeText={(text) => setProfile({ ...profile, specialization: text })}
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Profile Image URL"
-                        value={profile.profileImage}
-                        onChangeText={(text) => setProfile({ ...profile, profileImage: text })}
-                    />
+                    {/* Profile Form */}
+                    <View className="space-y-5 mb-8">
+                        <View>
+                            <Text className="text-[#555555] mb-2 font-medium">Full Name</Text>
+                            <TextInput
+                                className="bg-white p-4 rounded-xl border border-[#B4E4FF]/50 text-[#333333] shadow-sm"
+                                placeholder="Enter your full name"
+                                placeholderTextColor="#94A3B8"
+                                value={profile.fullName}
+                                onChangeText={(text) => setProfile({ ...profile, fullName: text })}
+                            />
+                        </View>
 
-                    <View style={styles.buttonContainer}>
+                        <View>
+                            <Text className="text-[#555555] mb-2 font-medium">Email</Text>
+                            <TextInput
+                                className="bg-[#F8FAFC] p-4 rounded-xl text-[#555555] border border-[#B4E4FF]/30"
+                                placeholder="Your email"
+                                placeholderTextColor="#94A3B8"
+                                value={profile.email}
+                                editable={false}
+                            />
+                        </View>
+
+                        <View>
+                            <Text className="text-[#555555] mb-2 font-medium">Years of Experience</Text>
+                            <TextInput
+                                className="bg-white p-4 rounded-xl border border-[#B4E4FF]/50 text-[#333333] shadow-sm"
+                                placeholder="Enter years of experience"
+                                placeholderTextColor="#94A3B8"
+                                value={profile.experienceYears}
+                                onChangeText={(text) => setProfile({ ...profile, experienceYears: text })}
+                                keyboardType="numeric"
+                            />
+                        </View>
+
+                        <View>
+                            <Text className="text-[#555555] mb-2 font-medium">Specialization</Text>
+                            <TextInput
+                                className="bg-white p-4 rounded-xl border border-[#B4E4FF]/50 text-[#333333] shadow-sm"
+                                placeholder="Enter your specialization"
+                                placeholderTextColor="#94A3B8"
+                                value={profile.specialization}
+                                onChangeText={(text) => setProfile({ ...profile, specialization: text })}
+                            />
+                        </View>
+
+                        <View>
+                            <Text className="text-[#555555] mb-2 font-medium">Profile Image URL</Text>
+                            <TextInput
+                                className="bg-white p-4 rounded-xl border border-[#B4E4FF]/50 text-[#333333] shadow-sm"
+                                placeholder="Enter image URL"
+                                placeholderTextColor="#94A3B8"
+                                value={profile.profileImage}
+                                onChangeText={(text) => setProfile({ ...profile, profileImage: text })}
+                            />
+                        </View>
+                    </View>
+
+                    {/* Action Buttons with enhanced visibility */}
+                    <View className="space-y-4 mb-8">
                         <TouchableOpacity
-                            style={[styles.button, styles.updateButton, loading && styles.disabledButton]}
+                            className={`bg-[#4E9AF6] p-5 rounded-xl flex-row items-center justify-center shadow-md ${loading ? "opacity-80" : "active:opacity-90"}`}
                             onPress={handleUpdateProfile}
                             disabled={loading}
                         >
-                            <Text style={styles.buttonText}>Update Profile</Text>
+                            <Ionicons name="save-outline" size={22} color="white" />
+                            <Text className="text-white font-bold ml-3 text-lg">Update Profile</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.button, styles.deleteButton, loading && styles.disabledButton]}
+                            className={`bg-[#FF85B3] p-5 rounded-xl flex-row items-center justify-center shadow-md ${loading ? "opacity-80" : "active:opacity-90"}`}
                             onPress={() => setDeleteModalVisible(true)}
                             disabled={loading}
                         >
-                            <Text style={styles.buttonText}>Delete Profile</Text>
+                            <Ionicons name="trash-outline" size={22} color="white" />
+                            <Text className="text-white font-bold ml-3 text-lg">Delete Profile</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                            style={[styles.button, styles.logoutButton]}
+                            className="bg-[#555555] p-5 rounded-xl flex-row items-center justify-center shadow-md active:opacity-90"
                             onPress={handleLogout}
                             disabled={loading}
                         >
-                            <Ionicons name="log-out-outline" size={20} color="#fff" style={styles.icon} />
-                            <Text style={styles.buttonText}>Logout</Text>
+                            <Ionicons name="log-out-outline" size={22} color="white" />
+                            <Text className="text-white font-bold ml-3 text-lg">Logout</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
             )}
 
-            {/* Delete Confirmation Modal */}
+            {/* Enhanced Delete Confirmation Modal */}
             <Modal
-                animationType="slide"
+                animationType="fade"
                 transparent={true}
                 visible={deleteModalVisible}
                 onRequestClose={() => setDeleteModalVisible(false)}
             >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Confirm Deletion</Text>
-                        <Text style={styles.modalText}>
-                            Are you sure you want to delete your profile? This action cannot be undone.
+                <View className="flex-1 justify-center items-center bg-black/70 p-5">
+                    <View className="bg-white w-full p-6 rounded-2xl max-w-md shadow-xl">
+                        <View className="items-center mb-4">
+                            <View className="bg-[#FF85B3]/10 p-4 rounded-full">
+                                <Ionicons name="warning" size={40} color="#FF85B3" />
+                            </View>
+                        </View>
+                        <Text className="text-2xl font-bold text-[#333333] mb-3 text-center">Confirm Deletion</Text>
+                        <Text className="text-[#555555] mb-6 text-center text-base leading-6">
+                            This will permanently delete your doctor profile and all associated data. This action cannot be undone.
                         </Text>
-                        <View style={styles.modalButtonContainer}>
+
+                        <View className="flex-row justify-between space-x-4">
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.cancelButton]}
+                                className="flex-1 bg-[#F1F5F9] p-4 rounded-xl items-center justify-center active:bg-[#E2E8F0] border border-[#E2E8F0]"
                                 onPress={() => setDeleteModalVisible(false)}
                             >
-                                <Text style={styles.modalButtonText}>Cancel</Text>
+                                <Text className="text-[#555555] font-semibold text-base">Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.modalButton, styles.confirmDeleteButton]}
+                                className="flex-1 bg-[#FF85B3] p-4 rounded-xl items-center justify-center active:bg-[#FF85B3]/90 shadow-sm"
                                 onPress={handleDeleteProfile}
                                 disabled={loading}
                             >
                                 {loading ? (
-                                    <ActivityIndicator color="#fff" />
+                                    <ActivityIndicator color="#FFFFFF" />
                                 ) : (
-                                    <Text style={styles.modalButtonText}>Delete</Text>
+                                    <View className="flex-row items-center">
+                                        <Ionicons name="trash-outline" size={20} color="white" />
+                                        <Text className="text-white font-semibold text-base ml-2">Confirm Delete</Text>
+                                    </View>
                                 )}
                             </TouchableOpacity>
                         </View>
@@ -215,126 +267,3 @@ export default function DoctorProfile() {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#F5F5F5",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginTop: 20,
-        marginBottom: 20,
-        textAlign: "center",
-        color: "#333",
-    },
-    scrollContent: {
-        paddingHorizontal: 20,
-        paddingBottom: 30,
-    },
-    loading: {
-        flex: 1,
-        justifyContent: "center",
-    },
-    profileImageContainer: {
-        alignItems: "center",
-        marginBottom: 20,
-    },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-    },
-    nameWithTitle: {
-        fontSize: 22,
-        fontWeight: "bold",
-        color: "#007AFF",
-        textAlign: "center",
-        marginBottom: 20,
-    },
-    input: {
-        backgroundColor: "#fff",
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 15,
-        fontSize: 16,
-        borderWidth: 1,
-        borderColor: "#ddd",
-    },
-    buttonContainer: {
-        marginTop: 20,
-    },
-    button: {
-        flexDirection: "row",
-        padding: 15,
-        borderRadius: 10,
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 15,
-    },
-    updateButton: {
-        backgroundColor: "#007AFF",
-    },
-    deleteButton: {
-        backgroundColor: "#FF4444",
-    },
-    logoutButton: {
-        backgroundColor: "#FFA500",
-    },
-    disabledButton: {
-        opacity: 0.6,
-    },
-    buttonText: {
-        color: "#fff",
-        fontWeight: "bold",
-        fontSize: 16,
-    },
-    icon: {
-        marginRight: 10,
-    },
-    // Modal styles
-    modalContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-    },
-    modalContent: {
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        padding: 20,
-        width: "80%",
-    },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginBottom: 15,
-        textAlign: "center",
-    },
-    modalText: {
-        fontSize: 16,
-        marginBottom: 20,
-        textAlign: "center",
-    },
-    modalButtonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    modalButton: {
-        padding: 12,
-        borderRadius: 5,
-        width: "48%",
-        alignItems: "center",
-    },
-    cancelButton: {
-        backgroundColor: "#ccc",
-    },
-    confirmDeleteButton: {
-        backgroundColor: "#FF4444",
-    },
-    modalButtonText: {
-        color: "#fff",
-        fontWeight: "bold",
-    },
-});

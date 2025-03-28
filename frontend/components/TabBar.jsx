@@ -4,8 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import Feather from "@expo/vector-icons/Feather";
 
 const TabBar = ({ state, descriptors, navigation }) => {
-	const { logout, user } = useContext(AuthContext);
-	const role = user?.role; // Get the user's role from the auth context
+	const { user } = useContext(AuthContext);
+	const role = user?.role;
 
 	return (
 		<View className="flex flex-row justify-between items-center bg-white py-2 px-5 shadow-lg">
@@ -21,9 +21,11 @@ const TabBar = ({ state, descriptors, navigation }) => {
 				// Skip these routes
 				if (["_sitemap", "+not-found"].includes(route.name)) return null;
 
-				// Conditionally hide profile tabs based on role
-				if (role === "doctor" && route.name === "profile") return null;
-				if (role !== "doctor" && route.name === "doctor-profile") return null;
+				// Only show doctor-home and doctor-profile for doctors
+				if (role === "doctor" && !["doctor-home", "doctor-profile"].includes(route.name)) return null;
+
+				// Only show regular tabs for non-doctors
+				if (role !== "doctor" && ["doctor-home", "doctor-profile"].includes(route.name)) return null;
 
 				const isFocused = state.index === index;
 
@@ -41,12 +43,8 @@ const TabBar = ({ state, descriptors, navigation }) => {
 
 				const color = isFocused ? "#3b82f6" : "#6b7280";
 
-				const icon =
-					typeof options.tabBarIcon === "function" ? (
-						options.tabBarIcon({ color })
-					) : (
-						<Feather name="alert-circle" size={24} color={color} />
-					);
+				// Only render if tabBarIcon is defined
+				if (!options.tabBarIcon) return null;
 
 				return (
 					<TouchableOpacity
@@ -58,7 +56,7 @@ const TabBar = ({ state, descriptors, navigation }) => {
 						testID={options.tabBarTestID}
 						onPress={onPress}
 					>
-						{icon}
+						{options.tabBarIcon({ color })}
 						<Text
 							className={`text-xs mt-2 ${
 								isFocused ? "text-blue-500" : "text-gray-500"

@@ -1,7 +1,6 @@
 const Appointment = require('../models/appointmentModel');
 const Doctor = require('../models/doctorModel');
 const User = require('../models/userModel');
-const { generateAgoraToken } = require('../utils/agora');
 
 exports.createAppointment = async (req, res) => {
     try {

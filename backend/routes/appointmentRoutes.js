@@ -10,7 +10,6 @@ const {
 const {authenticate} = require('../middlewares/auth');
 const router = express.Router();
 
-// Protected routes
 router.post('/', authenticate, createAppointment); // Doctor creates appointment
 router.get('/doctor', authenticate, getDoctorAppointments); // Doctor views their appointments
 router.delete('/cancel/:appointmentId', authenticate, cancelAppointment); // Cancel appointment (used by both doctor and mother)

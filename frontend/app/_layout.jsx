@@ -74,6 +74,14 @@ function RootLayout() {
 						name="appointments/DoctorAppointments"
 						options={{
 							header: () => <Header backLink="/" title="Doctor Appointments" />,
+							presentation: "modal",
+						}}
+					/>
+					<Stack.Screen
+						name="(tabs)/doctorProfile"
+						options={{
+							header: () => <Header backLink="/" title=" " />,
+							presentation: "modal",
 						}}
 					/>
 					<Stack.Screen

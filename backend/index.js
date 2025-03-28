@@ -8,7 +8,6 @@ require("dotenv").config()
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const healthPlanRoutes = require('./routes/healthPlanRoutes');
-const emergencyContactRoutes = require('./routes/emergencyContactRoutes');
 const postRoutes = require('../backend/routes/community-routes/postRoutes');
 const communityRoutes = require('./routes/community-routes/communityRoutes');
 const quizRoutes = require('./routes/quizRoutes');
@@ -48,7 +47,6 @@ app.use('/api/quizzes', quizRoutes);
 app.use('/api/exercises', require('./routes/exerciseRoutes'));
 app.use("/api/users", userRoutes)
 app.use("/api/health-plans", healthPlanRoutes)
-app.use("/api/emergency-contacts", emergencyContactRoutes)
 app.use("/api/community-posts", postRoutes)
 app.use("/api/communities", communityRoutes)
 app.use("/api/community-replies", replyRoutes)

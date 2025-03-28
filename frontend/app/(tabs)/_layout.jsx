@@ -84,7 +84,6 @@ export default function TabsLayout() {
 		{
 			name: "doctor-home",
 			options: {
-				headerTitle: "Doctor Dashboard",
 				headerShown: false,
 				tabBarLabel: "Home",
 				tabBarIcon: ({ color }) => (
@@ -95,7 +94,6 @@ export default function TabsLayout() {
 		{
 			name: "doctor-profile",
 			options: {
-				headerTitle: "Doctor Profile",
 				headerShown: false,
 				tabBarLabel: "Profile",
 				tabBarIcon: ({ color }) => (

@@ -172,10 +172,21 @@ export default function DoctorHome() {
     return (
         <View className="flex-1 bg-[#FCFCFC]">
             <ScrollView className="px-5 py-6" showsVerticalScrollIndicator={false}>
-                {/* Header Section */}
+                {/* Header Section with Profile Icon */}
                 <View className="mb-8">
-                    <Text className="text-3xl font-bold text-[#333333] mb-2 text-center">Doctor Dashboard</Text>
-                    <View className="flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm">
+                    <View className="flex-row justify-between items-center">
+                        <Text className="text-3xl font-bold text-[#333333]">Doctor Dashboard</Text>
+                        <TouchableOpacity
+                            onPress={() => router.push("/(tabs)/doctorProfile")}
+                            className="p-2"
+                            accessibilityLabel="Go to profile"
+                            accessibilityRole="button"
+                        >
+                            <Ionicons name="person-circle-outline" size={32} color="#B4E4FF" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View className="flex-row justify-between items-center bg-white p-4 rounded-xl shadow-sm mt-4">
                         <Text className="text-lg text-[#555555]">
                             Status: <Text className="font-semibold">{isOnline ? "Online" : "Offline"}</Text>
                         </Text>
