@@ -381,12 +381,7 @@ const Landing = () => {
                                         hasAppointment && styles.bookedDayText,
                                     ]}>
                                         {date.format("D")}
-                                    </Text>
-                                    {hasAppointment && (
-                                        <View style={styles.bookedIndicator}>
-                                            <Text style={styles.bookedIndicatorText}>Booked</Text>
-                                        </View>
-                                    )}
+                                    </Text>                                    
                                 </TouchableOpacity>
                             );
                         })}
@@ -398,7 +393,7 @@ const Landing = () => {
                                 <Ionicons
                                     name={bookedAppointments.some(a =>
                                         moment(a.appointmentDate).format("YYYY-MM-DD") === selectedDate
-                                    ) ? "md-calendar" : "md-calendar-outline"}
+                                    ) ? "calendar" : "calendar-outline"}
                                     size={24}
                                     color="#B4E4FF"
                                 />
