@@ -17,7 +17,7 @@ router.post('/login', loginDoctor);
 
 // Protected routes (require authentication)
 router.get('/me', authenticate, getDoctorProfile);
-router.put('/me', authenticate, updateDoctorProfile); // Changed from /online-status to /me for full profile update
+router.put('/me', authenticate, updateDoctorProfile);
 router.delete('/me', authenticate, deleteDoctorProfile);
 router.put('/online-status', authenticate, updateOnlineStatus);
 router.get('/available', getAvailableDoctors);

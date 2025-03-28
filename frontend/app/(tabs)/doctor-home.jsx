@@ -16,7 +16,6 @@ import { getDoctorAppointments, createAppointment } from "../../api/appointmentA
 import axiosInstance from "../../api/axiosInstance";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { AuthContext } from "../../context/AuthContext";
-import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { updateDoctorOnlineStatus } from "../../api/doctorApi";
 

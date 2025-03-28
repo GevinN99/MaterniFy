@@ -50,12 +50,12 @@ export default function UserAppointments() {
     };
 
     useEffect(() => {
-        let mounted = true; // Prevent updates on unmounted component
+        let mounted = true;
 
         loadData();
 
         return () => {
-            mounted = false; // Cleanup to avoid state updates after unmount
+            mounted = false;
         };
     }, []);
 

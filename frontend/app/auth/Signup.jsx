@@ -172,7 +172,7 @@ export default function Signup() {
             if (response.token) {
                 await AsyncStorage.setItem("token", response.token);
                 setSuccessMessage("Account created successfully!");
-                setTimeout(() => router.replace("/auth/Login"), 1000); // Slight delay for user to see success
+                setTimeout(() => router.replace("/auth/Login"), 1000);
             } else {
                 setGeneralError(response.message || "Signup failed. Please try again.");
             }

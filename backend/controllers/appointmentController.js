@@ -9,7 +9,7 @@ exports.createAppointment = async (req, res) => {
             body: req.body,
         });
 
-        const doctorId = req.user.id; // Use 'id' from token payload
+        const doctorId = req.user.id;
         if (!doctorId) {
             return res.status(401).json({ message: "Unauthorized: Doctor ID not found" });
         }
@@ -21,7 +21,7 @@ exports.createAppointment = async (req, res) => {
 
         const newAppointment = new Appointment({
             appointmentType,
-            appointmentDate: new Date(appointmentDate), // Convert string to Date
+            appointmentDate: new Date(appointmentDate),
             appointmentTime,
             doctorId,
             motherId: null,
@@ -77,7 +77,7 @@ exports.getAvailableAppointments = async (req, res) => {
     try {
         const appointments = await Appointment.find({ motherId: null })
             .populate("doctorId", "fullName specialization experienceYears");
-        console.log("Available Appointments:", appointments); // Add logging for debugging
+        console.log("Available Appointments:", appointments);
         res.status(200).json(appointments);
     } catch (error) {
         console.error(error);
@@ -108,7 +108,7 @@ exports.bookAppointment = async (req, res) => {
 
         appointment.motherId = user._id;
         appointment.status = "confirmed";
-        appointment.url = doctor.googleMeetUrl; // Assign Google Meet URL to appointment
+        appointment.url = doctor.googleMeetUrl;
 
         await appointment.save();
 

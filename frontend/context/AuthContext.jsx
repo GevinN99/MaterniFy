@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null)
 	const [userId, setUserId] = useState(null)
 	const [role, setRole] = useState(null)
-	const [isLoading, setIsLoading] = useState(true) // Add loading state
+	const [isLoading, setIsLoading] = useState(true)
 	const router = useRouter()
 
 	useEffect(() => {
@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }) => {
 			if (!user) {
 				router.replace("/auth/Login")
 			} else {
-				// Only redirect if we're on auth pages
 				const currentPath = router.pathname
 				const isOnAuthPage = currentPath?.startsWith("/auth")
 
@@ -46,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 					if (role === "doctor") {
 						router.replace("/doctor-home")
 					} else {
-						router.replace("/") // Goes to (tabs)/index
+						router.replace("/")
 					}
 				}
 			}
@@ -66,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 	}
 
 	if (isLoading) {
-		return null // Or a loading spinner
+		return null
 	}
 
 	return (

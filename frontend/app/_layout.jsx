@@ -9,14 +9,21 @@ function RootLayout() {
 		<AuthProvider>
 			<CommunityProvider>
 				<Stack>
+					<Stack
+						name="auth/Login"
+						options={{ headerShown: false }}
+						screenOptions={{
+							initialRouteName: "auth/Login",
+						}}
+						/>
 					<Stack.Screen
 						name="(tabs)"
 						options={{ headerShown: false }}
 					/>
-					<Stack.Screen
-						name="auth/Login"
-						options={{ headerShown: false }}
-					/>
+					{/*<Stack.Screen*/}
+					{/*	name="auth/Login"*/}
+					{/*	options={{ headerShown: false }}*/}
+					{/*/>*/}
 					<Stack.Screen
 						name="auth/Signup"
 						options={{ headerShown: false }}

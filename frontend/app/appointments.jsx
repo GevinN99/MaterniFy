@@ -5,24 +5,24 @@ import { useRouter } from "expo-router";
 
 export default function AppointmentsScreen() {
     const [appointments, setAppointments] = useState([]);
-    const [loading, setLoading] = useState(true); // Added loading state
-    const [error, setError] = useState(null); // Added error state
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
-        let mounted = true; // Flag to track component mount status
+        let mounted = true;
 
         const fetchAppointments = async () => {
             try {
-                setLoading(true); // Set loading true at start
-                setError(null); // Reset error state
+                setLoading(true);
+                setError(null);
                 const response = await axiosInstance.get("/appointments/pending");
                 if (mounted) {
-                    setAppointments(response.data); // Update state only if mounted
+                    setAppointments(response.data);
                 }
             } catch (error) {
                 if (mounted) {
-                    setError("Failed to fetch appointments. Please try again."); // Set error message
+                    setError("Failed to fetch appointments. Please try again.");
                     console.error("Error fetching appointments:", error);
                 }
             } finally {
@@ -34,13 +34,11 @@ export default function AppointmentsScreen() {
 
         fetchAppointments();
 
-        // Cleanup function to prevent state updates after unmount
         return () => {
             mounted = false;
         };
-    }, []); // Empty dependency array: runs once on mount
+    }, []);
 
-    // Render based on loading, error, or data states
     if (loading) {
         return (
             <View style={styles.container}>

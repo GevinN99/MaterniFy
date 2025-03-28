@@ -13,11 +13,11 @@ import { getDoctorAppointments, cancelAppointment } from "../../api/appointmentA
 export default function DoctorAppointments() {
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null); // Added error state
+    const [error, setError] = useState(null);
 
     const loadAppointments = async () => {
         setLoading(true);
-        setError(null); // Reset error state
+        setError(null);
         try {
             const data = await getDoctorAppointments();
             const today = new Date();
@@ -32,12 +32,12 @@ export default function DoctorAppointments() {
             setError("Failed to load appointments. Please try again.");
             Alert.alert("Error", "Failed to load appointments.");
         } finally {
-            setLoading(false); // Moved into finally block
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        let mounted = true; // Flag to track mount status
+        let mounted = true;
 
         const fetchData = async () => {
             setLoading(true);
@@ -68,18 +68,17 @@ export default function DoctorAppointments() {
 
         fetchData();
 
-        // Cleanup to prevent state updates on unmount
         return () => {
             mounted = false;
         };
-    }, []); // Runs once on mount
+    }, []);
 
     const handleCancelAppointment = async (appointmentId) => {
         try {
-            setLoading(true); // Prevent multiple actions during cancellation
+            setLoading(true);
             await cancelAppointment(appointmentId);
             Alert.alert("Success", "Appointment canceled.");
-            await loadAppointments(); // Reload after cancellation
+            await loadAppointments();
         } catch (error) {
             console.error("Cancel Appointment Error:", error);
             Alert.alert("Error", "Failed to cancel appointment.");
@@ -129,7 +128,7 @@ export default function DoctorAppointments() {
                                     <TouchableOpacity
                                         style={styles.cancelButton}
                                         onPress={() => handleCancelAppointment(item._id)}
-                                        disabled={loading} // Disable button during loading
+                                        disabled={loading}
                                     >
                                         <Text style={styles.cancelText}>Cancel</Text>
                                     </TouchableOpacity>
@@ -157,7 +156,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: "row",
         marginTop: 5,
-        gap: 10, // Adds space between buttons
+        gap: 10,
     },
     cancelButton: {
         backgroundColor: "red",

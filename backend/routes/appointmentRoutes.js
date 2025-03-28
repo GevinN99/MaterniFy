@@ -10,11 +10,11 @@ const {
 const {authenticate} = require('../middlewares/auth');
 const router = express.Router();
 
-router.post('/', authenticate, createAppointment); // Doctor creates appointment
-router.get('/doctor', authenticate, getDoctorAppointments); // Doctor views their appointments
-router.delete('/cancel/:appointmentId', authenticate, cancelAppointment); // Cancel appointment (used by both doctor and mother)
-router.get('/available', authenticate, getAvailableAppointments); // Mother views available appointments
-router.post('/book', authenticate, bookAppointment); // Mother books appointment
-router.get('/my-booked', authenticate, getUserBookedAppointments); // Mother views booked appointments
+router.post('/', authenticate, createAppointment);
+router.get('/doctor', authenticate, getDoctorAppointments);
+router.delete('/cancel/:appointmentId', authenticate, cancelAppointment);
+router.get('/available', authenticate, getAvailableAppointments);
+router.post('/book', authenticate, bookAppointment);
+router.get('/my-booked', authenticate, getUserBookedAppointments);
 
 module.exports = router;
