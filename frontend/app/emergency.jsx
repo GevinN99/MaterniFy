@@ -16,7 +16,7 @@ const symptomsList = [
 const SymptomsChecker = () => {
   const router = useRouter();
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
-  const themeColor = "#7469B6";
+  const themeColor = "#B4E4FF";
 
   const toggleSymptom = (symptom) => {
     setSelectedSymptoms((prev) =>

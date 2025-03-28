@@ -472,68 +472,41 @@ const Landing = () => {
 						</View>
 					</View>
 				</LinearGradient>
-				
-				<View style={{ paddingTop: 20 }}>
-					<Text
-						style={{
-							fontSize: 18,
-							fontWeight: "bold",
-							marginBottom: 10,
-							textAlign: "left",
-						}}
-					>
-						Mental Health Summary
-					</Text>
-					{scores.length > 0 ? (
-						<View>
-							{scores.length === 0 ? (
-								<Text>No users scores found for now</Text>
-							) : (
-								<LineChart
-									data={chartData}
-									width={screenWidth - 32}
-									height={220}
-									yAxisInterval={1}
-									chartConfig={{
-										backgroundColor: "#FCFCFC",
-										backgroundGradientFrom: "#FCFCFC",
-										backgroundGradientTo: "#FCFCFC",
-										decimalPlaces: 0,
-										color: (opacity = 1) => `rgba(163, 200, 232, ${opacity})`,
-										labelColor: (opacity = 1) => `rgba(51, 51, 51, ${opacity})`,
-										style: { borderRadius: 16 },
-										propsForDots: {
-											r: "6",
-											strokeWidth: "2",
-											stroke: "#A3C8E8",
-										},
-									}}
-									bezier
-									style={{
-										marginVertical: 8,
-										borderRadius: 16,
-										backgroundColor: "#EAEFF4",
-									}}
-								/>
-							)}
-						</View>
-					) : (
-						<Text
-							style={{
-								fontSize: 16,
-								textAlign: "center",
-								color: "#64A8F1",
-								marginTop: 20,
-							}}
-						>
-							No scores available. Try the EPDS test to track your mental
-							health.
-						</Text>
-					)}
-				</View>
-			</ScrollView>
-		</SafeAreaView>
-	)
+
+        <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 25, textAlign:"left"}}>Mental Health Summary</Text>
+        <View style={{ alignItems: "center", padding: 20 }}>
+          {scores.length > 0 ? (
+            <View>
+              {scores.length === 0 ? (<Text>No users scores found for now</Text>) : (
+              <LineChart
+                data={chartData}
+                width={screenWidth - 32}
+                height={220}
+                yAxisInterval={1}
+                chartConfig={{
+                  backgroundColor: "#FCFCFC",
+                  backgroundGradientFrom: "#FCFCFC",
+                  backgroundGradientTo: "#FCFCFC",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(163, 200, 232, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(51, 51, 51, ${opacity})`,
+                  style: { borderRadius: 16 },
+                  propsForDots: { r: "6", strokeWidth: "2", stroke: "#A3C8E8" },
+                }}
+                bezier
+                style={{ marginVertical: 8, borderRadius: 16, backgroundColor: "#EAEFF4" }}
+              />)}
+            </View>
+          ) : (
+            <Text style={{ fontSize: 16, textAlign: "center", color: "#64A8F1", marginTop: 20 }}>
+              No scores available. Try the EPDS test to track your mental health.
+
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
