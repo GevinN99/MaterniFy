@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity, Platform, SafeAreaView, ScrollView } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { View, Text, StyleSheet, Image, ActivityIndicator, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getConceptionDate } from "../api/conceptionApi";
 
-// Shortened growth stages array - just keeping a few key stages
 const growthStages = [
   { week: 1, fruit: "Poppy Seed", image: require("../assets/images/fruits/Poppy Seed.png") },
   { week: 2, fruit: "Apple Seed", image: require("../assets/images/fruits/Apple Seed.png") },
@@ -50,52 +47,36 @@ const growthStages = [
   { week: 40, fruit: "Cabbage", image: require("../assets/images/fruits/Cabbage.png") },
 ];
 
-const GrowthTracker = ({conceptionDate}) => {
+const GrowthTracker = ({ conceptionDate }) => {
   const [gestationalAge, setGestationalAge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPicker, setShowPicker] = useState(false);
   const [dueDate, setDueDate] = useState(null);
-  const [error, setError] = useState(null);
-  
 
-  // Load saved date on component mount
   useEffect(() => {
-		if (conceptionDate) {
-			calculateDates(new Date(conceptionDate))
-		}
-	}, [conceptionDate])
+    if (conceptionDate) {
+      calculateDates(new Date(conceptionDate));
+    }
+  }, [conceptionDate]);
 
-  // Calculate gestational age and due date
   const calculateDates = (date) => {
     const today = new Date();
     const days = Math.floor((today - date) / (1000 * 60 * 60 * 24));
     setGestationalAge(Math.floor(days / 7));
-    
+
     const due = new Date(date);
-    due.setDate(due.getDate() + 280); // 40 weeks
+    due.setDate(due.getDate() + 280);
     setDueDate(due);
-    setLoading(false)
+    setLoading(false);
   };
 
-  // Handle date selection
-  const onChangeDate = async (event, selectedDate) => {
-    if (selectedDate) {
-      setShowPicker(Platform.OS === "ios");
-      await AsyncStorage.setItem("conceptionDate", selectedDate.toISOString());
-      calculateDates(selectedDate);
-    } else {
-      setShowPicker(false);
-    }
-  };
-
-  // Format date for display
   const formatDate = (date) => {
     if (!date) return "";
-    const parsedDate = date instanceof Date ? date : new Date(date)
+    const parsedDate = date instanceof Date ? date : new Date(date);
     return parsedDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  // Loading state
+
   if (loading) {
     return (
       <View style={styles.centeredContainer}>
@@ -105,7 +86,6 @@ const GrowthTracker = ({conceptionDate}) => {
     );
   }
 
-  // Initial setup state
   if (!conceptionDate) {
     return (
       <SafeAreaView style={styles.container}>
@@ -141,17 +121,15 @@ const GrowthTracker = ({conceptionDate}) => {
     );
   }
 
-  // Find current growth stage
   const currentStage = growthStages.reduce(
     (closest, stage) => (stage.week <= gestationalAge ? stage : closest),
     growthStages[0]
   );
 
-  // Determine trimester
   const trimester = gestationalAge <= 12 ? "First" : gestationalAge <= 26 ? "Second" : "Third";
-  const trimesterColor = gestationalAge <= 12 ? "#F7C8E0" : gestationalAge <= 26 ? "#F7C8E0" : "#F7C8E0";
+  const trimesterColor = "#F7C8E0"; // This value is the same for all cases.
   const weeksRemaining = Math.max(0, 40 - gestationalAge);
-  const progressPercent = Math.round(gestationalAge / 40 * 100);
+  const progressPercent = Math.round((gestationalAge / 40) * 100);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -205,7 +183,6 @@ const GrowthTracker = ({conceptionDate}) => {
             </View>
           </View>
         </View>
-      
       </ScrollView>
     </SafeAreaView>
   );
@@ -215,7 +192,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#B4E4FF",
-    padding: 16,
   },
   centeredContainer: {
     flex: 1,
@@ -251,7 +227,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     padding: 10,
-    marginBottom: 16,
+    marginBottom: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

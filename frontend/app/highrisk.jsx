@@ -1,6 +1,11 @@
 import { useRouter } from "expo-router";
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Linking } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+
+const handleEmergencyCall = () => {
+  const phoneNumber = '1990';
+  Linking.openURL(`tel:${phoneNumber}`);
+};
 
 const HighRisk = () => {
   const router = useRouter();
@@ -35,7 +40,7 @@ const HighRisk = () => {
       
       <TouchableOpacity 
         style={styles.emergencyButton} 
-        onPress={() => {/* Add emergency call functionality */}}
+        onPress={() => { handleEmergencyCall(); }}
       >
         <MaterialIcons name="phone" size={24} color="white" />
         <Text style={styles.emergencyButtonText}>Call Emergency Services</Text>
@@ -112,12 +117,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
+    width:335
   },
   actionText: {
     fontSize: 16,
     fontWeight: "600",
     color: "#222222",
-    marginLeft: 12,
+    marginLeft: 10,
   },
   emergencyButton: {
     backgroundColor: "#FF3B30",

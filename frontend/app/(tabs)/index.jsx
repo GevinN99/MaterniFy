@@ -392,8 +392,6 @@ const Landing = () => {
           )}
         </View>
 
-
-        {/* Today's Health Plan */}
 				<Text style={styles.sectionTitle}>Today's Health Checklist</Text>
 				<LinearGradient
 					colors={["#B4E4FF", "#9fd9fa"]}
@@ -429,9 +427,8 @@ const Landing = () => {
 					</View>
 				</LinearGradient>
 
-   
+        <Text style={{ fontSize: 18, fontWeight: "bold", marginTop: 25, textAlign:"left"}}>Mental Health Summary</Text>
         <View style={{ alignItems: "center", padding: 20 }}>
-          <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10, textAlign:"left"}}>Mental Health Summary</Text>
           {scores.length > 0 ? (
             <View>
               {scores.length === 0 ? (<Text>No users scores found for now</Text>) : (
