@@ -16,6 +16,8 @@ import moment from "moment";
 import { Svg, Circle } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { LineChart } from "react-native-chart-kit";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BabyGrowthTracker from "../../components/GrowthTracker";
 import axiosInstance from "../../api/axiosInstance";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -218,180 +220,216 @@ const Landing = () => {
   
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
-    
-        <View style={styles.headerSection}>
-          <View style={styles.profileContainer}>
-            {profilePic ? (
-              <Image source={{ uri: profilePic }} style={styles.profileImage} />
-            ) : (
-              <Image source={require("../../assets/images/landing.png")} style={styles.profileImage} />
-            )}
-            <View style={styles.welcomeContainer}>
-              <Text style={styles.welcomeText}>Welcome back,</Text>
-              <Text style={styles.nameText}>{username ? username : "Mom"}!</Text>
-            </View>
-          </View>
-        </View>
+		<SafeAreaView style={styles.safeContainer}>
+			<ScrollView
+				showsVerticalScrollIndicator={false}
+				contentContainerStyle={styles.container}
+			>
+				<View style={styles.headerSection}>
+					<View style={styles.profileContainer}>
+						{profilePic ? (
+							<Image
+								source={{ uri: profilePic }}
+								style={styles.profileImage}
+							/>
+						) : (
+							<Image
+								source={require("../../assets/images/landing.png")}
+								style={styles.profileImage}
+							/>
+						)}
+						<View style={styles.welcomeContainer}>
+							<Text style={styles.welcomeText}>Welcome back,</Text>
+							<Text style={styles.nameText}>
+								{username ? username : "Mom"}!
+							</Text>
+						</View>
+					</View>
+				</View>
 
-        <View style={styles.growthTrackerCard}>
-      {conceptionDate ? (
-        <BabyGrowthTracker conceptionDate={conceptionDate} />
-      ) : (
-        <View style={styles.noConceptionContainer}>
-          <ActivityIndicator size="large" color="#F7C8E0" />
-          <Text style={styles.noConceptionText}>
-            Please set and save your conception date to track Baby's Growth
-          </Text>
+				<View style={styles.growthTrackerCard}>
+					{conceptionDate ? (
+						<BabyGrowthTracker conceptionDate={conceptionDate} />
+					) : (
+						<View style={styles.noConceptionContainer}>
+							<ActivityIndicator
+								size="large"
+								color="#F7C8E0"
+							/>
+							<Text style={styles.noConceptionText}>
+								Please set and save your conception date to track Baby's Growth
+							</Text>
 
-          <View style={styles.growthButtons}>
-          <TouchableOpacity 
-            style={styles.addDateButton}
-            onPress={() => setShowPicker(true)} 
-          >
-            <Text style={styles.addDateButtonText}>Set Date</Text>
-          </TouchableOpacity>
+							<View style={styles.growthButtons}>
+								<TouchableOpacity
+									style={styles.addDateButton}
+									onPress={() => setShowPicker(true)}
+								>
+									<Text style={styles.addDateButtonText}>Set Date</Text>
+								</TouchableOpacity>
 
-          {showPicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                setShowPicker(false);
-                if (selectedDate) setDate(selectedDate);
-              }}
-            />
-          )}
+								{showPicker && (
+									<DateTimePicker
+										value={date}
+										mode="date"
+										display="default"
+										onChange={(event, selectedDate) => {
+											setShowPicker(false)
+											if (selectedDate) setDate(selectedDate)
+										}}
+									/>
+								)}
 
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveDate}>
-              <Text style={styles.saveButtonText}>Save Date</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-    </View>
+								<TouchableOpacity
+									style={styles.saveButton}
+									onPress={handleSaveDate}
+								>
+									<Text style={styles.saveButtonText}>Save Date</Text>
+								</TouchableOpacity>
+							</View>
+						</View>
+					)}
+				</View>
 
-        
-        <Text style={styles.sectionTitle}>Quick Access</Text>
-        <View style={styles.quickAccessContainer}>
-          <View style={styles.row}>
-            <TouchableOpacity 
-              style={styles.quickAccessButton}
-              onPress={() => router.push("/HealthPlanScreen")}
-            >
-              <View style={styles.buttonIconContainer}>
-                <Image 
-                  source={require("../../assets/images/health_plan.png")} 
-                  style={styles.buttonIcon} 
-                />
-              </View>
-              <Text style={styles.buttonText}>Health Plan</Text>
-            </TouchableOpacity>
+				<Text style={styles.sectionTitle}>Quick Access</Text>
+				<View style={styles.quickAccessContainer}>
+					<View style={styles.row}>
+						<TouchableOpacity
+							style={styles.quickAccessButton}
+							onPress={() => router.push("/HealthPlanScreen")}
+						>
+							<View style={styles.buttonIconContainer}>
+								<Image
+									source={require("../../assets/images/health_plan.png")}
+									style={styles.buttonIcon}
+								/>
+							</View>
+							<Text style={styles.buttonText}>Health Plan</Text>
+						</TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.quickAccessButton}
-              onPress={() => router.push("/epdsstart")}
-            >
-              <View style={styles.buttonIconContainer}>
-                <Image 
-                  source={require("../../assets/images/mental_health.png")} 
-                  style={styles.buttonIcon} 
-                />
-              </View>
-              <Text style={styles.buttonText}>Mental Health</Text>
-            </TouchableOpacity>
-          </View>
+						<TouchableOpacity
+							style={styles.quickAccessButton}
+							onPress={() => router.push("/epdsstart")}
+						>
+							<View style={styles.buttonIconContainer}>
+								<Image
+									source={require("../../assets/images/mental_health.png")}
+									style={styles.buttonIcon}
+								/>
+							</View>
+							<Text style={styles.buttonText}>Mental Health</Text>
+						</TouchableOpacity>
+					</View>
 
-          <View style={styles.row}>
-            <TouchableOpacity 
-              style={styles.quickAccessButton}
-              onPress={() => router.push("/appointments")}
-            >
-              <View style={styles.buttonIconContainer}>
-                <Image 
-                  source={require("../../assets/images/apoinment.png")} 
-                  style={styles.buttonIcon} 
-                />
-              </View>
-              <Text style={styles.buttonText}>Appointments</Text>
-            </TouchableOpacity>
+					<View style={styles.row}>
+						<TouchableOpacity
+							style={styles.quickAccessButton}
+							onPress={() => router.push("/appointments/UserAppointments")}
+						>
+							<View style={styles.buttonIconContainer}>
+								<Image
+									source={require("../../assets/images/apoinment.png")}
+									style={styles.buttonIcon}
+								/>
+							</View>
+							<Text style={styles.buttonText}>Appointments</Text>
+						</TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.quickAccessButton}
-              onPress={() => router.push("/emergency")}
-            >
-              <View style={styles.buttonIconContainer}>
-                <Image 
-                  source={require("../../assets/images/Emergency (2).png")} 
-                  style={styles.buttonIcon} 
-                />
-              </View>
-              <Text style={styles.buttonText}>Emergency</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+						<TouchableOpacity
+							style={styles.quickAccessButton}
+							onPress={() => router.push("/emergency")}
+						>
+							<View style={styles.buttonIconContainer}>
+								<Image
+									source={require("../../assets/images/Emergency (2).png")}
+									style={styles.buttonIcon}
+								/>
+							</View>
+							<Text style={styles.buttonText}>Emergency</Text>
+						</TouchableOpacity>
+					</View>
+				</View>
 
+				<Text style={styles.sectionTitle}>Upcoming Appointments</Text>
 
-        <Text style={styles.sectionTitle}>Upcoming Appointments</Text>
+				<View style={styles.calendarContainer}>
+					<View style={styles.weekHeader}>
+						<TouchableOpacity onPress={handlePrevWeek}>
+							<Ionicons
+								name="chevron-back"
+								size={24}
+								color="#B4E4FF"
+							/>
+						</TouchableOpacity>
+						<Text style={styles.weekTitle}>
+							{currentWeek.format("MMMM YYYY")}
+						</Text>
+						<TouchableOpacity onPress={handleNextWeek}>
+							<Ionicons
+								name="chevron-forward"
+								size={24}
+								color="#B4E4FF"
+							/>
+						</TouchableOpacity>
+					</View>
 
-        <View style={styles.calendarContainer}>
-          <View style={styles.weekHeader}>
-            <TouchableOpacity onPress={handlePrevWeek}>
-              <Ionicons name="chevron-back" size={24} color="#B4E4FF" />
-            </TouchableOpacity>
-            <Text style={styles.weekTitle}>{currentWeek.format("MMMM YYYY")}</Text>
-            <TouchableOpacity onPress={handleNextWeek}>
-              <Ionicons name="chevron-forward" size={24} color="#B4E4FF" />
-            </TouchableOpacity>
-          </View>
-          
-          <View style={styles.weekDays}>
-            {getWeekDates().map((date) => {
-              const isSelected = selectedDate === date.format("YYYY-MM-DD");
-              const isToday = date.format("YYYY-MM-DD") === moment().format("YYYY-MM-DD");
-              
-              return (
-                <TouchableOpacity 
-                  key={date.format("YYYY-MM-DD")} 
-                  onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}
-                  style={[
-                    styles.dayContainer,
-                    isSelected && styles.selectedDayContainer,
-                    isToday && styles.todayContainer
-                  ]}
-                >
-                  <Text style={[
-                    styles.dayNameText, 
-                    isSelected && styles.selectedDayText
-                  ]}>
-                    {date.format("ddd").toUpperCase()}
-                  </Text>
-                  <Text style={[
-                    styles.dayText, 
-                    isSelected && styles.selectedDayText
-                  ]}>
-                    {date.format("D")}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-          
-          {selectedDate && (
-            <View style={styles.appointmentDetail}>
-              <View style={styles.appointmentIcon}>
-                <Ionicons name="md-calendar" size={24} color="#B4E4FF" />
-              </View>
-              <View>
-                <Text style={styles.appointmentTitle}>Doctor Checkup</Text>
-                <Text style={styles.appointmentDate}>{moment(selectedDate).format("dddd, MMMM D, YYYY")}</Text>
-              </View>
-            </View>
-          )}
-        </View>
+					<View style={styles.weekDays}>
+						{getWeekDates().map((date) => {
+							const isSelected = selectedDate === date.format("YYYY-MM-DD")
+							const isToday =
+								date.format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")
 
+							return (
+								<TouchableOpacity
+									key={date.format("YYYY-MM-DD")}
+									onPress={() => setSelectedDate(date.format("YYYY-MM-DD"))}
+									style={[
+										styles.dayContainer,
+										isSelected && styles.selectedDayContainer,
+										isToday && styles.todayContainer,
+									]}
+								>
+									<Text
+										style={[
+											styles.dayNameText,
+											isSelected && styles.selectedDayText,
+										]}
+									>
+										{date.format("ddd").toUpperCase()}
+									</Text>
+									<Text
+										style={[
+											styles.dayText,
+											isSelected && styles.selectedDayText,
+										]}
+									>
+										{date.format("D")}
+									</Text>
+								</TouchableOpacity>
+							)
+						})}
+					</View>
+
+					{selectedDate && (
+						<View style={styles.appointmentDetail}>
+							<View style={styles.appointmentIcon}>
+								<Ionicons
+									name="md-calendar"
+									size={24}
+									color="#B4E4FF"
+								/>
+							</View>
+							<View>
+								<Text style={styles.appointmentTitle}>Doctor Checkup</Text>
+								<Text style={styles.appointmentDate}>
+									{moment(selectedDate).format("dddd, MMMM D, YYYY")}
+								</Text>
+							</View>
+						</View>
+					)}
+				</View>
+
+				{/* Today's Health Plan */}
 				<Text style={styles.sectionTitle}>Today's Health Checklist</Text>
 				<LinearGradient
 					colors={["#B4E4FF", "#9fd9fa"]}
@@ -409,11 +447,19 @@ const Landing = () => {
 									<View
 										style={[
 											styles.taskDot,
-											{ backgroundColor: completed ? "black" : "white" },
+											{
+												backgroundColor: completed ? "#0087cc" : "white",
+											},
 										]}
 									></View>
 									<Text
-										style={[styles.taskText, { opacity: completed ? 1 : 0.7 }]}
+										style={[
+											styles.taskText,
+											{
+												opacity: completed ? 0.7 : 1,
+												textDecorationLine: completed ? "line-through" : "none",
+											},
+										]}
 									>
 										{taskDisplay[task]}
 									</Text>
@@ -688,14 +734,14 @@ const styles = StyleSheet.create({
   healthPlanCard: {
     borderRadius: 16,
     padding: 20,
-    elevation: 4,
+    elevation: 4,    
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
   healthPlanContent: {
-    flexDirection: "row",
+    flexDirection: "row",    
   },
   healthTasks: {
     flex: 1,
@@ -708,7 +754,7 @@ const styles = StyleSheet.create({
   taskDot: {
     width: 8,
     height: 8,
-    borderRadius: 4,
+    borderRadius: 5,
     backgroundColor: "#FFFFFF",
     marginRight: 10,
   },

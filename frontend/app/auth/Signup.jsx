@@ -143,7 +143,7 @@ export default function Signup() {
         try {
             let imageUrl = formData.profileImage;
             if (image) {
-                imageUrl = await uploadImage(image, "profile_pics");
+                imageUrl = await uploadImageToFirebase(image, "profile_pics");
             } else {
                 imageUrl = "https://www.w3schools.com/w3images/avatar2.png";
             }

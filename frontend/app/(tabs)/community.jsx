@@ -21,6 +21,7 @@ import { AuthContext } from "../../context/AuthContext"
 import axiosInstance from "../../api/axiosInstance"
 
 const Community = () => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const router = useRouter()
 	const {
 		posts,
@@ -35,7 +36,7 @@ const Community = () => {
 	const hideTimeout = useRef(null)
 	const [profileImage, setProfileImage] = useState()
 
-	useEffect(() => {
+	useEffect(() => {		
 		const fetchUser = async () => {
 			try {
 				const response = await axiosInstance.get("/users/profile")
@@ -105,6 +106,7 @@ const Community = () => {
 						<Image
 							source={{ uri: profileImage }}
 							style={styles.profileImage}
+							placeholder={{ blurhash }}
 							transition={300}
 						/>
 					</Pressable>
@@ -143,7 +145,7 @@ const Community = () => {
 					</View>
 				) : (
 					<View className="flex-1 justify-center items-center mt-52">
-						<Text className="text-gray-500 text-lg text-center">
+						<Text className="text-gray-500 text-base text-center">
 							No posts to show. Explore and find communities to join!
 						</Text>
 					</View>

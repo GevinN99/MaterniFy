@@ -1,5 +1,13 @@
 const express = require('express');
-const { registerDoctor, loginDoctor, getDoctorProfile, updateDoctorProfile, getAvailableDoctors } = require('../controllers/doctorController');
+const {
+    registerDoctor,
+    loginDoctor,
+    getDoctorProfile,
+    getAvailableDoctors,
+    updateOnlineStatus,
+    updateDoctorProfile,
+    deleteDoctorProfile
+} = require('../controllers/doctorController');
 const { authenticate } = require('../middlewares/auth');
 const router = express.Router();
 
@@ -8,8 +16,10 @@ router.post('/register', registerDoctor);
 router.post('/login', loginDoctor);
 
 // Protected routes (require authentication)
-router.get('/profile', authenticate, getDoctorProfile);
-router.put('/profile', authenticate, updateDoctorProfile);
+router.get('/me', authenticate, getDoctorProfile);
+router.put('/me', authenticate, updateDoctorProfile); // Changed from /online-status to /me for full profile update
+router.delete('/me', authenticate, deleteDoctorProfile);
+router.put('/online-status', authenticate, updateOnlineStatus);
 router.get('/available', getAvailableDoctors);
 
 module.exports = router;

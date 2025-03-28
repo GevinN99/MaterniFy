@@ -9,6 +9,7 @@ router.post('/login', userController.loginUser);
 
 // Protected Routes
 router.get('/profile', auth.authenticate, userController.getUserProfile);
+router.get('/profile/:id', auth.authenticate, userController.getUserProfileById);
 router.put('/profile', auth.authenticate, userController.updateUserProfile);
 
 // Admin or User Routes
@@ -18,4 +19,3 @@ router.delete('/profile', auth.authenticate, userController.deleteUser);
 router.put('/password', auth.authenticate, userController.changePassword);
 
 module.exports = router;
-

@@ -13,7 +13,7 @@ const CompactCommunityCard = ({ community, classname }) => {
 
 	return (
 		<TouchableOpacity
-			className={`w-[160px] bg-white rounded-xl overflow-hidden pb-4 mx-3 ${classname}`}
+			className={`w-[160px] bg-white rounded-xl overflow-hidden pb-4 mx-3 shadow-sm ${classname}`}
 			onPress={() => router.push(`/community/${communityId}`)}
 		>
 			{/* Community Cover Image */}

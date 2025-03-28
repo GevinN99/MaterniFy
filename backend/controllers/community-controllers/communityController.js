@@ -115,6 +115,7 @@ const getCommunityById = async (req, res) => {
 			.populate("admin", "fullName profileImage")
 			.populate({
 				path: "posts", // Populates the posts array
+				options: { sort: { createdAt: -1 } }, // Sort posts by createdAt in descending order
 				populate: [
 					{
 						path: "userId", // Further populates the user inside each post

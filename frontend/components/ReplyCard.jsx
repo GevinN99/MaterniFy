@@ -201,7 +201,7 @@ const ReplyCard = ({ reply, admin, nestLevel = 0, isLastReply = false }) => {
 				/>
 			)}
 
-			<View className="bg-white rounded-xl p-4 shadow-sm">
+			<View className="bg-white rounded-xl p-4">
 				{/* User details */}
 				<View className="flex-row items-center mb-1.5">
 					<Image

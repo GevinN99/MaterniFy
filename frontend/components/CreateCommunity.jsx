@@ -49,8 +49,7 @@ const CreateCommunity = ({
 	const pickImage = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ["images"],
-			allowsEditing: true,
-			aspect: [4, 3],
+			allowsEditing: true,			
 			quality: 1,
 		})
 

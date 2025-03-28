@@ -1,140 +1,263 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet, Alert } from "react-native";
+import {
+    View,
+    Text,
+    FlatList,
+    TouchableOpacity,
+    ActivityIndicator,
+    Alert,
+    Linking,
+    ScrollView,
+    RefreshControl,
+    SafeAreaView,
+} from "react-native";
+import { useRouter } from "expo-router";
 import { getAvailableAppointments, bookAppointment, getUserBookedAppointments } from "../../api/appointmentApi";
-import { getAvailableDoctors } from "../../api/doctorApi"; // Import the function to fetch doctors
+import { getAvailableDoctors } from "../../api/doctorApi";
+import { MaterialIcons, FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function UserAppointments() {
-    const [appointments, setAppointments] = useState([]);
+    const [pendingAppointments, setPendingAppointments] = useState([]);
     const [bookedAppointments, setBookedAppointments] = useState([]);
-    const [doctors, setDoctors] = useState([]); // State to store available doctors
+    const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [activeTab, setActiveTab] = useState("available");
+    const [refreshing, setRefreshing] = useState(false);
+    const router = useRouter();
 
-    // Fetch Available Appointments
-    const loadAvailableAppointments = async () => {
-        setLoading(true);
+    const loadData = async () => {
         try {
-            const data = await getAvailableAppointments();
-            setAppointments(data);
+            setLoading(true);
+            const [pending, booked, docs] = await Promise.all([
+                getAvailableAppointments(),
+                getUserBookedAppointments(),
+                getAvailableDoctors(),
+            ]);
+            setPendingAppointments(pending);
+            setBookedAppointments(booked);
+            setDoctors(docs);
         } catch (error) {
-            Alert.alert("Error", "Failed to load available appointments.");
+            Alert.alert("Error", "Failed to load data");
+            console.error(error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
         }
-        setLoading(false);
     };
 
-    // Fetch User's Booked Appointments
-    const loadBookedAppointments = async () => {
-        setLoading(true);
-        try {
-            const data = await getUserBookedAppointments();
-            setBookedAppointments(data);
-        } catch (error) {
-            Alert.alert("Error", "Failed to load booked appointments.");
-        }
-        setLoading(false);
-    };
-
-    // Fetch Available Doctors
-    const loadDoctors = async () => {
-        setLoading(true);
-        try {
-            const data = await getAvailableDoctors(); // Fetch available doctors
-            setDoctors(data);
-        } catch (error) {
-            Alert.alert("Error", "Failed to load doctors.");
-        }
-        setLoading(false);
+    const onRefresh = () => {
+        setRefreshing(true);
+        loadData();
     };
 
     useEffect(() => {
-        loadAvailableAppointments();
-        loadBookedAppointments();
-        loadDoctors(); // Load doctors on component mount
+        let mounted = true; // Prevent updates on unmounted component
+
+        loadData();
+
+        return () => {
+            mounted = false; // Cleanup to avoid state updates after unmount
+        };
     }, []);
 
-    // Handle Appointment Booking
     const handleBookAppointment = async (appointmentId) => {
-        const response = await bookAppointment(appointmentId);
-        if (response.error) {
-            Alert.alert("Error", response.error);
-        } else {
-            Alert.alert("Success", "Appointment booked!");
-            loadAvailableAppointments();
-            loadBookedAppointments();
+        try {
+            setLoading(true);
+            const response = await bookAppointment(appointmentId);
+            if (response.error) {
+                Alert.alert("Error", response.error);
+            } else {
+                Alert.alert("Success", "Appointment booked successfully!");
+                loadData();
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to book appointment");
+        } finally {
+            setLoading(false);
         }
     };
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Appointments</Text>
+    const handleJoinMeeting = async (meetUrl) => {
+        try {
+            const supported = await Linking.canOpenURL(meetUrl);
+            if (supported) {
+                await Linking.openURL(meetUrl);
+            } else {
+                Alert.alert("Error", "Unable to open the meeting URL");
+            }
+        } catch (error) {
+            Alert.alert("Error", "Failed to open the meeting link");
+        }
+    };
 
-            {/* Tab Navigation */}
-            <View style={styles.tabContainer}>
-                <TouchableOpacity onPress={() => setActiveTab("available")} style={[styles.tab, activeTab === "available" && styles.activeTab]}>
-                    <Text style={styles.tabText}>Available</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setActiveTab("booked")} style={[styles.tab, activeTab === "booked" && styles.activeTab]}>
-                    <Text style={styles.tabText}>My Booked</Text>
-                </TouchableOpacity>
+    const renderPendingAppointmentItem = ({ item }) => (
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
+            <View className="flex-row items-center mb-2">
+                <MaterialIcons name="event-available" size={20} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">
+                    {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
+                </Text>
             </View>
+            <View className="flex-row items-center mb-2">
+                <MaterialCommunityIcons name="doctor" size={20} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-800 font-medium">{item.doctorId?.fullName || "N/A"}</Text>
+            </View>
+            <View className="flex-row items-center mb-4">
+                <MaterialIcons name="medical-services" size={20} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">{item.doctorId?.specialization || "N/A"}</Text>
+            </View>
+            <TouchableOpacity
+                className="py-3 rounded-lg flex-row justify-center items-center"
+                onPress={() => handleBookAppointment(item._id)}
+                disabled={loading}
+                style={{ backgroundColor: "#B4E4FF" }}
+            >
+                <FontAwesome name="calendar-plus-o" size={16} color="white" className="mr-2" />
+                <Text className="text-white font-semibold">Book Appointment</Text>
+            </TouchableOpacity>
+        </View>
+    );
 
-            {loading ? (
-                <ActivityIndicator size="large" color="#007AFF" />
-            ) : (
-                <FlatList
-                    data={activeTab === "available" ? appointments : bookedAppointments}
-                    keyExtractor={(item) => item._id}
-                    renderItem={({ item }) => (
-                        <View style={styles.appointmentCard}>
-                            <Text>{item.appointmentDate} at {item.appointmentTime}</Text>
-                            <Text>Doctor: {item.doctorId?.fullName} ({item.doctorId?.specialization})</Text>
-
-                            {activeTab === "available" ? (
-                                <TouchableOpacity style={styles.bookButton} onPress={() => handleBookAppointment(item._id)}>
-                                    <Text style={styles.bookText}>Book</Text>
-                                </TouchableOpacity>
-                            ) : (
-                                <Text style={styles.statusText}>Status: {item.status}</Text>
-                            )}
-                        </View>
-                    )}
-                />
+    const renderBookedAppointmentItem = ({ item }) => (
+        <View className="bg-white rounded-xl p-4 mb-4 shadow-sm border border-gray-100">
+            <View className="flex-row justify-between items-start mb-3">
+                <View>
+                    <View className="flex-row items-center mb-1">
+                        <MaterialIcons name="event" size={20} color="#F7C8E0" className="mr-2" />
+                        <Text className="text-gray-800 font-medium">
+                            {new Date(item.appointmentDate).toLocaleDateString()} at {item.appointmentTime}
+                        </Text>
+                    </View>
+                    <View className="flex-row items-center mb-1">
+                        <MaterialCommunityIcons name="doctor" size={20} color="#F7C8E0" className="mr-2" />
+                        <Text className="text-gray-500">{item.doctorId?.fullName || "N/A"}</Text>
+                    </View>
+                    <View className="flex-row items-center">
+                        <MaterialIcons name="medical-services" size={20} color="#F7C8E0" className="mr-2" />
+                        <Text className="text-gray-500">{item.doctorId?.specialization || "N/A"}</Text>
+                    </View>
+                </View>
+                <View className="bg-F7C8E0 px-2 py-1 rounded-full">
+                    <Text className="text-xs text-gray-800">Confirmed</Text>
+                </View>
+            </View>
+            {item.status === "confirmed" && item.url && (
+                <TouchableOpacity
+                    className="py-3 rounded-lg flex-row justify-center items-center mt-2"
+                    onPress={() => handleJoinMeeting(item.url)}
+                    style={{ backgroundColor: "#F7C8E0" }}
+                >
+                    <MaterialCommunityIcons name="video" size={18} color="white" className="mr-2" />
+                    <Text className="text-white font-semibold">Join Video Consultation</Text>
+                </TouchableOpacity>
             )}
+        </View>
+    );
 
-            {/* Display Available Doctors */}
-            <View style={styles.doctorsContainer}>
-                <Text style={styles.title}>Available Doctors</Text>
-                {doctors.length === 0 ? (
-                    <Text>No available doctors at the moment.</Text>
-                ) : (
-                    <FlatList
-                        data={doctors}
-                        keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => (
-                            <View style={styles.doctorCard}>
-                                <Text style={styles.doctorName}>{item.fullName}</Text>
-                                <Text>{item.specialization}</Text>
-                            </View>
-                        )}
-                    />
-                )}
+    const renderDoctorItem = ({ item }) => (
+        <View className="bg-white rounded-xl p-4 mb-3 shadow-sm border border-gray-100">
+            <View className="flex-row justify-between items-center mb-2">
+                <Text className="text-lg font-semibold text-gray-800">{item.fullName}</Text>
+                <View className="flex-row items-center">
+                    <View className="w-2 h-2 bg-green-500 rounded-full mr-1" />
+                    <Text className="text-xs text-gray-500">Online</Text>
+                </View>
+            </View>
+            <View className="flex-row items-center mb-1">
+                <MaterialIcons name="medical-services" size={16} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">{item.specialization}</Text>
+            </View>
+            <View className="flex-row items-center">
+                <MaterialIcons name="work" size={16} color="#B4E4FF" className="mr-2" />
+                <Text className="text-gray-500">{item.experienceYears} years experience</Text>
             </View>
         </View>
     );
-}
 
-const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-    title: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-    tabContainer: { flexDirection: "row", marginBottom: 10, borderBottomWidth: 1, borderColor: "#ccc" },
-    tab: { flex: 1, padding: 10, alignItems: "center" },
-    activeTab: { borderBottomWidth: 2, borderColor: "#007AFF" },
-    tabText: { fontSize: 16, fontWeight: "bold", color: "#007AFF" },
-    appointmentCard: { padding: 10, borderBottomWidth: 1, borderColor: "#ccc", marginTop: 10 },
-    bookButton: { marginTop: 5, backgroundColor: "#007AFF", padding: 5, borderRadius: 5 },
-    bookText: { color: "white", textAlign: "center" },
-    statusText: { fontWeight: "bold", color: "green", marginTop: 5 },
-    doctorsContainer: { marginTop: 20 },
-    doctorCard: { padding: 10, backgroundColor: "#f9f9f9", marginBottom: 10, borderRadius: 10, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 5, elevation: 3 },
-    doctorName: { fontSize: 18, fontWeight: "bold" },
-});
+    return (
+        <SafeAreaView className="flex-1 bg-FCFCFC">
+            <View className="p-4">
+                <View className="h-1 w-16 bg-B4E4FF rounded-full" />
+            </View>
+
+            {loading && !refreshing ? (
+                <View className="flex-1 justify-center items-center">
+                    <ActivityIndicator size="large" color="#B4E4FF" />
+                </View>
+            ) : (
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, paddingBottom: 30 }}
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#B4E4FF"]} tintColor="#B4E4FF" />
+                    }
+                >
+                    <View className="px-4">
+                        {/* Booked Appointments Section */}
+                        <View className="mb-8">
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-xl font-bold text-gray-800 mr-3">Your Appointments</Text>
+                                <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
+                            </View>
+                            {bookedAppointments.length > 0 ? (
+                                <FlatList
+                                    data={bookedAppointments}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={renderBookedAppointmentItem}
+                                    scrollEnabled={false}
+                                    ListFooterComponent={<View className="pb-4" />}
+                                />
+                            ) : (
+                                <View className="bg-white p-6 rounded-xl items-center mb-4">
+                                    <MaterialIcons name="event-busy" size={40} color="#B4E4FF" />
+                                    <Text className="text-gray-500 mt-3">No booked appointments yet</Text>
+                                </View>
+                            )}
+                        </View>
+
+                        {/* Available Appointments Section */}
+                        <View className="mb-8">
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-xl font-bold text-gray-800 mr-3">Available Appointments</Text>
+                                <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
+                            </View>
+                            {pendingAppointments.length > 0 ? (
+                                <FlatList
+                                    data={pendingAppointments}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={renderPendingAppointmentItem}
+                                    scrollEnabled={false}
+                                    ListFooterComponent={<View className="pb-4" />}
+                                />
+                            ) : (
+                                <View className="bg-white p-6 rounded-xl items-center mb-4">
+                                    <MaterialIcons name="schedule" size={40} color="#B4E4FF" />
+                                    <Text className="text-gray-500 mt-3">No available appointments</Text>
+                                </View>
+                            )}
+                        </View>
+
+                        {/* Doctors Section */}
+                        <View className="mb-8">
+                            <View className="flex-row items-center mb-3">
+                                <Text className="text-xl font-bold text-gray-800 mr-3">Available Doctors</Text>
+                                <View className="h-1 flex-1 bg-B4E4FF rounded-full" />
+                            </View>
+                            {doctors.length > 0 ? (
+                                <FlatList
+                                    data={doctors}
+                                    keyExtractor={(item) => item._id}
+                                    renderItem={renderDoctorItem}
+                                    scrollEnabled={false}
+                                />
+                            ) : (
+                                <View className="bg-white p-6 rounded-xl items-center">
+                                    <MaterialCommunityIcons name="doctor" size={40} color="#B4E4FF" />
+                                    <Text className="text-gray-500 mt-3">No doctors available</Text>
+                                </View>
+                            )}
+                        </View>
+                    </View>
+                </ScrollView>
+            )}
+        </SafeAreaView>
+    );
+}

@@ -1,41 +1,39 @@
 const Appointment = require('../models/appointmentModel');
 const Doctor = require('../models/doctorModel');
 const User = require('../models/userModel');
-const { generateAgoraToken } = require('../utils/agora');
 
 exports.createAppointment = async (req, res) => {
     try {
-        const doctorId = req.user.id;
+        console.log("Creating appointment with data:", {
+            user: req.user,
+            body: req.body,
+        });
+
+        const doctorId = req.user.id; // Use 'id' from token payload
+        if (!doctorId) {
+            return res.status(401).json({ message: "Unauthorized: Doctor ID not found" });
+        }
+
         const { appointmentType, appointmentDate, appointmentTime } = req.body;
-
-        // Validation
         if (!appointmentType || !appointmentDate || !appointmentTime) {
-            return res.status(400).json({ message: "All fields (appointmentType, appointmentDate, appointmentTime) are required" });
-        }
-
-        const doctor = await Doctor.findById(doctorId);
-        if (!doctor) {
-            return res.status(404).json({ message: "Doctor not found" });
-        }
-
-        // Parse appointmentDate to ensure it’s a valid Date object
-        const parsedDate = new Date(appointmentDate);
-        if (isNaN(parsedDate.getTime())) {
-            return res.status(400).json({ message: "Invalid appointmentDate format. Use YYYY-MM-DD" });
+            return res.status(400).json({ message: "Missing required fields" });
         }
 
         const newAppointment = new Appointment({
-            doctorId: doctor._id,
             appointmentType,
-            appointmentDate: parsedDate,
+            appointmentDate: new Date(appointmentDate), // Convert string to Date
             appointmentTime,
-            status: "pending",
+            doctorId,
+            motherId: null,
         });
 
+        console.log("New appointment object:", newAppointment.toObject());
         await newAppointment.save();
-        res.status(201).json({ message: "Appointment created successfully", appointment: newAppointment });
+        console.log("Appointment saved successfully:", newAppointment.toObject());
+
+        res.status(201).json(newAppointment);
     } catch (error) {
-        console.error("Error creating appointment:", error);
+        console.error("Error in createAppointment:", error.stack);
         res.status(500).json({ message: "Internal server error", error: error.message });
     }
 };
@@ -77,16 +75,12 @@ exports.cancelAppointment = async (req, res) => {
 // User fetches available appointments
 exports.getAvailableAppointments = async (req, res) => {
     try {
-        const currentDate = new Date();
-
-        const appointments = await Appointment.find({
-            status: { $in: ["pending", "any"] },
-            appointmentDate: { $gte: currentDate },
-        }).populate("doctorId", "fullName specialization");
-
+        const appointments = await Appointment.find({ motherId: null })
+            .populate("doctorId", "fullName specialization experienceYears");
+        console.log("Available Appointments:", appointments); // Add logging for debugging
         res.status(200).json(appointments);
     } catch (error) {
-        console.error("Error fetching available appointments:", error);
+        console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -94,7 +88,7 @@ exports.getAvailableAppointments = async (req, res) => {
 // User books an appointment (Generate Agora token here)
 exports.bookAppointment = async (req, res) => {
     try {
-        const userId = req.user.id; // Mother ID from authenticated token
+        const userId = req.user.id;
         const { appointmentId } = req.body;
 
         const user = await User.findById(userId);
@@ -107,14 +101,14 @@ exports.bookAppointment = async (req, res) => {
             return res.status(404).json({ message: "Appointment not found or already booked" });
         }
 
-        // Generate Agora token and channel name
-        const { token, channelName } = await generateAgoraToken(appointment.doctorId, userId);
+        const doctor = await Doctor.findById(appointment.doctorId);
+        if (!doctor) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
 
-        // Update appointment with user details and Agora info
         appointment.motherId = user._id;
         appointment.status = "confirmed";
-        appointment.agoraToken = token;
-        appointment.channelName = channelName;
+        appointment.url = doctor.googleMeetUrl; // Assign Google Meet URL to appointment
 
         await appointment.save();
 
@@ -129,13 +123,16 @@ exports.bookAppointment = async (req, res) => {
 exports.getUserBookedAppointments = async (req, res) => {
     try {
         const userId = req.user.id;
-
-        const appointments = await Appointment.find({ motherId: userId })
-            .populate("doctorId", "fullName specialization profileImage");
-
+        console.log("Fetching confirmed appointments for userId:", userId);
+        const appointments = await Appointment.find({
+            motherId: userId,
+            status: "confirmed"
+        })
+            .populate("doctorId", "fullName specialization experienceYears");
+        console.log("Found appointments:", appointments);
         res.status(200).json(appointments);
     } catch (error) {
-        console.error("Error fetching user booked appointments:", error);
+        console.error(error);
         res.status(500).json({ message: "Internal server error" });
     }
 };

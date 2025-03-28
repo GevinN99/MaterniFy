@@ -18,6 +18,7 @@ import { Image } from "expo-image"
 import { useCommunity } from "../context/communityContext"
 
 const MembersList = ({ visible, onClose, community }) => {
+	const blurhash = "LCKMX[}@I:OE00Eg$%Na0eNHWp-B"
 	const { fetchData } = useCommunity()
 	const [communityMembers, setCommunityMembers] = useState([])
 	useEffect(() => {
@@ -94,6 +95,9 @@ const MembersList = ({ visible, onClose, community }) => {
 											<Image
 												source={{ uri: member.profileImage }}
 												style={styles.profileImage}
+												placeholder={{ blurhash }}
+												contentFit="cover"
+												transition={300}												
 											/>
 											<Text className="text-base">{member.fullName}</Text>
 										</View>
