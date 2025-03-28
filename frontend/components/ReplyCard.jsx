@@ -193,7 +193,7 @@ const ReplyCard = ({ reply, admin, nestLevel = 0, isLastReply = false }) => {
 
 	return (
 		<View className={`relative mt-3 ${nestLevel === 0 ? "pl-0" : "pl-4"}`}>
-			{/* Vertical connector for nested replies */}
+			
 			{nestLevel > 0 && (
 				<View
 					className="absolute left-0 top-0 w-0.5 bg-blue-200"
@@ -202,7 +202,7 @@ const ReplyCard = ({ reply, admin, nestLevel = 0, isLastReply = false }) => {
 			)}
 
 			<View className="bg-white rounded-xl p-4">
-				{/* User details */}
+				
 				<View className="flex-row items-center mb-1.5">
 					<Image
 						source={{ uri: userId.profileImage }}
@@ -219,7 +219,7 @@ const ReplyCard = ({ reply, admin, nestLevel = 0, isLastReply = false }) => {
 					</View>
 				</View>
 
-				{/* Mention the user being replied to */}
+				
 				<Text className=" text-gray-500 mb-2">
 					Replying to{" "}
 					<Text className="font-base text-gray-600">
@@ -264,7 +264,7 @@ const ReplyCard = ({ reply, admin, nestLevel = 0, isLastReply = false }) => {
 						/>
 					</Pressable>
 
-					{/* Display all nested replies  */}
+					
 					{showNestedReplies &&
 						replies.map((nestedReply, index) => (
 							<ReplyCard

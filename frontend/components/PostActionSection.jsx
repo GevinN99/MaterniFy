@@ -17,7 +17,7 @@ const PostActionSection = ({
 	return (
 		<View className="flex flex-row justify-between mt-4">
 			<View className="flex flex-row gap-4">
-				{/* Reply Icon */}
+				
 				<Pressable
 					className="flex flex-row items-center"
 					onPress={onReply}
@@ -30,7 +30,7 @@ const PostActionSection = ({
 					<Text>{replyCount}</Text>
 				</Pressable>
 
-				{/* Like/Unlike Icon */}
+				
 				<Pressable
 					className="flex flex-row items-center"
 					onPress={onLike}
@@ -45,7 +45,7 @@ const PostActionSection = ({
 				</Pressable>
 			</View>			
 
-			{/* Ellipsis Icon for menu */}
+			
 			{admin && (
 				<Pressable onPress={onToggleMenu}>
 					<Ionicons
@@ -56,7 +56,7 @@ const PostActionSection = ({
 				</Pressable>
 			)}
 
-			{/* Conditional Menu */}
+			
 			{showMenu && (
 				<View className="absolute right-8 bottom-1 rounded-md shadow-md z-10 p-1 bg-white">
 					<Pressable

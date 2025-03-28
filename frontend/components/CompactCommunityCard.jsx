@@ -16,7 +16,7 @@ const CompactCommunityCard = ({ community, classname }) => {
 			className={`w-[160px] bg-white rounded-xl overflow-hidden pb-4 mx-3 shadow-sm ${classname}`}
 			onPress={() => router.push(`/community/${communityId}`)}
 		>
-			{/* Community Cover Image */}
+			
 			<View>
 				{imageUrl && (
 					<Image
@@ -29,7 +29,7 @@ const CompactCommunityCard = ({ community, classname }) => {
 				)}
 			</View>
 
-			{/* Community Info */}
+			
 			<View className="pt-3 px-2">
 				<Text className="text-lg font-semibold line-clamp-1">{name}</Text>
 				<View className="flex-row items-center justify-between mt-1">
