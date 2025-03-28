@@ -1,64 +1,79 @@
-import { createContext, useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { createContext, useState, useEffect } from "react"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useRouter } from "expo-router"
 
-export const AuthContext = createContext();
+export const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [userId, setUserId] = useState(null);
-    const [role, setRole] = useState(null);
-    const router = useRouter();
+	const [user, setUser] = useState(null)
+	const [userId, setUserId] = useState(null)
+	const [role, setRole] = useState(null)
+	const [isLoading, setIsLoading] = useState(true) // Add loading state
+	const router = useRouter()
 
-    useEffect(() => {
-        const loadUser = async () => {
-            try {
-                const token = await AsyncStorage.getItem("token");
-                const storedRole = await AsyncStorage.getItem("role");
-                const storedUserId = await AsyncStorage.getItem("userId")
-                console.log("AuthContext - Initial Load - Token:", token);
-                console.log("AuthContext - Initial Load - Role:", storedRole);
+	useEffect(() => {
+		const loadUser = async () => {
+			try {
+				const token = await AsyncStorage.getItem("token")
+				const storedRole = await AsyncStorage.getItem("role")
+				const storedUserId = await AsyncStorage.getItem("userId")
 
-                if (token) {
-                    setUser(token);
-                    setRole(storedRole);
-                    setUserId(storedUserId)
-                    const currentPath = router.pathname;
-                    if (!currentPath || currentPath === "/auth/Login" || currentPath === "/auth/DoctorLogin") {
-                        if (storedRole === "doctor") {
-                            router.replace("/(tabs)/doctor-home");
-                        } else {
-                            router.replace("/(tabs)/index");
-                        }
-                    }
-                } else {
-                    router.replace("/auth/Login");
-                }
-            } catch (error) {
-                console.error("Error loading user from AsyncStorage:", error);
-                router.replace("/auth/Login");
-            }
-        };
-        loadUser();
-    }, []);
+				if (token) {
+					setUser(token)
+					setRole(storedRole)
+					setUserId(storedUserId)
+				}
+			} catch (error) {
+				console.error("Error loading user:", error)
+			} finally {
+				setIsLoading(false)
+			}
+		}
+		loadUser()
+	}, [])
 
-    const logout = async () => {
-        try {
-            await AsyncStorage.removeItem("token");
-            await AsyncStorage.removeItem("userId");
-            await AsyncStorage.removeItem("role");
-            setUser(null);
-            setRole(null);
-            router.replace("/auth/Login");
-            console.log("Logged out successfully");
-        } catch (error) {
-            console.error("Logout Error:", error);
-        }
-    };
+	// Separate useEffect for route handling
+	useEffect(() => {
+		if (!isLoading) {
+			if (!user) {
+				router.replace("/auth/Login")
+			} else {
+				// Only redirect if we're on auth pages
+				const currentPath = router.pathname
+				const isOnAuthPage = currentPath?.startsWith("/auth")
 
-    return (
-        <AuthContext.Provider value={{ user, userId, setUserId, setUser, role, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
+				if (isOnAuthPage) {
+					if (role === "doctor") {
+						router.replace("/doctor-home")
+					} else {
+						router.replace("/") // Goes to (tabs)/index
+					}
+				}
+			}
+		}
+	}, [user, role, isLoading])
+
+	const logout = async () => {
+		try {
+			await AsyncStorage.clear()
+			setUser(null)
+			setRole(null)
+			setUserId(null)
+			router.replace("/auth/Login")
+		} catch (error) {
+			console.error("Logout failed:", error)
+		}
+	}
+
+	if (isLoading) {
+		return null // Or a loading spinner
+	}
+
+	return (
+		<AuthContext.Provider
+			value={{ user, userId, setUserId, setUser, role, logout }}
+		>
+			{children}
+		</AuthContext.Provider>
+	)
+}
