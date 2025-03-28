@@ -39,7 +39,7 @@ const CommunityUserProfileTabs = ({userCommunities, userPosts}) => {
 					</Text>
 				</TouchableOpacity>
 			</View>
-			{/* Content Section */}
+			
 			<ScrollView className=" bg-[#E7EDEF]">
 				{activeTab === "Communities" ? (
 					<View>

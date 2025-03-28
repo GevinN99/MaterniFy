@@ -26,7 +26,7 @@ const CommunityPicker = ({ items, selectedValue, onValueChange }) => {
 					className="flex flex-row items-center justify-between border border-gray-200 rounded-lg p-2 bg-white"
 					onPress={toggleDropdown}
 				>
-					{/* Display selected community image and label */}
+					
 					{selectedItem ? (
 						<View className="flex flex-row gap-4 items-center">
 							<Image
@@ -54,7 +54,7 @@ const CommunityPicker = ({ items, selectedValue, onValueChange }) => {
 				</TouchableOpacity>
 			)}
 
-			{/* Show message when no communities are available */}
+			
 			{items.length === 0 && (
 				<Text className="text-center text-red-500">
 					Join a community to start creating posts.

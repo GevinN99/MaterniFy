@@ -123,7 +123,7 @@ const CommunityDetails = ({
 				</View>
 			</View>
 
-			{/* Community Image */}
+			
 			<View className="flex justify-center items-center -mt-10 mb-4 ">
 				<View className="rounded-xl overflow-hidden border-4 border-white shadow-md">
 					<Image
@@ -136,7 +136,7 @@ const CommunityDetails = ({
 				</View>
 			</View>
 
-			{/* Community Description */}
+			
 			<View className="px-5">
 				<Text className="text-center text-lg text-gray-600 mb-6">
 					{description}
@@ -165,7 +165,7 @@ const CommunityDetails = ({
 							Community Administrator
 						</Text>
 					</View>
-					{/* Admin Actions Menu */}
+					
 					{isAdmin && (
 						<Pressable onPress={onToggleMenu}>
 							<Feather
@@ -175,7 +175,7 @@ const CommunityDetails = ({
 						</Pressable>
 					)}
 
-					{/* Dropdown Menu for Admin Actions */}
+
 					{showMenu && (
 						<View className="absolute top-5 right-10 z-30 rounded-md shadow-md bg-white">
 							<TouchableOpacity
@@ -225,7 +225,7 @@ const CommunityDetails = ({
 					)}
 				</View>
 
-				{/* Join/Leave Button for Members */}
+				
 				{!isAdmin && (
 					<View className="flex flex-col gap-3">
 						<TouchableOpacity
@@ -245,7 +245,7 @@ const CommunityDetails = ({
 					</View>
 				)}
 			</View>
-			{/* Community Update Modal */}
+			
 			<CreateCommunity
 				editing={true}
 				community={communityDetails}

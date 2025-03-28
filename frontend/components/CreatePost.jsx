@@ -154,12 +154,12 @@ const CreatePost = ({ visible, onClose }) => {
 									<Text className="font-bold">{name}</Text>
 								</View>
 
-								{/* Display content error if present */}
+								
 								{errors.content && (
 									<Text className="text-red-500 my-1">*{errors.content}</Text>
 								)}
 								<View className="transition duration-300 rounded-lg px-4 pt-4 mb-4 pb-2 bg-white">
-									{/* Text input for post content */}
+									
 									<TextInput
 										className="mb-4 outline-none"
 										placeholder="What's on your mind?"
@@ -185,7 +185,7 @@ const CreatePost = ({ visible, onClose }) => {
 										}}
 									/>
 
-									{/* Display selected image */}
+									
 									{image && (
 										<View>
 											<Image
@@ -206,7 +206,7 @@ const CreatePost = ({ visible, onClose }) => {
 										</View>
 									)}
 
-									{/* Image picker and character count */}
+									
 									<View className="flex flex-row justify-between items-center mt-4 ">
 										<TouchableOpacity onPress={pickImage}>
 											<Feather
@@ -223,12 +223,12 @@ const CreatePost = ({ visible, onClose }) => {
 									</View>
 								</View>
 
-								{/* Display community selection error if present */}
+								
 								{errors.community && (
 									<Text className="text-red-500 my-1">*{errors.community}</Text>
 								)}
 
-								{/* Community picker dropdown */}
+								
 								<CommunityPicker
 									items={userCommunities.map((community) => ({
 										label: community.name,
@@ -249,7 +249,7 @@ const CreatePost = ({ visible, onClose }) => {
 									}}
 								/>
 							</View>
-							{/* Display server error if present */}
+							
 							{errors.server && (
 								<Text className="text-red-500 mt-4">{errors.server}</Text>
 							)}
